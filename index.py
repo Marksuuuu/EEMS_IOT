@@ -21,6 +21,7 @@ from matplotlib.figure import Figure
 from ttkbootstrap.constants import *
 
 from operator_module.operator_dashboard import OperatorDashboard
+from technician_module.technician_dashboard import TechnicianDashboard
 from utils.quantity_data import QuantityData
 from utils.status_update import StatusUpdate
 from utils.time_data import TimeData
@@ -240,15 +241,15 @@ class App:
         self.GLabel_794["fg"] = "#333333"
         self.GLabel_794["justify"] = "center"
         self.GLabel_794.place(x=1480, y=10, width=300, height=60)
-        
-        self.ticket=tk.Label(root)
+
+        self.ticket = tk.Label(root)
         self.ticket["bg"] = "#ffb800"
         self.ticket["cursor"] = "circle"
-        ft = tkFont.Font(family='Times',size=9)
+        ft = tkFont.Font(family='Times', size=9)
         self.ticket["font"] = ft
         self.ticket["fg"] = "#000000"
         self.ticket["justify"] = "left"
-        self.ticket.place(x=1199,y=73,width=581,height=43)
+        self.ticket.place(x=1199, y=73, width=750, height=43)
 
     @sio.event
     def my_message(data):
@@ -331,7 +332,7 @@ class App:
             if response.status_code == 200:
                 try:
                     data = json.loads(response.text)['result']
-                    
+
                     # Check if data is a dictionary before accessing its values
                     if isinstance(data, dict):
                         user_department = data.get('employee_department')
@@ -357,9 +358,11 @@ class App:
                             self.validate_permissions(
                                 user_department, user_position, dataJson)
                         else:
-                            print("Employee data doesn't contain department or position.")
+                            print(
+                                "Employee data doesn't contain department or position.")
                     else:
-                        print("Response data is not in the expected format (dictionary).")
+                        print(
+                            "Response data is not in the expected format (dictionary).")
                 except KeyError:
                     print("Response data doesn't have expected keys.")
             else:
@@ -367,7 +370,6 @@ class App:
         except ValueError:
             tk.messagebox.showerror(
                 "Invalid Input", "Please enter a valid integer employee number.")
-
 
     def validate_offline_employee(self, employee_number):
         log_file_path = os.path.join(
@@ -451,6 +453,12 @@ class App:
         OpeDashboard = tk.Toplevel(root)
         ope_dashboard = OperatorDashboard(
             OpeDashboard, user_department, user_position, data_json)
+        root.withdraw()
+
+    def show_tech_dashboard(self, user_department, user_position, dataJson):
+        techDashboard = Toplevel(root)
+        tech_dashboard = TechnicianDashboard(
+            techDashboard, user_department, user_position, dataJson)
         root.withdraw()
 
     def update_clock(self):
@@ -572,16 +580,15 @@ class App:
             self.oee_graph.configure(image=self.chart_image)
         if self.quantity_graph is not None:
             self.quantity_graph.configure(image=self.total_img)
-            
+
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
-        
+
         if ticket_present:
             self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             self.ticket.destroy()
-
 
 
 if __name__ == "__main__":

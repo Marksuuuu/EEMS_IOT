@@ -10,6 +10,7 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
+from ttkbootstrap.constants import *
 
 import requests
 from PIL import Image, ImageTk
@@ -129,7 +130,8 @@ class OperatorDashboard:
 
         ## END ##
 
-        root.title("undefined")
+        root.title(
+            f"TECHNICIAN DASHBOARD - {self.extracted_employee_no} -- POSSITION - {self.extracted_possition}")
         width = 1800
         height = 1013
         screenwidth = root.winfo_screenwidth()
@@ -168,7 +170,7 @@ class OperatorDashboard:
         self.ticket_checking["font"] = ft
         self.ticket_checking["fg"] = "#000000"
         self.ticket_checking["justify"] = "center"
-        self.ticket_checking.place(x=460,y=10,width=750,height=37)
+        self.ticket_checking.place(x=460, y=10, width=750, height=37)
 
         # self.GLabel_703 = tk.Label(self.root)
         # self.GLabel_703["bg"] = "#ffffff"
@@ -452,11 +454,11 @@ class OperatorDashboard:
         show_ticket_dashboard = RequestTicket(
             self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
         )
-    
+
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
-        
+
         if ticket_present:
             self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
