@@ -1,0 +1,72 @@
+{
+  "allowed_users": {
+    "employee_department": [
+      "Management Information System",
+      "Maintenance",
+      "Manufacturing",
+      "Materials Planning & Control and Purchasing"
+    ],
+    "employee_position": [
+      "Application Developer 1",
+      "Application Developer 2",
+      "Application Developer 3",
+      "Application Developer 4",
+      "Application Developer 5",
+      "Application Developer 6",
+      "Application Developer 7",
+      "Operator 1",
+      "Operator 2",
+      "Operator 3",
+      "Operator 4",
+      "Operator 5",
+      "Operator 6",
+      "Operator 7",
+      "Operator 8",
+      "Supervisor 1",
+      "Supervisor 2",
+      "Supervisor 3",
+      "Supervisor 4",
+      "Supervisor 5",
+      "Supervisor 6",
+      "Supervisor 7",
+      "Supervisor 8",
+      "Technician 1",
+      "Technician 2",
+      "Technician 3",
+      "Technician 4",
+      "Technician 5",
+      "Technician 6",
+      "Technician 7",
+      "Technician 8",
+      "Apprentice"
+    ],
+    "operator": [
+      "Application Developer 1",
+      "Application Developer 2",
+      "Application Developer 3",
+      "Application Developer 4",
+      "Application Developer 5",
+      "Application Developer 6",
+      "Application Developer 7",
+      "Operator 1",
+      "Operator 2",
+      "Operator 3",
+      "Operator 4",
+      "Operator 5",
+      "Operator 6",
+      "Operator 7",
+      "Operator 8",
+      "Apprentice"
+    ],
+    "technician": [
+      "Technician 1",
+      "Technician 2",
+      "Technician 3",
+      "Technician 4",
+      "Technician 5",
+      "Technician 6",
+      "Technician 7",
+      "Technician 8"
+    ]
+  }
+}
