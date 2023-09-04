@@ -14,6 +14,7 @@ class TimeData:
         self.file_path = file_path
         self.get_available_hrs()
         self.calculate_oee()
+        self.calculate_total_downtime()
 
     def get_script_directory(self):
         return os.path.dirname(os.path.realpath(__file__))
@@ -93,7 +94,7 @@ class TimeData:
             for row in csvreader:
                 data.append(tuple(row))
 
-        productive_hours = {}
+        downtime_hours = {}
         start_time = None
 
         for action, date_str, time_str in data:
@@ -105,48 +106,59 @@ class TimeData:
             elif action == "STOP" and start_time is not None:
                 productive_time = dt - start_time
                 day = dt.date()
-                if day not in productive_hours:
-                    productive_hours[day] = productive_time
+                if day not in downtime_hours:
+                    downtime_hours[day] = productive_time
                 else:
-                    productive_hours[day] += productive_time
+                    downtime_hours[day] += productive_time
                 start_time = None
 
         total_productive_time = timedelta()
 
-        for day, productive_time in productive_hours.items():
+        for day, productive_time in downtime_hours.items():
             total_productive_time += productive_time
 
         return total_productive_time
 
-    def total_running_qty(self):
+    def calculate_total_downtime(self):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         log_folder = os.path.join(script_directory, self.file_path)
-        log_file_path = os.path.join(log_folder, 'main.json')
+        log_file_path = os.path.join(log_folder, 'logs/downtime.csv')
 
-        try:
-            with open(log_file_path, "r") as json_file:
-                data = json.load(json_file)['data']
-        except FileNotFoundError:
-            print("File not found:", log_file_path)
-            return 0
-        except json.JSONDecodeError:
-            print("Invalid JSON data in file:", log_file_path)
-            return 0
+        data = []
+        with open(log_file_path, 'r') as csvfile:
+            csvreader = csv.reader(csvfile)
+            for row in csvreader:
+                data.append(row)
 
-        total_running_qty = 0
+        total_available_seconds = 0
+        previous_event_time = None
 
-        for item in data:
-            if item is None or item is False:
-                running_qty = 0
-                total_running_qty += running_qty
+        for event in data:
+            event_type = event[0]
+            event_date = event[1]
+            event_time = event[2]
+
+            event_datetime = datetime.strptime(
+                event_date + " " + event_time, "%Y-%m-%d %H:%M:%S")
+
+            if previous_event_time and event_type == "DOWNTIME_START":
+                time_difference = event_datetime - previous_event_time
+                total_available_seconds += time_difference.total_seconds()
+
+            previous_event_time = event_datetime
+
+        if not any(event[0].startswith("DOWNTIME_STOP") for event in data):
+            current_datetime = datetime.now()
+            if previous_event_time:
+                time_difference = current_datetime - previous_event_time
             else:
-                running_qty = int(item['running_qty'])
-                total_running_qty += running_qty
+                time_difference = current_datetime - \
+                    datetime.strptime("2000-01-01 00:00:00",
+                                      "%Y-%m-%d %H:%M:%S")
+            total_available_seconds += time_difference.total_seconds()
 
-        # print("Total Running Quantity:", total_running_qty)
-        return total_running_qty
-
-
+        formatted_time = self.format_time(total_available_seconds)
+        return formatted_time
 
 
 if __name__ == "__main__":

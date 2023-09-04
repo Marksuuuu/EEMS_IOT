@@ -10,8 +10,7 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
-from ttkbootstrap.constants import *
-
+import time
 import requests
 from PIL import Image, ImageTk
 
@@ -106,6 +105,8 @@ class OperatorDashboard:
         self.extracted_possition = data[5]
         self.extracted_username = data[6]
 
+        self.details_window = None
+
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
         else:
@@ -127,11 +128,13 @@ class OperatorDashboard:
         self.update_status()
         self.create_tree_view()
         self.verify_ticket_status()
+        self.update_table()
 
         ## END ##
 
         root.title(
-            f"TECHNICIAN DASHBOARD - {self.extracted_employee_no} -- POSSITION - {self.extracted_possition}")
+            f"OPERATOR DASHBOARD - {self.extracted_employee_no} -- POSITION - {self.extracted_possition}"
+        )
         width = 1800
         height = 1013
         screenwidth = root.winfo_screenwidth()
@@ -140,6 +143,14 @@ class OperatorDashboard:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
+
+    def load_permissions(self):
+        log_file_path = os.path.join(
+            self.get_script_directory(), "../config", "settings.json"
+        )
+        permissions = UserPermissions(log_file_path)
+        permissions.load_permissions()
+        return permissions
 
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
@@ -165,12 +176,12 @@ class OperatorDashboard:
 
         self.ticket_checking = tk.Label(self.root)
         self.ticket_checking["bg"] = "#ffb800"
-        self.ticket_checking["cursor"] = "circle"
-        ft = tkFont.Font(family='Times', size=13)
+        # self.ticket_checking["cursor"] = "circle"
+        ft = tkFont.Font(family='Times', size=10)
         self.ticket_checking["font"] = ft
         self.ticket_checking["fg"] = "#000000"
         self.ticket_checking["justify"] = "center"
-        self.ticket_checking.place(x=460, y=10, width=750, height=37)
+        self.ticket_checking.place(x=460,y=10,width=750,height=37)
 
         # self.GLabel_703 = tk.Label(self.root)
         # self.GLabel_703["bg"] = "#ffffff"
@@ -201,6 +212,17 @@ class OperatorDashboard:
         self.logout_btn.place(x=1640, y=110, width=149, height=50)
         self.logout_btn["command"] = self.logout
 
+        self.refresh_btn = tk.Button(self.root)
+        self.refresh_btn["bg"] = "#999999"
+        self.refresh_btn["cursor"] = "circle"
+        ft = tkFont.Font(family="Times", size=16)
+        self.refresh_btn["font"] = ft
+        self.refresh_btn["fg"] = "#333333"
+        self.refresh_btn["justify"] = "center"
+        self.refresh_btn["text"] = "REFRESH"
+        self.refresh_btn["command"] = self.update_table
+        self.refresh_btn.place(x=1450, y=110, width=150, height=50)
+
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=56)
         self.statusHere["font"] = ft
@@ -220,19 +242,40 @@ class OperatorDashboard:
                 "PACKAGE",
                 "MO QUANTITY",
                 "MO",
+                "STATUS",
             ),
         )
-        self.tree.heading("ROW NUMBER", text="ROW NUMBER")
+        self.tree.heading("ROW NUMBER", text="#")
         self.tree.heading("CUSTOMER", text="CUSTOMER")
         self.tree.heading("DEVICES", text="DEVICES")
         self.tree.heading("MAIN OPERATION", text="MAIN OPERATION")
         self.tree.heading("PACKAGE", text="PACKAGE")
         self.tree.heading("MO QUANTITY", text="MO QUANTITY")
-        self.tree.heading("MO", text="MO")
+        self.tree.heading("MO", text="MO NUMBER")
+        self.tree.heading("STATUS", text="STATUS")
         self.tree.pack(pady=120)
 
+        header_style = ttk.Style()
+        header_style.configure("Treeview.Heading", font=("Helvetica", 15)) 
+
+        row_style = ttk.Style()
+        row_style.configure("Treeview", font=("Helvetica", 12)) 
+        row_style.configure("Treeview.Item", padding=(10, 5))
+
+        self.tree.column("ROW NUMBER", width=50)  # Adjust the width for each column
+        self.tree.column("CUSTOMER", width=150)
+        self.tree.column("DEVICES", width=250)
+        self.tree.column("MAIN OPERATION", width=150)
+        self.tree.column("PACKAGE", width=100)
+        self.tree.column("MO QUANTITY", width=100)
+        self.tree.column("MO", width=100)
+        self.tree.column("STATUS", width=100)
+
+
+        for col in self.tree["columns"]:
+            self.tree.column(col, anchor="center")
         self.populate_table()
-        self.root.after(5000, self.update_table)
+       # self.root.after(5000, self.update_table)
 
         self.update_status()
 
@@ -270,39 +313,98 @@ class OperatorDashboard:
             return None
 
     def read_json_file(self):
-        with open("data/main.json", "r") as json_file:
-            data = json.load(json_file)
-            extracted_data = []
+        try:
+            with open("data/main.json", "r") as json_file:
+                data = json.load(json_file)
+                extracted_data = []
 
-            for item in data["data"]:
-                customer = item["customer"]
-                device = item["device"]
-                main_opt = item["main_opt"]
-                package = item["package"]
-                running_qty = item["running_qty"]
-                wip_entity_name = item["wip_entity_name"]
-                extracted_data.append(
-                    (customer, device, main_opt, package, running_qty, wip_entity_name))
+                for item in data["data"]:
+                    customer = item["customer"]
+                    device = item["device"]
+                    main_opt = item["main_opt"]
+                    package = item["package"]
+                    running_qty = item["running_qty"]
+                    wip_entity_name = item["wip_entity_name"]
+                    status = item.get("status", "")
+                    extracted_data.append((customer, device, main_opt, package, running_qty, wip_entity_name, status))
+            return extracted_data
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+                print("Error reading mo_logs.json or extracting data.")
+                return []
+        
+
+    def read_mo_logs(self):
+        try:
+            with open('data/mo_logs.json', 'r') as json_file:
+                mo_logs = json.load(json_file)
+            return mo_logs
+        
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            print("Error reading mo_logs.json or extracting data.")
+            return []
+        
+    def read_json_file_with_status(self):
+        main_data = None
+        
+        mo_logs = self.read_mo_logs()
+        
+        
+        with open("data/main.json", "r") as json_file:
+            main_data = json.load(json_file)
+
+        extracted_data = []
+
+        for item in main_data["data"]:
+            wip_entity_name = item["wip_entity_name"]
+            status = ""
+            
+            for mo_log_entry in mo_logs["data"]:
+                if mo_log_entry["wip_entity_name"] == wip_entity_name:
+                    status = mo_log_entry["status"]
+                    break
+            
+            extracted_data.append((
+                item["customer"],
+                item["device"],
+                item["main_opt"],
+                item["package"],
+                item["running_qty"],
+                item["wip_entity_name"],
+                status  # Add the status here
+            ))
 
         return extracted_data
-
+    
     def populate_table(self):
+        
+        if os.stat("data/mo_logs.json").st_size == 0:
+            print("mo_logs.json is empty.")
+            data = self.read_json_file()
 
-        data = self.read_json_file()
+            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+                self.tree.insert(
+                    "", "end", iid=i, text=str(i),
+                    values=(i, customer, device, main_opt, package, running_qty, wip_entity_name, status)
+                )
 
-        for i, (customer, device, main_opt, package, running_qty, wip_entity_name) in enumerate(data, start=1):
-            self.tree.insert(
-                "", "end", iid=i, text=str(i),
-                values=(i, customer, device, main_opt,
-                        package, running_qty, wip_entity_name)
-            )
+        else:
+            print("mo_logs.json is not empty.")
+            data = self.read_json_file_with_status()
+
+            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+                self.tree.insert(
+                    "", "end", iid=i, text=str(i),
+                    values=(i, customer, device, main_opt, package, running_qty, wip_entity_name, status)
+                )
 
     def update_table(self):
+        print("UPDATING TABLE ....")
+        # Clear existing data from the treeview
         self.tree.delete(*self.tree.get_children())
 
         self.populate_table()
+        # self.root.after(15000, self.update_table)
 
-        self.root.after(5000, self.update_table)
 
     def show_popup_view(self, event):
         selected_item = self.tree.selection()
@@ -318,9 +420,9 @@ class OperatorDashboard:
             self.show_mo_details_function(data)
 
         else:
-            self.validate_offline_employee()
+            self.validate_ppc_employee()
 
-    def validate_offline_employee(self):
+    def validate_ppc_employee(self):
         employee_number = self.extracted_employee_no
         log_file_path = os.path.join(
             self.get_script_directory(), "../config", "hris.json")
@@ -334,6 +436,8 @@ class OperatorDashboard:
         for employee in data:
             if int(employee.get("employee_id_no")) == int(employee_number):
                 matching_employee = employee
+                self.update_table()
+                print("UPDATE TABLE RUN")
                 break
 
         if matching_employee:
@@ -437,9 +541,15 @@ class OperatorDashboard:
         print("command")
 
     def show_mo_details_function(self, data):
-        self.details_window = Toplevel(self.root)
-        show_mo_details_window = MoDetails(self.details_window, self.extracted_fullname, self.extracted_employee_no,
-                                           self.extracted_photo_url, self.extracted_username, data)
+        # Check if the details window is already open
+        if self.details_window is None or not self.details_window.winfo_exists():
+            self.details_window = tk.Toplevel(self.root)
+            show_mo_details_window = MoDetails(
+                self.details_window, self.extracted_fullname, self.extracted_employee_no,
+                self.extracted_photo_url, self.extracted_username, data)
+        else:
+            # Bring the existing details window to the front if it's already open
+            self.details_window.lift()
 
     def logout(self):
         response = messagebox.askyesno(
@@ -454,15 +564,16 @@ class OperatorDashboard:
         show_ticket_dashboard = RequestTicket(
             self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
         )
-
+    
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
-
+        
         if ticket_present:
             self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             self.ticket_checking.destroy()
+
 
 
 if __name__ == "__main__":

@@ -18,7 +18,9 @@ import socketio
 from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import numpy as np
 from ttkbootstrap.constants import *
+import datetime
 
 from operator_module.operator_dashboard import OperatorDashboard
 from technician_module.technician_dashboard import TechnicianDashboard
@@ -26,25 +28,8 @@ from utils.quantity_data import QuantityData
 from utils.status_update import StatusUpdate
 from utils.time_data import TimeData
 from utils.ticket_status import TicketChecker
-
-sio = socketio.Client(reconnection=True, reconnection_attempts=5,
-                      reconnection_delay=1, reconnection_delay_max=5)
-client = str(uuid.uuid4())
-filename = os.path.basename(__file__)
-removeExtension = re.sub('.py', '', filename)
-
-
-@sio.event
-def connect():
-    print('Connected to server')
-    sio.emit('client_connected', {'machine_name': filename, 'client': client})
-    sio.emit('controller', {'machine_name': filename})
-    sio.emit('client', {'machine_name': filename, 'client': client})
-
-
-@sio.event
-def disconnect():
-    print('disconnected to server')
+# from utils.trigger_downtime import TriggerDowntime
+from socketio_utils.socketio_manager import SocketIOManager
 
 
 class UserPermissions:
@@ -94,13 +79,18 @@ class App:
 
         self.quantity_data = QuantityData("../data")
         self.get_data = TimeData('../data')
+
+        # self.receiver = ReceiveAndRequest(self.socketio_path())
         self.total_running_qty = self.quantity_data.total_running_qty()
         self.calculate_oee = self.get_data.calculate_oee
         self.total_remaining_qty_value = self.quantity_data.total_remaining_qty()
         self.get_available_hrs = self.get_data.get_available_hrs()
         self.get_productive_hrs = self.get_data.calculate_total_productive_time()
-
+        self.get_downtime_hrs = self.get_data.calculate_total_downtime()
+        self.last_ticket_status = None
         self.root = root
+
+        # self.receiver.sio.connect('http://10.0.2.150:9090')
 
         ## FUNCTIONS##
 
@@ -115,6 +105,9 @@ class App:
         self.create_oee_graph()
         self.charts()
         self.verify_ticket_status()
+        self.auto_update()
+        # self.downtime_trigger_record()
+        # self.continuously_check_tickets()
 
         ## END##
 
@@ -204,7 +197,6 @@ class App:
         self.GLabel_725["font"] = ft
         self.GLabel_725["fg"] = "#333333"
         self.GLabel_725["justify"] = "center"
-        self.GLabel_725["text"] = "DOWTIME"
         self.GLabel_725.place(x=610, y=900, width=580, height=90)
 
         self.statusHere = tk.Label(self.root)
@@ -234,13 +226,13 @@ class App:
         self.logs_message['width'] = 580
         self.logs_message.place(x=1200, y=700, width=580, height=290)
 
-        self.GLabel_794 = tk.Label(self.root)
-        self.GLabel_794["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.GLabel_794["font"] = ft
-        self.GLabel_794["fg"] = "#333333"
-        self.GLabel_794["justify"] = "center"
-        self.GLabel_794.place(x=1480, y=10, width=300, height=60)
+        self.date_time = tk.Label(self.root)
+        self.date_time["bg"] = "#ffffff"
+        ft = tkFont.Font(family='Times', size=15)
+        self.date_time["font"] = ft
+        self.date_time["fg"] = "#333333"
+        self.date_time["justify"] = "center"
+        self.date_time.place(x=1480, y=10, width=300, height=60)
 
         self.ticket = tk.Label(root)
         self.ticket["bg"] = "#ffb800"
@@ -249,59 +241,15 @@ class App:
         self.ticket["font"] = ft
         self.ticket["fg"] = "#000000"
         self.ticket["justify"] = "left"
-        self.ticket.place(x=1199, y=73, width=750, height=43)
-
-    @sio.event
-    def my_message(data):
-        print('Message received with', data)
-        toPassData = data['dataToPass']
-        machno = data['machno']
-        fileNameWithIni = 'main.json'
-        folder_path = 'data'
-        file_path = f'{folder_path}/{fileNameWithIni}'
-
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-
-        with open(file_path, 'w') as file:
-            data = {
-                'machno': machno,
-                'filename': remove_py,
-                'data': toPassData
-            }
-            json.dump(data, file)
-        sio.emit('my_response', {'response': 'my response'})
-
-    @sio.event
-    def getMatrixfromServer(data):
-        print('Message received with', data)
-        toPassData = data['dataToPass'][0]
-
-        flattened_data = ', '.join(toPassData).replace("'", "")
-        print(f"==>> toPassData: {flattened_data}")
-
-        filename = 'matrix.csv'
-        folder_path = 'data'
-        file_path = os.path.join(folder_path, filename)
-
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-
-        file_exists = os.path.exists(file_path)
-        with open(file_path, 'a', newline='') as file:
-            writer = csv.writer(file)
-
-            if not file_exists:
-                header_row = [f'data{i}' for i in range(
-                    1, len(toPassData) + 1)]
-                writer.writerow(header_row)
-
-            writer.writerow(toPassData)
-
-        sio.emit('my_response', {'response': 'my response'})
+        self.ticket.place(x=1199, y=73, width=580, height=43)
 
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
+
+    def socketio_path(self):
+        path_here = os.path.join(
+            self.get_script_directory(), "data", 'main.json')
+        return path_here
 
     def check_internet_connection_requests(self):
         try:
@@ -466,7 +414,7 @@ class App:
         current_date = time.strftime('%Y-%m-%d')
 
         dateNTime = current_date + ' ' + current_time
-        self.GLabel_794["text"] = dateNTime
+        self.date_time["text"] = 'DATETIME: ' + dateNTime
         root.after(1000, self.update_clock)
 
     def update_status(self):
@@ -483,7 +431,25 @@ class App:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
             self.statusHere["text"] = getStatus
-        self.root.after(5000, self.update_status)
+            self.status_card()
+        self.root.after(1000, self.update_status)
+
+    def status_card(self):
+        self.time_data()
+        self.get_data.calculate_oee
+        self.charts()
+        self.delete_file_data()
+        self.get_data.calculate_total_productive_time()
+
+    def delete_file_data(self):
+        filename = os.path.join(
+            self.get_script_directory(), "data", 'time.csv')
+        try:
+            with open(filename, 'w') as file:
+                file.truncate(0)
+
+        except IOError:
+            print(f"Error deleting data in '{filename}'.")
 
     def update_logs(self):
         log_file_path = os.path.join(
@@ -497,14 +463,7 @@ class App:
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
-        root.after(50000, self.update_logs)
-
-    def time_data(self):
-        self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
-        self.productive_hrs["text"] = f"PRODUCTIVE HRS : {self.get_productive_hrs}"
-        self.available_hrs["text"] = f"AVAILABLE HRS : {self.get_available_hrs}"
-        self.total_quantity_to_process[
-            "text"] = f"QUANTITY TO PROCESS : {self.total_remaining_qty_value}"
+        root.after(5000, self.update_logs)
 
     def create_total_qty_graph(self):
         if self.total_running_qty == 0 and self.total_remaining_qty_value == 0:
@@ -528,6 +487,7 @@ class App:
         plot.text(0, 0, center_text, va='center', ha='center', fontsize=12)
 
         plot.axis('equal')
+        # plot.set_title('QUANTITY GRAPH')
         plot.legend(loc='upper center', labels=labels, fontsize='small')
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
@@ -563,6 +523,7 @@ class App:
         plot.legend(loc='upper center', labels=labels, fontsize='small')
 
         plot.axis('equal')
+        # plot.set_title('OEE GRAPH')
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
         canvas_widget = canvas.get_tk_widget()
@@ -573,24 +534,81 @@ class App:
         img = ImageTk.PhotoImage(image=pil_image)
         return img
 
+    def create_line_chart(self):
+        fig = Figure(figsize=(6, 4), dpi=100)
+        ax = fig.add_subplot(1, 1, 1)
+
+        days = np.arange(1, 8)
+        values = [10, 0, 2, 11, 4, 2, 15]
+
+        ax.plot(days, values, marker='o', label="7-Day Data")
+        ax.set_xlabel("Day")
+        ax.set_ylabel("Value")
+        ax.set_title("CPK GRAPH")
+        ax.legend()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.root)
+        canvas.draw()
+        img = self.convert_figure_to_photoimage(canvas)
+        return img
+
+    def convert_figure_to_photoimage(self, fig_canvas):
+        buf = fig_canvas.buffer_rgba()
+        img_data = buf.tobytes()  # Convert memoryview to bytes
+        img = Image.frombytes("RGBA", fig_canvas.get_width_height(), img_data)
+        return ImageTk.PhotoImage(image=img)
+
+    def time_data(self):
+        self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
+        self.productive_hrs["text"] = f"PRODUCTIVE HRS : {self.get_productive_hrs}"
+        self.available_hrs["text"] = f"AVAILABLE HRS : {self.get_data.get_available_hrs()}"
+        self.total_quantity_to_process[
+            "text"] = f"QUANTITY PROCESS : {self.total_remaining_qty_value}"
+        self.GLabel_725["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
+
     def charts(self):
-        self.chart_image = self.create_oee_graph()
+        self.chart_img = self.create_oee_graph()
         self.total_img = self.create_total_qty_graph()
+        self.line_img = self.create_line_chart()
         if self.oee_graph is not None:
-            self.oee_graph.configure(image=self.chart_image)
+            self.oee_graph.configure(image=self.chart_img)
         if self.quantity_graph is not None:
             self.quantity_graph.configure(image=self.total_img)
+        if self.cpk_graph is not None:
+            self.cpk_graph.configure(image=self.line_img)
+
+    def auto_update(self):
+        """
+        CAN BE ENABLED, BUT IT CAN EAT A LOT OF RESOURCES
+        """
+        pass
+        # self.time_data()
+        # self.get_data.calculate_oee
+        # self.create_oee_graph()
+        # self.create_line_chart()
+        # self.root.after(50000, self.auto_update)
 
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
-
         if ticket_present:
             self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+            self.log_event("DOWNTIME_START")
         else:
+            self.log_event("DOWNTIME_STOP")
             self.ticket.destroy()
 
+    def log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
 
+        with open('data/logs/downtime.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+
+# receiver.sio.wait()
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
