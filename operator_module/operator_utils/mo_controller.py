@@ -218,9 +218,11 @@ class MoDetails:
         root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def get_remaining_qty_from_logs(self):
-        self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
-        
-        remaining_qty = None
+        # self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
+        if self.lbl_remaining_qty.winfo_exists():
+            self.lbl_remaining_qty["text"] = "Remaining MO Quantity: "
+        else:
+            print("Widget self.lbl_remaining_qty does not exist.")
         
         try:
             with open("data/mo_logs.json", "r") as json_file:
@@ -281,10 +283,10 @@ class MoDetails:
 
     def start_command(self):
         
-        self.checking() #comment this if there is a ticket for testing
+        # self.checking() #comment this if there is a ticket for testing
 
-        # self.show_stop_btn() #uncomment this to show the start button
-        # self.log_event("START")
+        self.show_stop_btn() #uncomment this to show the start button
+        self.log_event("START")
 
     def stop_command(self):
 
@@ -293,7 +295,6 @@ class MoDetails:
         self.show_input_dialog()
         self.mo_data = MOData()
         self.mo_data.perform_check_and_swap()
-        
 
 
         # hris_password = simpledialog.askstring(
@@ -463,7 +464,6 @@ class MoDetails:
                         self.data_dict = {
                             item["wip_entity_name"]: item for item in data["data"]
                         }
-                        print("data_dict: ", self.data_dict)
 
                 except FileNotFoundError:
                     self.data_dict = {}

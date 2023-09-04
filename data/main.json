@@ -3,13 +3,13 @@
     "filename": "main",
     "data": [
         {
-            "customer": "ATOM",
-            "device": "PM09.PMD-0002",
+            "customer": "MICROCHIP",
+            "device": "SP3F.CMHUSM120VC120CT3EAG CC9756",
             "main_opt": "Wirebond/3RD Opt.Insp.",
-            "package": "PM09",
+            "package": "SP3F",
             "running_qty": "100",
-            "uph": "20",
-            "wip_entity_name": "MO839288"
+            "uph": "30",
+            "wip_entity_name": "MO838597"
         },
         {
             "customer": "TPC",
@@ -21,13 +21,13 @@
             "wip_entity_name": "MO839211"
         },
         {
-            "customer": "MICROCHIP",
-            "device": "SP3F.CMHUSM120VC120CT3EAG CC9756",
+            "customer": "ATOM",
+            "device": "PM09.PMD-0002",
             "main_opt": "Wirebond/3RD Opt.Insp.",
-            "package": "SP3F",
+            "package": "PM09",
             "running_qty": "100",
-            "uph": "30",
-            "wip_entity_name": "MO838597"
+            "uph": "20",
+            "wip_entity_name": "MO839288"
         }
     ]
 }
