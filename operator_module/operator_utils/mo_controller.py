@@ -24,6 +24,7 @@ class MoDetails:
         extracted_photo_url,
         extracted_username,
         data,
+        update_table_function
     ):
         # MO PROPERTIES
         # ///////////////////////////////////////////////////////////////
@@ -65,6 +66,8 @@ class MoDetails:
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
         self.currentDateTime = f"{date} {time}"
+
+        self.update_table_function = update_table_function
 
 
         self.root.geometry(alignstr)
@@ -217,13 +220,15 @@ class MoDetails:
 
         root.protocol("WM_DELETE_WINDOW", self.on_close)
 
+    def update_table_display(self):
+        # Call the update_table function when needed
+        print("SOME FUNCTION THAT SHOULD WORK")
+        self.update_table_function()
+
     def get_remaining_qty_from_logs(self):
-        # self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
-        if self.lbl_remaining_qty.winfo_exists():
-            self.lbl_remaining_qty["text"] = "Remaining MO Quantity: "
-        else:
-            print("Widget self.lbl_remaining_qty does not exist.")
-        
+        self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
+
+        remaining_qty = None
         try:
             with open("data/mo_logs.json", "r") as json_file:
                 data = json.load(json_file)
@@ -283,18 +288,17 @@ class MoDetails:
 
     def start_command(self):
         
+        self.log_event("START")
         # self.checking() #comment this if there is a ticket for testing
 
         self.show_stop_btn() #uncomment this to show the start button
-        self.log_event("START")
 
     def stop_command(self):
 
         # TESTING PURPOSES ONLY
         # ///////////////////////////////////////////////////////////////
         self.show_input_dialog()
-        self.mo_data = MOData()
-        self.mo_data.perform_check_and_swap()
+
 
 
         # hris_password = simpledialog.askstring(
@@ -374,25 +378,21 @@ class MoDetails:
         # Accessing the values within the data
         for entry in data:
             wip_entity_name = entry.get("wip_entity_name")
-            running_qty = entry["running_qty"]
+            # running_qty = entry["running_qty"]
             total_finished = entry["total_finished"]
-            remaining_qty = entry["remaining_qty"]
+            # remaining_qty = entry["remaining_qty"]
 
             if wip_entity_name == self.wip_entity_name:
                 if self.running_qty == total_finished:
                     self.show_label_completed()
                     self.hide_start_and_stop_btn()
 
-                    showinfo("MO COMPLETED!", "MO Alredy Completed!")
-                    self.mo_data = MOData()
-                    self.mo_data.perform_check_and_swap()
+                    showinfo("MO COMPLETED!", "MO Already Completed!")
+                    # self.mo_data = MOData()
+                    # self.mo_data.perform_check_and_swap()
+                    
                     self.root.destroy()
 
-            # print('wip_entity_name: ', wip_entity_name)
-
-        # if self.wip_entity_name in entry:
-        #     print('self.wip_entity_name: ', self.wip_entity_name)
-        #     print('wip_entity_name: ', wip_entity_name)
 
     def show_input_dialog(self):
 
@@ -436,7 +436,10 @@ class MoDetails:
                         )
                     
                     # self.show_start_btn()
+                    self.mo_data = MOData()
+                    self.mo_data.perform_check_and_swap()
                     self.get_remaining_qty_from_logs()
+                    self.update_table_display()
                     self.log_event("STOP")
                 else:
                     messagebox.showinfo(
@@ -542,8 +545,11 @@ class MoDetails:
                         json_output_file,
                         indent=4,
                     )
-
+            self.mo_data = MOData()
+            self.mo_data.perform_check_and_swap()
             self.get_remaining_qty_from_logs()
+            self.update_table_display()
+            self.log_event("STOP")
 
 
             # self.root.destroy()

@@ -22,7 +22,8 @@ from operator_module.operator_utils.request_ticket import RequestTicket
 from utils.ticket_status import TicketChecker
 # from request_ticket import RequestTicket
 # from move_mo import MOData
-
+from tkinter import Canvas, Entry, Button, PhotoImage
+from pathlib import Path
 
 class UserPermissions:
     def __init__(self, config_path):
@@ -211,16 +212,16 @@ class OperatorDashboard:
         self.logout_btn.place(x=1640, y=110, width=149, height=50)
         self.logout_btn["command"] = self.logout
 
-        self.refresh_btn = tk.Button(self.root)
-        self.refresh_btn["bg"] = "#999999"
-        self.refresh_btn["cursor"] = "circle"
-        ft = tkFont.Font(family="Times", size=16)
-        self.refresh_btn["font"] = ft
-        self.refresh_btn["fg"] = "#333333"
-        self.refresh_btn["justify"] = "center"
-        self.refresh_btn["text"] = "REFRESH"
-        self.refresh_btn["command"] = self.update_table
-        self.refresh_btn.place(x=1450, y=110, width=150, height=50)
+        # self.refresh_btn = tk.Button(self.root)
+        # self.refresh_btn["bg"] = "#999999"
+        # self.refresh_btn["cursor"] = "circle"
+        # ft = tkFont.Font(family="Times", size=16)
+        # self.refresh_btn["font"] = ft
+        # self.refresh_btn["fg"] = "#333333"
+        # self.refresh_btn["justify"] = "center"
+        # self.refresh_btn["text"] = "REFRESH"
+        # self.refresh_btn["command"] = self.update_table
+        # self.refresh_btn.place(x=1450, y=110, width=150, height=50)
 
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=56)
@@ -516,6 +517,7 @@ class OperatorDashboard:
         )
 
         showinfo("Success", "Data swapped successfully!")
+        self.update_table()
 
     def update_status(self):
         statusHere = StatusUpdate('data/logs/logs.csv')
@@ -545,7 +547,7 @@ class OperatorDashboard:
             self.details_window = tk.Toplevel(self.root)
             show_mo_details_window = MoDetails(
                 self.details_window, self.extracted_fullname, self.extracted_employee_no,
-                self.extracted_photo_url, self.extracted_username, data)
+                self.extracted_photo_url, self.extracted_username, data, self.update_table )
         else:
             # Bring the existing details window to the front if it's already open
             self.details_window.lift()
