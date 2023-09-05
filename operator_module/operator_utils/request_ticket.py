@@ -78,8 +78,6 @@ class RequestTicket:
         lbl_DateNow["text"] = self.current_date_time
         lbl_DateNow.place(x=20, y=120, width=300, height=50)
 
-
-
         # ////////////////////////////////////////
         # TIME DOWN
 
@@ -90,8 +88,6 @@ class RequestTicket:
         lbl_TimeDown["justify"] = "center"
         lbl_TimeDown["text"] = "TIME DOWN"
         lbl_TimeDown.place(x=900, y=120, width=300, height=50)
-
-
 
         # ////////////////////////////////////////
         # MACHINE NO.
@@ -119,8 +115,10 @@ class RequestTicket:
         lbl_DowntimeType["text"] = "DOWNTIME TYPE"
         lbl_DowntimeType.place(x=540, y=200, width=250, height=50)
 
-        dropdown = ttk.Combobox(root, textvariable=self.dropdown_var, state="readonly")
-        dropdown["values"] = [item["DOWNTIME_TYPE"] for item in self.downtime_data]
+        dropdown = ttk.Combobox(
+            root, textvariable=self.dropdown_var, state="readonly")
+        dropdown["values"] = [item["DOWNTIME_TYPE"]
+                              for item in self.downtime_data]
         dropdown.bind("<<ComboboxSelected>>", self.on_select)
         dropdown.place(x=540, y=240, width=250, height=30)
 
@@ -187,7 +185,8 @@ class RequestTicket:
         # FUNCTIONS
 
     def load_machno(self):
-        log_file_path = os.path.join(self.get_script_directory(), "../../data", "main.json")
+        log_file_path = os.path.join(
+            self.get_script_directory(), "../../data", "main.json")
 
         with open(log_file_path, "r") as json_file:
             get_machno = json.load(json_file)["machno"]
@@ -238,7 +237,6 @@ class RequestTicket:
             print("Selected ID:", selected_id)
             print("Selected Text:", selected_text)
 
-
     def collect_and_print_values(self):
         employee_no = self.employee_no
         machine_no_value = self.load_machno()
@@ -249,11 +247,15 @@ class RequestTicket:
 
         # Load existing JSON data if the file exists, or create an empty list
         file_path = "data/logs/ticket_logs.json"
+        existing_data = []
         if os.path.exists(file_path):
-            with open(file_path, "r") as json_file:
-                existing_data = json.load(json_file)
-        else:
-            existing_data = []
+            try:
+                with open(file_path, "r") as json_file:
+                    existing_data = json.load(json_file)
+            except json.decoder.JSONDecodeError as e:
+                print("Error loading JSON:", e)
+                existing_data = []
+
         # Create a new entry dictionary
         new_entry = {
             "employee_no": employee_no,
@@ -279,10 +281,12 @@ class RequestTicket:
             print(f"==>> value_url: {value_url}")
             if value_url['status'] == 'meron':
                 dtno_value = value_url['dtno']
-                showinfo("warning", f"Already have ticket . \nDTNO {dtno_value}")
+                showinfo(
+                    "warning", f"Already have ticket . \nDTNO {dtno_value}")
             else:
                 dtno_value = value_url['dtno']
-                showinfo("Success", f"Job order created successfully. \nDTNO {dtno_value}")
+                showinfo(
+                    "Success", f"Job order created successfully. \nDTNO {dtno_value}")
             print(value_url['dtno'])
         else:
             showerror("Error", "Error in creating job order.")

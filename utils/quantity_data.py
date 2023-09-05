@@ -13,7 +13,7 @@ class QuantityData:
 
     def total_running_qty(self):
         log_file_path = os.path.join(
-            self.get_script_directory(), self.file_path, 'mo_logs.json')
+            self.get_script_directory(), self.file_path, 'main.json')
 
         try:
             with open(log_file_path, "r") as json_file:
