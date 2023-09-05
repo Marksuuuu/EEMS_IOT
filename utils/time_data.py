@@ -43,7 +43,6 @@ class TimeData:
 
         if availableHrs > 0:
             oee_percentage = (productiveHrs / (availableHrs - downtimeHrs)) * 100
-            print(f"==>> oee_percentage: {oee_percentage}")
             return round(oee_percentage, 5)
         else:
             return 0
@@ -136,12 +135,8 @@ class TimeData:
             for row in csvreader:
                 data.append(row)
 
-        total_available_seconds = 0
+        total_downtime_time = 0
         previous_event_time = None
-
-        # Check if there are any "DOWNTIME_STOP" events
-        has_downtime_stop = any(event[0].startswith(
-            "DOWNTIME_STOP") for event in data)
 
         for event in data:
             event_type = event[0]
@@ -151,17 +146,13 @@ class TimeData:
             event_datetime = datetime.strptime(
                 event_date + " " + event_time, "%Y-%m-%d %H:%M:%S")
 
-            if previous_event_time and event_type == "DOWNTIME_START":
+            if previous_event_time and event_type == "DOWNTIME_STOP":
                 time_difference = event_datetime - previous_event_time
-                total_available_seconds += time_difference.total_seconds()
+                total_downtime_time += time_difference.total_seconds()
 
             previous_event_time = event_datetime
 
-        if not has_downtime_stop:
-            # No "DOWNTIME_STOP" events found, set total_available_seconds to 0
-            total_available_seconds = 0
-        else:
-            # Calculate downtime until the current time
+        if not any(event[0].startswith("DOWNTIME_STOP") for event in data):
             current_datetime = datetime.now()
             if previous_event_time:
                 time_difference = current_datetime - previous_event_time
@@ -169,9 +160,9 @@ class TimeData:
                 time_difference = current_datetime - \
                     datetime.strptime("2000-01-01 00:00:00",
                                       "%Y-%m-%d %H:%M:%S")
-            total_available_seconds += time_difference.total_seconds()
+            total_downtime_time += time_difference.total_seconds()
 
-        formatted_time = self.format_time(total_available_seconds)
+        formatted_time = self.format_time(total_downtime_time)
         return formatted_time
 
 

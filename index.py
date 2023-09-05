@@ -79,8 +79,9 @@ class App:
 
         self.quantity_data = QuantityData("../data")
         self.get_data = TimeData('../data')
-        
+
         # self.receiver = ReceiveAndRequest(self.socketio_path())
+        self.downtime_started = self.load_downtime_state()
         self.total_running_qty = self.quantity_data.total_running_qty()
         self.calculate_oee = self.get_data.calculate_oee
         self.total_remaining_qty_value = self.quantity_data.total_remaining_qty()
@@ -88,6 +89,8 @@ class App:
         self.get_productive_hrs = self.get_data.calculate_total_productive_time()
         self.get_downtime_hrs = self.get_data.calculate_total_downtime()
         self.last_ticket_status = None
+        # self.downtime_started = False
+        self.update_interval = 50000
         self.root = root
 
         # self.root = root
@@ -106,9 +109,10 @@ class App:
         self.charts()
         self.verify_ticket_status()
         self.auto_update()
+        self.save_downtime_state()
         # self.downtime_trigger_record()
         # self.continuously_check_tickets()
-        
+
         ## END##
 
     def makeCenter(self):
@@ -130,7 +134,7 @@ class App:
         self.cpk_graph["justify"] = "center"
         self.cpk_graph["text"] = "CPK"
         self.cpk_graph.place(x=20, y=130, width=580, height=550)
-        
+
         self.oee_graph = tk.Label(self.root)
         self.oee_graph["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=10)
@@ -140,7 +144,6 @@ class App:
         self.oee_graph["text"] = "label"
         self.oee_graph.place(x=610, y=130, width=580, height=550)
 
-
         self.quantity_graph = tk.Label(self.root)
         self.quantity_graph["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=10)
@@ -149,7 +152,7 @@ class App:
         self.quantity_graph["justify"] = "center"
         self.quantity_graph["text"] = "QTY GRAPH"
         self.quantity_graph.place(x=1200, y=130, width=580, height=550)
-        
+
         self.productive_hrs = tk.Label(self.root)
         self.productive_hrs["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=22)
@@ -166,14 +169,14 @@ class App:
         self.available_hrs["justify"] = "left"
         self.available_hrs.place(x=610, y=700, width=580, height=90)
 
-
         self.total_quantity_to_process = tk.Label(self.root)
         self.total_quantity_to_process["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=22)
         self.total_quantity_to_process["font"] = ft
         self.total_quantity_to_process["fg"] = "#333333"
         self.total_quantity_to_process["justify"] = "left"
-        self.total_quantity_to_process.place(x=610, y=800, width=580, height=90)
+        self.total_quantity_to_process.place(
+            x=610, y=800, width=580, height=90)
 
         self.total_remaining_qty = tk.Label(self.root)
         self.total_remaining_qty["bg"] = "#ffffff"
@@ -190,7 +193,7 @@ class App:
         self.downtime["fg"] = "#333333"
         self.downtime["justify"] = "center"
         self.downtime.place(x=20, y=900, width=580, height=90)
-        
+
         self.idle = tk.Label(self.root)
         self.idle["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=22)
@@ -198,7 +201,7 @@ class App:
         self.idle["fg"] = "#333333"
         self.idle["justify"] = "center"
         self.idle["text"] = "IDLE"
-        self.idle.place(x=610, y=900, width=580, height=90) 
+        self.idle.place(x=610, y=900, width=580, height=90)
 
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=58)
@@ -234,21 +237,19 @@ class App:
         self.date_time["fg"] = "#333333"
         self.date_time["justify"] = "center"
         self.date_time.place(x=1480, y=10, width=300, height=60)
-        
-        self.ticket=tk.Label(root)
+
+        self.ticket = tk.Label(root)
         self.ticket["bg"] = "#ffb800"
         self.ticket["cursor"] = "circle"
-        ft = tkFont.Font(family='Times',size=9)
+        ft = tkFont.Font(family='Times', size=9)
         self.ticket["font"] = ft
         self.ticket["fg"] = "#000000"
         self.ticket["justify"] = "left"
-        self.ticket.place(x=1199,y=73,width=581,height=43)
-
-
+        self.ticket.place(x=1199, y=73, width=581, height=43)
 
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
-        
+
     def socketio_path(self):
         path_here = os.path.join(
             self.get_script_directory(), "data", 'main.json')
@@ -283,7 +284,7 @@ class App:
             if response.status_code == 200:
                 try:
                     data = json.loads(response.text)['result']
-                    
+
                     # Check if data is a dictionary before accessing its values
                     if isinstance(data, dict):
                         user_department = data.get('employee_department')
@@ -309,9 +310,11 @@ class App:
                             self.validate_permissions(
                                 user_department, user_position, dataJson)
                         else:
-                            print("Employee data doesn't contain department or position.")
+                            print(
+                                "Employee data doesn't contain department or position.")
                     else:
-                        print("Response data is not in the expected format (dictionary).")
+                        print(
+                            "Response data is not in the expected format (dictionary).")
                 except KeyError:
                     print("Response data doesn't have expected keys.")
             else:
@@ -319,7 +322,6 @@ class App:
         except ValueError:
             tk.messagebox.showerror(
                 "Invalid Input", "Please enter a valid integer employee number.")
-
 
     def validate_offline_employee(self, employee_number):
         log_file_path = os.path.join(
@@ -404,13 +406,13 @@ class App:
         ope_dashboard = OperatorDashboard(
             OpeDashboard, user_department, user_position, data_json)
         root.withdraw()
-        
+
     def show_tech_dashboard(self, user_department, user_position, dataJson):
         techDashboard = Toplevel(root)
         tech_dashboard = TechnicianDashboard(
             techDashboard, user_department, user_position, dataJson)
         root.withdraw()
-        
+
     def update_clock(self):
         current_time = time.strftime('%H:%M:%S')
         current_date = time.strftime('%Y-%m-%d')
@@ -452,7 +454,7 @@ class App:
 
         except IOError:
             print(f"Error deleting data in '{filename}'.")
-            
+
     def update_logs(self):
         log_file_path = os.path.join(
             self.get_script_directory(), 'data/logs', 'activity_log.txt')
@@ -478,12 +480,11 @@ class App:
         if self.total_running_qty == 0 and self.total_remaining_qty_value == 0:
             return None
 
-        result_qty = self.total_remaining_qty_value - self.total_running_qty
-        data = [self.total_remaining_qty_value, self.total_running_qty]
-        labels = ['REMAINING', 'TOTAL RUNNING QTY']
+        result_qty = self.total_running_qty - self.total_remaining_qty_value
+        data = [self.total_remaining_qty_value, result_qty]
+        labels = ['QUANTITY COMPLETED', 'PROCESS QUANTITY']
         colors = ['#4CAF50', '#e74c3c']
         explode = (0.05, 0)
-        
 
         figure = Figure(figsize=(5, 4), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
@@ -498,7 +499,7 @@ class App:
 
         plot.axis('equal')
         # plot.set_title('QUANTITY GRAPH')
-        
+
         plot.legend(loc='upper center', labels=labels, fontsize='small')
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
@@ -508,7 +509,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        self.root.after(5000, self.create_total_qty_graph)
+        self.root.after(50000, self.create_total_qty_graph)
         return img
 
     def create_oee_graph(self):
@@ -517,7 +518,7 @@ class App:
 
         total = 100 - calculated_oee
         data = [calculated_oee, total]
-        labels = ['EFFECTIVENESS', 'NOT EFFECTIVE']
+        labels = ['EFFECTIVENESS', 'INEFFECTIVENESS']
         colors = ['#4CAF50', '#e74c3c']
         explode = (0.05, 0)
 
@@ -543,6 +544,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
+        self.root.after(50000, self.create_oee_graph)
         return img
 
     def create_line_chart(self):
@@ -573,11 +575,13 @@ class App:
         self.total_remaining_qty["text"] = f"TOTAL TO PROCESS : {self.total_running_qty}"
         self.productive_hrs["text"] = f"PRODUCTIVE HOURS : {self.get_productive_hrs}"
         self.available_hrs["text"] = f"AVAILABLE HOURS : {self.get_data.get_available_hrs()}"
-        self.total_quantity_to_process["text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
+        self.total_quantity_to_process[
+            "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
         self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
+        # self.root.after(50000, self.time_data)
         
+        self.label_update_id = self.root.after(self.update_interval, self.time_data)
 
-        
     def charts(self):
         self.chart_img = self.create_oee_graph()
         self.total_img = self.create_total_qty_graph()
@@ -589,6 +593,8 @@ class App:
         if self.cpk_graph is not None:
             self.cpk_graph.configure(image=self.line_img)
             
+        self.chart_update_id = self.root.after(self.update_interval, self.charts)
+
     def auto_update(self):
         """
         CAN BE ENABLED, BUT IT CAN EAT A LOT OF RESOURCES
@@ -599,15 +605,19 @@ class App:
         # self.create_oee_graph()
         # self.create_line_chart()
         # self.root.after(50000, self.auto_update)
-        
+
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
         if ticket_present:
             self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
-            self.log_event("DOWNTIME_START")
+            if not self.downtime_started:
+                self.downtime_started = True
+                self.log_event("DOWNTIME_START")
         else:
-            self.log_event("DOWNTIME_STOP")
+            if self.downtime_started:
+                self.downtime_started = False
+                self.log_event("DOWNTIME_STOP")
             self.ticket.destroy()
 
     def log_event(self, msg):
@@ -618,6 +628,18 @@ class App:
         with open('data/logs/downtime.csv', mode="a", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
+
+    def load_downtime_state(self):
+        try:
+            with open('data/logs/downtime_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                return state.get('downtime_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_downtime_state(self):
+        with open('data/logs/downtime_state.json', 'w') as state_file:
+            json.dump({'downtime_started': self.downtime_started}, state_file)
 
 
 # receiver.sio.wait()
