@@ -78,16 +78,7 @@ class RequestTicket:
         lbl_DateNow["text"] = self.current_date_time
         lbl_DateNow.place(x=20, y=120, width=300, height=50)
 
-        # le_DateNow = tk.Entry(root)
-        # le_DateNow["bg"] = "#ffffff"
-        # le_DateNow["borderwidth"] = "1px"
-        # ft = tkFont.Font(family="Times", size=13)
-        # le_DateNow["font"] = ft
-        # le_DateNow["fg"] = "#333333"
-        # le_DateNow["justify"] = "center"
-        # le_DateNow["text"] = "date now"
-        # le_DateNow.delete(0, tk.END)
-        # le_DateNow.place(x=0, y=150, width=447, height=50)
+
 
         # ////////////////////////////////////////
         # TIME DOWN
@@ -100,16 +91,7 @@ class RequestTicket:
         lbl_TimeDown["text"] = "TIME DOWN"
         lbl_TimeDown.place(x=900, y=120, width=300, height=50)
 
-        # le_TimeDown = tk.Entry(root)
-        # le_TimeDown["bg"] = "#ffffff"
-        # le_TimeDown["borderwidth"] = "1px"
-        # ft = tkFont.Font(family="Times", size=13)
-        # le_TimeDown["font"] = ft
-        # le_TimeDown["fg"] = "#333333"
-        # le_TimeDown["justify"] = "center"
-        # le_TimeDown["text"] = "Entry"
-        # le_TimeDown.delete(0, tk.END)
-        # le_TimeDown.place(x=540, y=150, width=456, height=50)
+
 
         # ////////////////////////////////////////
         # MACHINE NO.
@@ -256,47 +238,6 @@ class RequestTicket:
             print("Selected ID:", selected_id)
             print("Selected Text:", selected_text)
 
-    # def collect_and_print_values(self):
-    #     employee_no = self.employee_no
-    #     machine_no_value = self.load_machno()
-    #     downtime_type_value = self.dropdown_var.get()
-    #     checkbox_value = self.set_checkbox_value
-    #     remarks_value = self.le_Remarks.get()
-
-    #     file_path = "data/ticket.json"
-    #     if os.path.exists(file_path):
-    #         with open(file_path, "r") as json_file:
-    #             existing_data = json.load(json_file)
-    #     else:
-    #         existing_data = []
-
-    #     # Create a new entry dictionary
-    #     new_entry = {
-    #         "employee_no": employee_no,
-    #         "machine_no_value": machine_no_value,
-    #         "downtime_type_value": downtime_type_value,
-    #         "checkbox_value": checkbox_value,
-    #         "remarks_value": remarks_value
-    #     }
-
-    #     # Add the new entry to the existing data
-    #     existing_data.append(new_entry)
-
-    #     # Save the updated JSON data to the file
-    #     with open(file_path, "w") as json_file:
-    #         json.dump(existing_data, json_file, indent=4)
-
-    #     url = f'http://lams.teamglac.com/lams/api/job_order/create_jo.php?params=["{machine_no_value}","{downtime_type_value}","{remarks_value}","{employee_no}","{checkbox_value}"]'
-    #     r = requests.post(url)
-
-    #     if r.status_code == 200:
-    #         value_url = (r.json())
-
-    #         dtno_value = value_url['dtno']
-    #         showinfo("Success", f"Job order created successfully. \nDTNO {dtno_value}")
-    #         print(value_url['dtno'])
-    #     else:
-    #         showerror("Error", "Error in creating job order.")
 
     def collect_and_print_values(self):
         employee_no = self.employee_no
