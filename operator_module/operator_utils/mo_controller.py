@@ -288,10 +288,10 @@ class MoDetails:
 
     def start_command(self):
         
+        self.log_event("START")
         # self.checking() #comment this if there is a ticket for testing
 
         self.show_stop_btn() #uncomment this to show the start button
-        self.log_event("START")
 
     def stop_command(self):
 

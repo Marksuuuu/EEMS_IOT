@@ -14,7 +14,7 @@ class RequestTicket:
     def __init__(self, root, extracted_fullname, extracted_employee_no):
         self.root = root
         # setting title
-        root.title("TICKET")
+        root.title("REQUEST TICKET")
         # setting window size
         width = 998
         height = 531
@@ -187,8 +187,8 @@ class RequestTicket:
         # FUNCTIONS
 
     def load_machno(self):
-        log_file_path = os.path.join(self.get_script_directory(), "../../data", "main.json")
-
+        # log_file_path = os.path.join(self.get_script_directory(), "/data", "main.json")
+        log_file_path = os.path.join("data", "main.json")  
         with open(log_file_path, "r") as json_file:
             get_machno = json.load(json_file)["machno"]
 
