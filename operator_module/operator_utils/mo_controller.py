@@ -218,12 +218,9 @@ class MoDetails:
         root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def get_remaining_qty_from_logs(self):
-        # self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
-        if self.lbl_remaining_qty.winfo_exists():
-            self.lbl_remaining_qty["text"] = "Remaining MO Quantity: "
-        else:
-            print("Widget self.lbl_remaining_qty does not exist.")
-        
+        self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
+
+        remaining_qty = None
         try:
             with open("data/mo_logs.json", "r") as json_file:
                 data = json.load(json_file)
@@ -374,9 +371,9 @@ class MoDetails:
         # Accessing the values within the data
         for entry in data:
             wip_entity_name = entry.get("wip_entity_name")
-            running_qty = entry["running_qty"]
+            # running_qty = entry["running_qty"]
             total_finished = entry["total_finished"]
-            remaining_qty = entry["remaining_qty"]
+            # remaining_qty = entry["remaining_qty"]
 
             if wip_entity_name == self.wip_entity_name:
                 if self.running_qty == total_finished:
