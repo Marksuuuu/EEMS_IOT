@@ -12,11 +12,8 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter.messagebox import showinfo, showwarning, showerror
 import datetime
-import importlib
 
 from .mo_transaction import MOData
-# from operator_module.operator_utils.controller import MakeCommand
-
 
 class MoDetails:
     def __init__(
@@ -31,6 +28,7 @@ class MoDetails:
         # MO PROPERTIES
         # ///////////////////////////////////////////////////////////////
         root.title("MO")
+        root.configure(background='white')
         width = 1264
         height = 675
         screenwidth = root.winfo_screenwidth()
@@ -49,7 +47,7 @@ class MoDetails:
         self.extracted_photo_url = extracted_photo_url
         self.extracted_username = extracted_username
         self.extracted_fullname = extracted_fullname
-        self.root.title("MO DETAILS")
+        self.root.title ("MO DETAILS")
         self.test_data = data
 
         self.customer = data[1]
@@ -59,12 +57,15 @@ class MoDetails:
         self.running_qty = data[5]
         self.wip_entity_name = data[6]
 
+
         self.data_dict = {}
+
 
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
         self.currentDateTime = f"{date} {time}"
+
 
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
@@ -72,15 +73,13 @@ class MoDetails:
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
         else:
-            # Replace with your image URL
-            image_url = f"http://hris.teamglac.com/{self.extracted_photo_url}"
+            image_url = f"http://hris.teamglac.com/{self.extracted_photo_url}"  # Replace with your image URL
 
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
         desired_width = 83
         desired_height = 60
-        pil_image = pil_image.resize(
-            (desired_width, desired_height), Image.ANTIALIAS)
+        pil_image = pil_image.resize((desired_width, desired_height), Image.ANTIALIAS)
 
         script_directory = os.path.dirname(os.path.abspath(__file__))
         self.log_folder = os.path.join(script_directory, "../../data")
@@ -89,50 +88,61 @@ class MoDetails:
         self.csv_file_path = os.path.join(self.log_folder, "time.csv")
 
         self.image = ImageTk.PhotoImage(pil_image)
+        
+        lbl_MO = tk.Label(root)
+        lbl_MO["bg"] = "#FFB800"
+        lbl_MO["borderwidth"] = "2px"
+        ft = tkFont.Font(family="Times", size=58)
+        lbl_MO["font"] = ft
+        lbl_MO["fg"] = "#333333"
+        lbl_MO["justify"] = "center"
+        lbl_MO["text"] = data[6]
+        lbl_MO.place(x=20, y=20, width=526, height=87)
 
-        GLabel_841 = tk.Label(root)
-        ft = tkFont.Font(family='Times', size=18)
-        GLabel_841["font"] = ft
-        GLabel_841["fg"] = "#333333"
-        GLabel_841["justify"] = "center"
-        GLabel_841["text"] = self.main_opt
-        GLabel_841.place(x=20, y=110, width=526, height=63)
+        lbl_main_opt=tk.Label(root)
+        ft = tkFont.Font(family='Times',size=18)
+        lbl_main_opt["font"] = ft
+        lbl_main_opt["bg"] = "#ffffff"
+        lbl_main_opt["fg"] = "#333333"
+        lbl_main_opt["justify"] = "center"
+        lbl_main_opt["text"] = self.main_opt
+        lbl_main_opt.place(x=20,y=110,width=526,height=63)
 
-        GLabel_932 = tk.Label(root)
-        GLabel_932["bg"] = "#ffffff"
+        lbl_device = tk.Label(root)
+        lbl_device["bg"] = "#ffffff"
         ft = tkFont.Font(family="Times", size=18)
-        GLabel_932["font"] = ft
-        GLabel_932["fg"] = "#333333"
-        GLabel_932["justify"] = "left"
-        GLabel_932["text"] = f"Device : {data[2]}"
-        GLabel_932.place(x=20, y=180, width=526, height=97)
+        lbl_device["font"] = ft
+        lbl_device["fg"] = "#333333"
+        lbl_device["justify"] = "left"
+        lbl_device["text"] = f"Device : {data[2]}"
+        lbl_device.place(x=20, y=180, width=526, height=97)
 
-        GLabel_771 = tk.Label(root)
-        GLabel_771["bg"] = "#ffffff"
+        lbl_package = tk.Label(root)
+        lbl_package["bg"] = "#ffffff"
         ft = tkFont.Font(family="Times", size=18)
-        GLabel_771["font"] = ft
-        GLabel_771["fg"] = "#333333"
-        GLabel_771["justify"] = "left"
-        GLabel_771["text"] = f"Package : {data[4]}"
-        GLabel_771.place(x=20, y=300, width=526, height=97)
+        lbl_package["font"] = ft
+        lbl_package["fg"] = "#333333"
+        lbl_package["justify"] = "left"
+        lbl_package["text"] = f"Package : {data[4]}"
+        lbl_package.place(x=20, y=300, width=526, height=97)
 
-        GLabel_146 = tk.Label(root)
-        GLabel_146["bg"] = "#ffffff"
+        lbl_customer = tk.Label(root)
+        lbl_customer["bg"] = "#ffffff"
         ft = tkFont.Font(family="Times", size=18)
-        GLabel_146["font"] = ft
-        GLabel_146["fg"] = "#333333"
-        GLabel_146["justify"] = "left"
-        GLabel_146["text"] = f"Customer : {data[1]}"
-        GLabel_146.place(x=20, y=420, width=526, height=97)
+        lbl_customer["font"] = ft
+        lbl_customer["fg"] = "#333333"
+        lbl_customer["justify"] = "left"
+        lbl_customer["text"] = f"Customer : {data[1]}"
+        lbl_customer.place(x=20, y=420, width=526, height=97)
 
-        GLabel_915 = tk.Label(root)
-        # GLabel_915["bg"] = "#89d35f"
-        GLabel_915["fg"] = "#333333"
+        lbl_mo_qty = tk.Label(root)
+        lbl_mo_qty["bg"] = "#ffffff"
+        lbl_mo_qty["fg"] = "#333333"
         ft = tkFont.Font(family="Times", size=18)
-        GLabel_915["font"] = ft
-        GLabel_915["justify"] = "left"
-        GLabel_915["text"] = f"MO Quantity : {data[5]}"
-        GLabel_915.place(x=20, y=540, width=526, height=97)
+        lbl_mo_qty["font"] = ft
+        lbl_mo_qty["justify"] = "left"
+        lbl_mo_qty["text"] = f"MO Quantity : {data[5]}"
+        lbl_mo_qty.place(x=20, y=540, width=526, height=97)
 
         # lbl_remaining_qty=tk.Label(root)
         # lbl_remaining_qty["bg"] = "#ffffff"
@@ -143,21 +153,21 @@ class MoDetails:
         # lbl_remaining_qty["text"] = f"Remaining MO Quantity : {data[5]}"
         # lbl_remaining_qty.place(x=450,y=540,width=526,height=97)
 
-        GLabel_514 = tk.Label(root)
+        lbl_fullname = tk.Label(root)
         ft = tkFont.Font(family="Times", size=24)
-        GLabel_514["font"] = ft
-        GLabel_514["fg"] = "#333333"
-        GLabel_514["justify"] = "left"
-        GLabel_514["text"] = extracted_fullname
-        GLabel_514.place(x=820, y=20, width=424, height=87)
+        lbl_fullname["font"] = ft
+        lbl_fullname["fg"] = "#333333"
+        lbl_fullname["justify"] = "left"
+        lbl_fullname["text"] = extracted_fullname
+        lbl_fullname.place(x=820, y=20, width=424, height=87)
 
-        GLabel_978 = tk.Label(root, image=self.image)
+        lbl_image = tk.Label(root, image=self.image)
         ft = tkFont.Font(family="Times", size=10)
-        GLabel_978["font"] = ft
-        GLabel_978["fg"] = "#333333"
-        GLabel_978["justify"] = "left"
-        GLabel_978["text"] = "img"
-        GLabel_978.place(x=680, y=20, width=120, height=87)
+        lbl_image["font"] = ft
+        lbl_image["fg"] = "#333333"
+        lbl_image["justify"] = "left"
+        lbl_image["text"] = "img"
+        lbl_image.place(x=680, y=20, width=120, height=87)
 
         self.start_btn = tk.Button(root)
         self.start_btn["bg"] = "#5fb878"
@@ -180,15 +190,7 @@ class MoDetails:
         self.stop_btn.place_forget()
         self.stop_btn["command"] = self.stop_command
 
-        GLabel_65 = tk.Label(root)
-        GLabel_65["bg"] = "#ffffff"
-        GLabel_65["borderwidth"] = "2px"
-        ft = tkFont.Font(family="Times", size=58)
-        GLabel_65["font"] = ft
-        GLabel_65["fg"] = "#333333"
-        GLabel_65["justify"] = "center"
-        GLabel_65["text"] = data[6]
-        GLabel_65.place(x=20, y=20, width=526, height=87)
+
 
         GLabel_566 = tk.Label(root)
         ft = tkFont.Font(family="Times", size=11)
@@ -216,10 +218,12 @@ class MoDetails:
         root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def get_remaining_qty_from_logs(self):
-        self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
-
-        remaining_qty = None
-
+        # self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: "
+        if self.lbl_remaining_qty.winfo_exists():
+            self.lbl_remaining_qty["text"] = "Remaining MO Quantity: "
+        else:
+            print("Widget self.lbl_remaining_qty does not exist.")
+        
         try:
             with open("data/mo_logs.json", "r") as json_file:
                 data = json.load(json_file)
@@ -229,7 +233,7 @@ class MoDetails:
                         and entry["wip_entity_name"] == self.wip_entity_name
                     ):
                         remaining_qty = entry["remaining_qty"]
-                        break
+                        break 
         except FileNotFoundError:
             pass
 
@@ -243,8 +247,7 @@ class MoDetails:
                             "wip_entity_name" in entry
                             and entry["wip_entity_name"] == self.wip_entity_name
                         ):
-                            self.lbl_remaining_qty[
-                                "text"] = f"Remaining MO Quantity: {entry['running_qty']}"
+                            self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: {entry['running_qty']}"
                             return entry["running_qty"]
             except FileNotFoundError:
                 pass
@@ -263,12 +266,13 @@ class MoDetails:
         with open(self.csv_file_path, mode="a", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
-
+         
+         
     def show_start_btn(self):
 
         self.start_btn.place(x=1000, y=540, width=245, height=97)
         self.stop_btn.place_forget()
-
+    
     def show_stop_btn(self):
         self.stop_btn.place(x=1000, y=540, width=245, height=97)
         self.start_btn.place_forget()
@@ -278,46 +282,54 @@ class MoDetails:
         self.stop_btn.place_forget()
 
     def start_command(self):
-        pass
-        #self.checking()  # comment this if there is a ticket for testing
+        
+        # self.checking() #comment this if there is a ticket for testing
 
-        # self.show_stop_btn() #uncomment this to show the start button
-        # self.log_event("START")
+        self.show_stop_btn() #uncomment this to show the start button
+        self.log_event("START")
 
     def stop_command(self):
-        # self.show_input_dialog()
-        hris_password = simpledialog.askstring(
-            "Password",
-            "Enter Password", show='*'
-        )
 
-        if hris_password is not None and hris_password.strip() != "":
-            input_password = str(hris_password)
+        # TESTING PURPOSES ONLY
+        # ///////////////////////////////////////////////////////////////
+        self.show_input_dialog()
+        self.mo_data = MOData()
+        self.mo_data.perform_check_and_swap()
 
-            url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
-            response = requests.get(url).json()
-            if response['result'] == False or response['result'] == None:
-                print("FAILED")
-                # self.start_btn["state"] = "disabled"
-                # self.stop_btn["state"] = "normal"
 
-                self.show_stop_btn()
-                showerror(
-                    title="Login Failed",
-                    message=f"Password is incorrect. Please try again.",
-                )
-                # self.show_input_dialog()
+        # hris_password = simpledialog.askstring(
+        #     "Password",
+        #     "Enter Password", show='*'
+        # )
 
-            else:
-                # self.start_btn["state"] = "normal"    # Enable the START button
-                print("Success")
-                # self.stop_btn["state"] = "disabled"
+        # if hris_password is not None and hris_password.strip() != "":
+        #     input_password = str(hris_password)
 
-                self.show_input_dialog()
-                self.mo_data = MOData()
-                self.mo_data.perform_check_and_swap()
-        else:
-            pass
+        #     url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
+        #     response = requests.get(url).json()
+        #     if response['result'] == False or response['result'] == None:
+        #         print("FAILED")
+        #         # self.start_btn["state"] = "disabled"
+        #         # self.stop_btn["state"] = "normal"
+
+        #         self.show_stop_btn()
+        #         showerror(
+        #         title="Login Failed",
+        #         message=f"Password is incorrect. Please try again.",
+        #     )
+        #         # self.show_input_dialog()
+
+        #     else:
+        #         # self.start_btn["state"] = "normal"    # Enable the START button
+        #         print("Success")
+        #         # self.stop_btn["state"] = "disabled"
+
+        #         self.show_input_dialog()
+        #         self.mo_data = MOData()
+        #         self.mo_data.perform_check_and_swap()
+        # else:
+        #     pass
+
 
     def read_machno(self):
         with open("data\main.json", "r") as json_file:
@@ -383,6 +395,7 @@ class MoDetails:
         #     print('wip_entity_name: ', wip_entity_name)
 
     def show_input_dialog(self):
+
         dateTimeNow = self.currentDateTime
         person_assigned = self.extracted_fullname
 
@@ -421,10 +434,9 @@ class MoDetails:
                             json_output_file,
                             indent=4,
                         )
-
+                    
                     # self.show_start_btn()
                     self.get_remaining_qty_from_logs()
-                    # self.toggle_refresh()
                     self.log_event("STOP")
                 else:
                     messagebox.showinfo(
@@ -452,7 +464,6 @@ class MoDetails:
                         self.data_dict = {
                             item["wip_entity_name"]: item for item in data["data"]
                         }
-                        print("data_dict: ", self.data_dict)
 
                 except FileNotFoundError:
                     self.data_dict = {}
@@ -477,7 +488,7 @@ class MoDetails:
                         current_entry["last_person_assigned"] = person_assigned
                         current_entry["status"] = status
                         self.log_event("STOP")
-
+                        
                     else:
                         messagebox.showinfo(
                             title="Warning",
@@ -490,8 +501,7 @@ class MoDetails:
 
                 else:
                     if extracted_running_qty == total_finished:
-                        status = "COMPLETED" if extracted_running_qty - \
-                            total_finished == 0 else "NOT COMPLETED"
+                        status = "COMPLETED" if extracted_running_qty - total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -503,7 +513,6 @@ class MoDetails:
                         }
                         self.hide_start_and_stop_btn()
                         self.show_label_completed()
-                        # self.toggle_refresh()
 
                     elif extracted_running_qty < total_finished:
                         self.show_stop_btn()
@@ -516,8 +525,7 @@ class MoDetails:
                     else:
                         self.show_start_btn()
 
-                        status = "COMPLETED" if extracted_running_qty - \
-                            total_finished == 0 else "NOT COMPLETED"
+                        status = "COMPLETED" if extracted_running_qty - total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -537,8 +545,8 @@ class MoDetails:
 
             self.get_remaining_qty_from_logs()
 
-            # self.root.destroy()
 
+            # self.root.destroy()
     def show_label_completed(self):
         self.lbl_mo_status = tk.Label(self.root)
         self.lbl_mo_status["bg"] = "#5fb878"
@@ -548,11 +556,12 @@ class MoDetails:
         self.lbl_mo_status["justify"] = "center"
         self.lbl_mo_status["text"] = "COMPLETED"
         self.lbl_mo_status.place(x=1000, y=540, width=245, height=97)
-
+        
     def on_close(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
 
+       
 
 if __name__ == "__main__":
     root = tk.Tk()

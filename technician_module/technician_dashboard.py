@@ -10,7 +10,7 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
-from ttkbootstrap.constants import *
+# from ttkbootstrap.constants import *
 
 
 import requests

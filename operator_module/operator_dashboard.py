@@ -10,7 +10,6 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
-import time
 import requests
 from PIL import Image, ImageTk
 
@@ -436,8 +435,8 @@ class OperatorDashboard:
         for employee in data:
             if int(employee.get("employee_id_no")) == int(employee_number):
                 matching_employee = employee
-                self.update_table()
-                print("UPDATE TABLE RUN")
+                # self.update_table()
+                # print("UPDATE TABLE RUN")
                 break
 
         if matching_employee:

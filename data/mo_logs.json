@@ -3,27 +3,9 @@
         {
             "wip_entity_name": "MO839288",
             "running_qty": 100,
-            "total_finished": 12,
-            "remaining_qty": 88,
-            "transaction_date": "2023-09-01 07:04:58",
-            "last_person_assigned": "Llavanes, John Raymark M.",
-            "status": "NOT COMPLETED"
-        },
-        {
-            "wip_entity_name": "MO839211",
-            "running_qty": 100,
             "total_finished": 100,
             "remaining_qty": 0,
-            "transaction_date": "2023-09-01 15:06:20",
-            "last_person_assigned": "Llavanes, John Raymark M.",
-            "status": "COMPLETED"
-        },
-        {
-            "wip_entity_name": "MO838597",
-            "running_qty": 100,
-            "total_finished": 100,
-            "remaining_qty": 0,
-            "transaction_date": "2023-09-01 16:52:49",
+            "transaction_date": "2023-09-04 14:50:26",
             "last_person_assigned": "Mercado, Alex Fernan F.",
             "status": "COMPLETED"
         }
