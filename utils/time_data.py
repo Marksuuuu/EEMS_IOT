@@ -25,19 +25,25 @@ class TimeData:
         return "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
     def calculate_oee(self):
+        productiveHrs = self.calculate_total_productive_time().total_seconds() / 3600
         availableHrs_str = self.get_available_hrs()
         availableHrs_parts = availableHrs_str.split(':')
         available_hours = int(availableHrs_parts[0])
         available_minutes = int(availableHrs_parts[1])
         available_seconds = int(availableHrs_parts[2])
 
-        availableHrs = available_hours + \
-            (available_minutes / 60) + (available_seconds / 3600)
+        availableHrs = available_hours + (available_minutes / 60) + (available_seconds / 3600)
+        downtimeHrs_str = self.calculate_total_downtime()
+        downtimeHrs_parts = downtimeHrs_str.split(':')
+        downtime_hours = int(downtimeHrs_parts[0])
+        downtime_minutes = int(downtimeHrs_parts[1])
+        downtime_seconds = int(downtimeHrs_parts[2])
 
-        productiveHrs = self.calculate_total_productive_time().total_seconds() / \
-            3600
+        downtimeHrs = downtime_hours + (downtime_minutes / 60) + (downtime_seconds / 3600)
+
         if availableHrs > 0:
-            oee_percentage = (productiveHrs / availableHrs) * 100
+            oee_percentage = (productiveHrs / (availableHrs - downtimeHrs)) * 100
+            print(f"==>> oee_percentage: {oee_percentage}")
             return round(oee_percentage, 5)
         else:
             return 0
@@ -133,6 +139,10 @@ class TimeData:
         total_available_seconds = 0
         previous_event_time = None
 
+        # Check if there are any "DOWNTIME_STOP" events
+        has_downtime_stop = any(event[0].startswith(
+            "DOWNTIME_STOP") for event in data)
+
         for event in data:
             event_type = event[0]
             event_date = event[1]
@@ -147,7 +157,11 @@ class TimeData:
 
             previous_event_time = event_datetime
 
-        if not any(event[0].startswith("DOWNTIME_STOP") for event in data):
+        if not has_downtime_stop:
+            # No "DOWNTIME_STOP" events found, set total_available_seconds to 0
+            total_available_seconds = 0
+        else:
+            # Calculate downtime until the current time
             current_datetime = datetime.now()
             if previous_event_time:
                 time_difference = current_datetime - previous_event_time
