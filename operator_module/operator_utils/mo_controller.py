@@ -12,8 +12,11 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter.messagebox import showinfo, showwarning, showerror
 import datetime
+from threading import Timer
+
 
 from .mo_transaction import MOData
+
 
 class MoDetails:
     def __init__(
@@ -48,7 +51,7 @@ class MoDetails:
         self.extracted_photo_url = extracted_photo_url
         self.extracted_username = extracted_username
         self.extracted_fullname = extracted_fullname
-        self.root.title ("MO DETAILS")
+        self.root.title("MO DETAILS")
         self.test_data = data
 
         self.customer = data[1]
@@ -57,10 +60,9 @@ class MoDetails:
         self.package = data[4]
         self.running_qty = data[5]
         self.wip_entity_name = data[6]
-
+        self.idle_function()
 
         self.data_dict = {}
-
 
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
@@ -69,20 +71,21 @@ class MoDetails:
 
         self.update_table_function = update_table_function
 
-
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
 
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
         else:
-            image_url = f"http://hris.teamglac.com/{self.extracted_photo_url}"  # Replace with your image URL
+            # Replace with your image URL
+            image_url = f"http://hris.teamglac.com/{self.extracted_photo_url}"
 
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
         desired_width = 83
         desired_height = 60
-        pil_image = pil_image.resize((desired_width, desired_height), Image.ANTIALIAS)
+        pil_image = pil_image.resize(
+            (desired_width, desired_height), Image.ANTIALIAS)
 
         script_directory = os.path.dirname(os.path.abspath(__file__))
         self.log_folder = os.path.join(script_directory, "../../data")
@@ -91,7 +94,7 @@ class MoDetails:
         self.csv_file_path = os.path.join(self.log_folder, "time.csv")
 
         self.image = ImageTk.PhotoImage(pil_image)
-        
+
         lbl_MO = tk.Label(root)
         lbl_MO["bg"] = "#FFB800"
         lbl_MO["borderwidth"] = "2px"
@@ -102,14 +105,14 @@ class MoDetails:
         lbl_MO["text"] = data[6]
         lbl_MO.place(x=20, y=20, width=526, height=87)
 
-        lbl_main_opt=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=18)
+        lbl_main_opt = tk.Label(root)
+        ft = tkFont.Font(family='Times', size=18)
         lbl_main_opt["font"] = ft
         lbl_main_opt["bg"] = "#ffffff"
         lbl_main_opt["fg"] = "#333333"
         lbl_main_opt["justify"] = "center"
         lbl_main_opt["text"] = self.main_opt
-        lbl_main_opt.place(x=20,y=110,width=526,height=63)
+        lbl_main_opt.place(x=20, y=110, width=526, height=63)
 
         lbl_device = tk.Label(root)
         lbl_device["bg"] = "#ffffff"
@@ -193,8 +196,6 @@ class MoDetails:
         self.stop_btn.place_forget()
         self.stop_btn["command"] = self.stop_command
 
-
-
         GLabel_566 = tk.Label(root)
         ft = tkFont.Font(family="Times", size=11)
         GLabel_566["font"] = ft
@@ -238,7 +239,7 @@ class MoDetails:
                         and entry["wip_entity_name"] == self.wip_entity_name
                     ):
                         remaining_qty = entry["remaining_qty"]
-                        break 
+                        break
         except FileNotFoundError:
             pass
 
@@ -252,7 +253,8 @@ class MoDetails:
                             "wip_entity_name" in entry
                             and entry["wip_entity_name"] == self.wip_entity_name
                         ):
-                            self.lbl_remaining_qty["text"] = f"Remaining MO Quantity: {entry['running_qty']}"
+                            self.lbl_remaining_qty[
+                                "text"] = f"Remaining MO Quantity: {entry['running_qty']}"
                             return entry["running_qty"]
             except FileNotFoundError:
                 pass
@@ -271,13 +273,12 @@ class MoDetails:
         with open(self.csv_file_path, mode="a", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
-         
-         
+
     def show_start_btn(self):
 
         self.start_btn.place(x=1000, y=540, width=245, height=97)
         self.stop_btn.place_forget()
-    
+
     def show_stop_btn(self):
         self.stop_btn.place(x=1000, y=540, width=245, height=97)
         self.start_btn.place_forget()
@@ -287,19 +288,17 @@ class MoDetails:
         self.stop_btn.place_forget()
 
     def start_command(self):
-        
+
         self.log_event("START")
         # self.checking() #comment this if there is a ticket for testing
 
-        self.show_stop_btn() #uncomment this to show the start button
+        self.show_stop_btn()  # uncomment this to show the start button
 
     def stop_command(self):
 
         # TESTING PURPOSES ONLY
         # ///////////////////////////////////////////////////////////////
         self.show_input_dialog()
-
-
 
         # hris_password = simpledialog.askstring(
         #     "Password",
@@ -333,7 +332,6 @@ class MoDetails:
         #         self.mo_data.perform_check_and_swap()
         # else:
         #     pass
-
 
     def read_machno(self):
         with open("data\main.json", "r") as json_file:
@@ -390,9 +388,8 @@ class MoDetails:
                     showinfo("MO COMPLETED!", "MO Already Completed!")
                     # self.mo_data = MOData()
                     # self.mo_data.perform_check_and_swap()
-                    
-                    self.root.destroy()
 
+                    self.root.destroy()
 
     def show_input_dialog(self):
 
@@ -434,7 +431,7 @@ class MoDetails:
                             json_output_file,
                             indent=4,
                         )
-                    
+
                     # self.show_start_btn()
                     self.mo_data = MOData()
                     self.mo_data.perform_check_and_swap()
@@ -491,7 +488,7 @@ class MoDetails:
                         current_entry["last_person_assigned"] = person_assigned
                         current_entry["status"] = status
                         self.log_event("STOP")
-                        
+
                     else:
                         messagebox.showinfo(
                             title="Warning",
@@ -504,7 +501,8 @@ class MoDetails:
 
                 else:
                     if extracted_running_qty == total_finished:
-                        status = "COMPLETED" if extracted_running_qty - total_finished == 0 else "NOT COMPLETED"
+                        status = "COMPLETED" if extracted_running_qty - \
+                            total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -528,7 +526,8 @@ class MoDetails:
                     else:
                         self.show_start_btn()
 
-                        status = "COMPLETED" if extracted_running_qty - total_finished == 0 else "NOT COMPLETED"
+                        status = "COMPLETED" if extracted_running_qty - \
+                            total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -551,8 +550,8 @@ class MoDetails:
             self.update_table_display()
             self.log_event("STOP")
 
-
             # self.root.destroy()
+
     def show_label_completed(self):
         self.lbl_mo_status = tk.Label(self.root)
         self.lbl_mo_status["bg"] = "#5fb878"
@@ -562,12 +561,28 @@ class MoDetails:
         self.lbl_mo_status["justify"] = "center"
         self.lbl_mo_status["text"] = "COMPLETED"
         self.lbl_mo_status.place(x=1000, y=540, width=245, height=97)
-        
+
     def on_close(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
 
-       
+    def are_buttons_shown(self):
+        try:
+            return self.start_btn is not None and self.start_btn.winfo_ismapped()
+        except tk.TclError as e:
+            return False
+
+    def idle_function(self):
+        Timer(10, self.tick).start()
+        self.root.after(10000, self.idle_function)
+
+    def tick(self):
+        if self.are_buttons_shown():
+            if self.start_btn["state"] == "normal":
+                print('idle')
+        else:
+            print('idle stop')
+
 
 if __name__ == "__main__":
     root = tk.Tk()
