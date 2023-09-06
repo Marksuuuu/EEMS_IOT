@@ -579,9 +579,9 @@ class MoDetails:
     def tick(self):
         if self.are_buttons_shown():
             if self.start_btn["state"] == "normal":
-                print('idle')
+                pass
         else:
-            print('idle stop')
+            pass
 
 
 if __name__ == "__main__":

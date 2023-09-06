@@ -88,7 +88,6 @@ class CSVMonitor:
             new_rows = len(current_rows) - len(previous_rows)
             if new_rows > 0:
                 self.new_data_count += new_rows
-                print(self.new_data_count)
 
             self.previous_content = current_content
 
@@ -310,7 +309,6 @@ class OperatorDashboard:
             event_type, event_date, event_time = last_offline_entry[:3]
             event_datetime = datetime.strptime(
                 f"{event_date} {event_time}", "%Y-%m-%d %H:%M:%S")
-            print('last_offline_entry: ', last_offline_entry)
             showwarning(
                 "MACHINE OFFLINE!",
                 "Attention! The machine is currently OFFLINE",
@@ -339,8 +337,8 @@ class OperatorDashboard:
                     extracted_data.append(
                         (customer, device, main_opt, package, running_qty, wip_entity_name, status))
             return extracted_data
-        except (FileNotFoundError, json.JSONDecodeError, KeyError):
-            print("Error reading mo_logs.json or extracting data.")
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            print(f"Error {e}")
             return []
 
     def read_mo_logs(self):
@@ -349,8 +347,8 @@ class OperatorDashboard:
                 mo_logs = json.load(json_file)
             return mo_logs
 
-        except (FileNotFoundError, json.JSONDecodeError, KeyError):
-            print("Error reading mo_logs.json or extracting data.")
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            print(f"Error {e}")
             return []
 
     def read_json_file_with_status(self):
@@ -387,7 +385,6 @@ class OperatorDashboard:
     def populate_table(self):
 
         if os.stat("data/mo_logs.json").st_size == 0:
-            print("mo_logs.json is empty.")
             data = self.read_json_file()
 
             for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
@@ -398,7 +395,6 @@ class OperatorDashboard:
                 )
 
         else:
-            print("mo_logs.json is not empty.")
             data = self.read_json_file_with_status()
 
             for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
@@ -409,12 +405,8 @@ class OperatorDashboard:
                 )
 
     def update_table(self):
-        print("UPDATING TABLE ....")
-        # Clear existing data from the treeview
         self.tree.delete(*self.tree.get_children())
-
         self.populate_table()
-        # self.root.after(15000, self.update_table)
 
     def show_popup_view(self, event):
         selected_item = self.tree.selection()
@@ -454,16 +446,13 @@ class OperatorDashboard:
             user_department = matching_employee.get("employee_department")
             self.validate_permissions(user_department)
         else:
-            print("Employee not found.")
+            showerror('Error', 'Employee not found!')
 
     def validate_permissions(self, user_department):
-        print(user_department)
         permissions = self.load_permissions()
         if permissions.is_department_allowed(user_department):
             selected_item = self.tree.selection()
             self.swap_position(selected_item)
-
-            print("User allowed.")
         else:
             showerror(
                 title="Login Failed",
@@ -471,7 +460,6 @@ class OperatorDashboard:
             )
 
     def swap_position(self, selected_item):
-        print('selected_item: ', selected_item)
 
         selected_id = self.tree.item(selected_item, "text")
         first_id = "1"
@@ -545,12 +533,6 @@ class OperatorDashboard:
             self.statusHere["text"] = getStatus
         self.root.after(5000, self.update_status)
 
-    def GButton_439_command(self):
-        print("command")
-
-    def GButton_213_command(self):
-        print("command")
-
     def logout(self):
         response = messagebox.askyesno(
             "Logout", "Are you sure you want to logout?")
@@ -595,7 +577,7 @@ class OperatorDashboard:
                 self.log_event("IDLE_START")
 
         self.root.after(10000, self.check_window_active)
-        
+
     def log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")

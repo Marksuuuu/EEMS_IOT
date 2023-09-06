@@ -90,7 +90,6 @@ class App:
         self.last_ticket_status = None
         # self.downtime_started = False
         self.downtime_started = self.load_downtime_state()
-        print('test', self.downtime_started )
         self.update_interval = 50000
         self.root = root
 
@@ -311,13 +310,16 @@ class App:
                             self.validate_permissions(
                                 user_department, user_position, dataJson)
                         else:
-                            print(
-                                "Employee data doesn't contain department or position.")
+                            pass
+                            # print(
+                            #     "Employee data doesn't contain department or position.")
                     else:
-                        print(
-                            "Response data is not in the expected format (dictionary).")
+                        pass
+                        # print(
+                        #     "Response data is not in the expected format (dictionary).")
                 except KeyError:
-                    print("Response data doesn't have expected keys.")
+                    pass
+                    # print("Response data doesn't have expected keys.")
             else:
                 print("Error accessing HRIS API:", response.status_code)
         except ValueError:
@@ -611,14 +613,10 @@ class App:
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
         if ticket_present:
-            print(f"==>> ticket_present: {ticket_present}")
             self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
             if not self.downtime_started:
-                print("==>> go here:")
                 self.downtime_started = True
-                print(f"==>> downtime_started: {self.downtime_started}")
                 self.log_event("DOWNTIME_START")
-                print("==>> DOWNTIME_START: ")
         else:
             if self.downtime_started:
                 self.downtime_started = False
@@ -627,7 +625,6 @@ class App:
 
     def log_event(self, msg):
         current_time = datetime.datetime.now()
-        print(f"==>> current_time: {current_time}")
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
 
