@@ -568,12 +568,12 @@ class OperatorDashboard:
 
     def check_window_active(self):
         if self.details_window is not None and self.details_window.winfo_exists():
-            print('win close')
+            # print('win close')
             if self.idle_started:
                 self.idle_started = False
                 self.log_event("IDLE_STOP")
         else:
-            print('win open')
+            # print('win open')
             if not self.idle_started:
                 self.idle_started = True
                 self.log_event("IDLE_START")

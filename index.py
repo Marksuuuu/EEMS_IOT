@@ -356,7 +356,6 @@ class App:
                 self.show_tech_dashboard(
                     user_department, user_position, dataJson)
             elif permissions.is_operator(user_position):
-                print(f"{user_position} is an operator.")
                 self.show_operator_dashboard(
                     user_department, user_position, dataJson)
                 self.log_activity(

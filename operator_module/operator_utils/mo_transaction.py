@@ -32,15 +32,13 @@ class MOData:
         first_wip_entity_name = main_array[0]['wip_entity_name']
         first_running_qty = main_array[0]['running_qty']
 
-        print('first_wip_entity_name: ', first_wip_entity_name)
-        print('first_running_qty: ', first_running_qty)
+
         for entry in mo_logs_array:
             if first_wip_entity_name in entry.get('wip_entity_name'):
                 if int(first_running_qty) == entry.get('total_finished'):
                     first_element = main_array.pop(0)  # Remove the first element
                     main_array.append(first_element)    
                     self.edit_and_write_main_json(main_json)
-                    print('COMPLETED')
                     break
                 else:
                     print('NOT COMPLETED')

@@ -223,7 +223,6 @@ class MoDetails:
 
     def update_table_display(self):
         # Call the update_table function when needed
-        print("SOME FUNCTION THAT SHOULD WORK")
         self.update_table_function()
 
     def get_remaining_qty_from_logs(self):
