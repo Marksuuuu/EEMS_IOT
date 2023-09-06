@@ -168,7 +168,7 @@ class App:
         self.available_hrs["font"] = ft
         self.available_hrs["fg"] = "#333333"
         self.available_hrs["justify"] = "left"
-        self.available_hrs.place(x=610, y=700, width=580, height=90)
+        self.available_hrs.place(x=20, y=800, width=580, height=90)
 
         self.total_quantity_to_process = tk.Label(self.root)
         self.total_quantity_to_process["bg"] = "#ffffff"
@@ -176,8 +176,7 @@ class App:
         self.total_quantity_to_process["font"] = ft
         self.total_quantity_to_process["fg"] = "#333333"
         self.total_quantity_to_process["justify"] = "left"
-        self.total_quantity_to_process.place(
-            x=610, y=800, width=580, height=90)
+        self.total_quantity_to_process.place(x=610, y=700, width=580, height=90)
 
         self.total_remaining_qty = tk.Label(self.root)
         self.total_remaining_qty["bg"] = "#ffffff"
@@ -185,7 +184,7 @@ class App:
         self.total_remaining_qty["font"] = ft
         self.total_remaining_qty["fg"] = "#333333"
         self.total_remaining_qty["justify"] = "left"
-        self.total_remaining_qty.place(x=20, y=800, width=580, height=90)
+        self.total_remaining_qty.place(x=20, y=900, width=580, height=90)
 
         self.downtime = tk.Label(self.root)
         self.downtime["bg"] = "#ffffff"
@@ -193,7 +192,7 @@ class App:
         self.downtime["font"] = ft
         self.downtime["fg"] = "#333333"
         self.downtime["justify"] = "center"
-        self.downtime.place(x=20, y=900, width=580, height=90)
+        self.downtime.place(x=610, y=900, width=580, height=90)
 
         self.idle = tk.Label(self.root)
         self.idle["bg"] = "#ffffff"
@@ -201,7 +200,7 @@ class App:
         self.idle["font"] = ft
         self.idle["fg"] = "#333333"
         self.idle["justify"] = "center"
-        self.idle.place(x=610, y=900, width=580, height=90)
+        self.idle.place(x=610, y=800, width=580, height=90)
 
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=58)
