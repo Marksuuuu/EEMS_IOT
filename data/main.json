@@ -1,33 +1,39 @@
 {
-    "machno": "1470-004",
-    "filename": "main",
+    "machno": "DAD 3350-01",
+    "filename": "index",
     "data": [
         {
-            "customer": "TPC",
-            "device": "PM09.PMD-0002",
-            "main_opt": "Wirebond/3RD Opt.Insp.",
-            "package": "SOT",
-            "running_qty": "100",
-            "uph": "30",
-            "wip_entity_name": "MO839211"
+            "customer": "IXYS",
+            "device": "WP.IXCD1953 M1 MIL",
+            "main_opt": "Wafer Saw",
+            "operation_seq_number": "10",
+            "package": "WP",
+            "running_qty": "96359",
+            "uph": "173902",
+            "wip_entity_id": "837352",
+            "wip_entity_name": "MO832784"
         },
         {
-            "customer": "MICROCHIP",
-            "device": "SP3F.CMHUSM120VC120CT3EAG CC9756",
-            "main_opt": "Wirebond/3RD Opt.Insp.",
-            "package": "SP3F",
-            "running_qty": "100",
-            "uph": "20",
-            "wip_entity_name": "MO838597"
+            "customer": "IXYS",
+            "device": "WP.IXCD1953 M1 MIL",
+            "main_opt": "Wafer Saw",
+            "operation_seq_number": "10",
+            "package": "WP",
+            "running_qty": "96359",
+            "uph": "10353",
+            "wip_entity_id": "837352",
+            "wip_entity_name": "MO832784"
         },
         {
-            "customer": "ATOM",
-            "device": "PM09.PMD-0002",
-            "main_opt": "Wirebond/3RD Opt.Insp.",
-            "package": "PM09",
-            "running_qty": "100",
-            "uph": "30",
-            "wip_entity_name": "MO839288"
+            "customer": "IXYS",
+            "device": "WP.IXCD1953 M1 MIL",
+            "main_opt": "Wafer Saw",
+            "operation_seq_number": "10",
+            "package": "WP",
+            "running_qty": "96359",
+            "uph": "6921517",
+            "wip_entity_id": "837352",
+            "wip_entity_name": "MO832784"
         }
     ]
 }

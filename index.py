@@ -31,6 +31,25 @@ from utils.ticket_status import TicketChecker
 # from utils.trigger_downtime import TriggerDowntime
 from socketio_utils.socketio_manager import SocketIOManager
 
+sio = socketio.Client(reconnection=True, reconnection_attempts=5,
+                      reconnection_delay=1, reconnection_delay_max=5)
+client = str(uuid.uuid4())
+filename = os.path.basename(__file__)
+removeExtension = re.sub('.py', '', filename)
+
+
+@sio.event
+def connect():
+    print('Connected to server')
+    sio.emit('client_connected', {'machine_name': filename, 'client': client})
+    sio.emit('controller', {'machine_name': filename})
+    sio.emit('client', {'machine_name': filename, 'client': client})
+
+
+@sio.event
+def disconnect():
+    print('disconnected to server')
+
 
 class UserPermissions:
     def __init__(self, config_path):
@@ -79,7 +98,7 @@ class App:
 
         self.quantity_data = QuantityData("../data")
         self.get_data = TimeData('../data')
-
+        self.sio_manager = SocketIOManager()
         # self.receiver = ReceiveAndRequest(self.socketio_path())
         self.total_running_qty = self.quantity_data.total_running_qty()
         self.calculate_oee = self.get_data.calculate_oee
@@ -87,6 +106,7 @@ class App:
         self.get_available_hrs = self.get_data.get_available_hrs()
         self.get_productive_hrs = self.get_data.calculate_total_productive_time()
         self.get_downtime_hrs = self.get_data.calculate_total_downtime()
+        self.get_idle_hrs = self.get_data.calculate_total_idle()
         self.last_ticket_status = None
         # self.downtime_started = False
         self.downtime_started = self.load_downtime_state()
@@ -167,7 +187,7 @@ class App:
         self.available_hrs["font"] = ft
         self.available_hrs["fg"] = "#333333"
         self.available_hrs["justify"] = "left"
-        self.available_hrs.place(x=610, y=700, width=580, height=90)
+        self.available_hrs.place(x=20, y=800, width=580, height=90)
 
         self.total_quantity_to_process = tk.Label(self.root)
         self.total_quantity_to_process["bg"] = "#ffffff"
@@ -176,7 +196,7 @@ class App:
         self.total_quantity_to_process["fg"] = "#333333"
         self.total_quantity_to_process["justify"] = "left"
         self.total_quantity_to_process.place(
-            x=610, y=800, width=580, height=90)
+            x=610, y=700, width=580, height=90)
 
         self.total_remaining_qty = tk.Label(self.root)
         self.total_remaining_qty["bg"] = "#ffffff"
@@ -184,7 +204,7 @@ class App:
         self.total_remaining_qty["font"] = ft
         self.total_remaining_qty["fg"] = "#333333"
         self.total_remaining_qty["justify"] = "left"
-        self.total_remaining_qty.place(x=20, y=800, width=580, height=90)
+        self.total_remaining_qty.place(x=20, y=900, width=580, height=90)
 
         self.downtime = tk.Label(self.root)
         self.downtime["bg"] = "#ffffff"
@@ -192,7 +212,7 @@ class App:
         self.downtime["font"] = ft
         self.downtime["fg"] = "#333333"
         self.downtime["justify"] = "center"
-        self.downtime.place(x=20, y=900, width=580, height=90)
+        self.downtime.place(x=610, y=900, width=580, height=90)
 
         self.idle = tk.Label(self.root)
         self.idle["bg"] = "#ffffff"
@@ -200,8 +220,7 @@ class App:
         self.idle["font"] = ft
         self.idle["fg"] = "#333333"
         self.idle["justify"] = "center"
-        self.idle["text"] = "IDLE"
-        self.idle.place(x=610, y=900, width=580, height=90)
+        self.idle.place(x=610, y=800, width=580, height=90)
 
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=58)
@@ -438,8 +457,8 @@ class App:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
             self.statusHere["text"] = getStatus
-            self.status_card()
-        self.root.after(1000, self.update_status)
+        #     self.status_card()
+        # self.root.after(1000, self.update_status)
 
     def status_card(self):
         self.time_data()
@@ -470,7 +489,7 @@ class App:
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
-        root.after(50000, self.update_logs)
+        # root.after(50000, self.update_logs)
 
     def time_data(self):
         self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
@@ -512,7 +531,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        self.root.after(50000, self.create_total_qty_graph)
+        # self.root.after(50000, self.create_total_qty_graph)
         return img
 
     def create_oee_graph(self):
@@ -547,7 +566,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        self.root.after(50000, self.create_oee_graph)
+        # self.root.after(50000, self.create_oee_graph)
         return img
 
     def create_line_chart(self):
@@ -581,9 +600,11 @@ class App:
         self.total_quantity_to_process[
             "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
         self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
+        self.idle["text"] = f"TOTAL IDLETIME : {self.get_idle_hrs}"
         # self.root.after(50000, self.time_data)
-        
-        self.label_update_id = self.root.after(self.update_interval, self.time_data)
+
+        self.label_update_id = self.root.after(
+            self.update_interval, self.time_data)
 
     def charts(self):
         self.chart_img = self.create_oee_graph()
@@ -595,8 +616,9 @@ class App:
             self.quantity_graph.configure(image=self.total_img)
         if self.cpk_graph is not None:
             self.cpk_graph.configure(image=self.line_img)
-            
-        self.chart_update_id = self.root.after(self.update_interval, self.charts)
+
+        self.chart_update_id = self.root.after(
+            self.update_interval, self.charts)
 
     def auto_update(self):
         """
@@ -643,7 +665,32 @@ class App:
     def save_downtime_state(self):
         with open('config/downtime_state.json', 'w') as state_file:
             json.dump({'downtime_started': self.downtime_started}, state_file)
+            
+    
+    @sio.event
+    def my_message(data):
+        print('Message received with', data)
+        toPassData = data['dataToPass']
+        machno = data['machno']
+        remove_py = re.sub('.py', '', filename)
+        fileNameWithIni = 'main.json'
+        folder_path = 'data'
+        file_path = f'{folder_path}/{fileNameWithIni}'
 
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        with open(file_path, 'w') as file:
+            data = {
+                'machno': machno,
+                'filename': remove_py,
+                'data': toPassData
+            }
+            json.dump(data, file)
+        sio.emit('my_response', {'response': 'my response'})
+
+
+sio.connect('http://10.0.2.150:8083')
 
 # receiver.sio.wait()
 if __name__ == "__main__":

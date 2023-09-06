@@ -37,10 +37,9 @@ class SocketIOManager:
             print('Message received with', data)
             to_pass_data = data['dataToPass']
             machno = data['machno']
-            remove_py = re.sub('.py', '', self.filename)
-            fileNameWithIni = remove_py + '.json'
+            filename = 'main.json'
             folder_path = 'data'
-            file_path = f'{folder_path}/{fileNameWithIni}'
+            file_path = f'{folder_path}/{filename}'
 
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
@@ -79,12 +78,15 @@ class SocketIOManager:
 
                 writer.writerow(to_pass_data)
 
-        def connect(self, url, filename):
-            self.filename = filename
-            self.sio.connect(url)
+    def client_make_connection(self, url, filename):
+        self.filename = filename
+        self.sio.connect(url)
 
-        def disconnect(self):
-            self.sio.disconnect()
+    def client_make_disconnection(self):
+        self.sio.disconnect()
+        
+    def client_make_file(self):
+        self.sio.my_message()
 
-        def emit(self, event_name, data):
-            self.sio.emit(event_name, data)
+    def emit(self, event_name, data):
+        self.sio.emit(event_name, data)
