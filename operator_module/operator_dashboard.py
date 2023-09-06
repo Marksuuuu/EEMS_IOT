@@ -12,6 +12,9 @@ from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
 import requests
 from PIL import Image, ImageTk
+import logging
+import datetime
+
 
 from utils.status_update import StatusUpdate
 
@@ -24,6 +27,7 @@ from utils.ticket_status import TicketChecker
 # from move_mo import MOData
 from tkinter import Canvas, Entry, Button, PhotoImage
 from pathlib import Path
+
 
 class UserPermissions:
     def __init__(self, config_path):
@@ -104,6 +108,9 @@ class OperatorDashboard:
         self.extracted_photo_url = data[4]
         self.extracted_possition = data[5]
         self.extracted_username = data[6]
+        self.idle_started = self.load_idle_state()
+        self.details_window = None
+        self.window_open = False
 
         self.details_window = None
 
@@ -129,6 +136,9 @@ class OperatorDashboard:
         self.create_tree_view()
         self.verify_ticket_status()
         self.update_table()
+        self.check_window_active()
+        self.save_idle_state()
+        # self.save_idle_state()
 
         ## END ##
 
@@ -181,7 +191,7 @@ class OperatorDashboard:
         self.ticket_checking["font"] = ft
         self.ticket_checking["fg"] = "#000000"
         self.ticket_checking["justify"] = "center"
-        self.ticket_checking.place(x=460,y=10,width=750,height=37)
+        self.ticket_checking.place(x=460, y=10, width=750, height=37)
 
         # self.GLabel_703 = tk.Label(self.root)
         # self.GLabel_703["bg"] = "#ffffff"
@@ -256,13 +266,14 @@ class OperatorDashboard:
         self.tree.pack(pady=120)
 
         header_style = ttk.Style()
-        header_style.configure("Treeview.Heading", font=("Helvetica", 15)) 
+        header_style.configure("Treeview.Heading", font=("Helvetica", 15))
 
         row_style = ttk.Style()
-        row_style.configure("Treeview", font=("Helvetica", 12)) 
+        row_style.configure("Treeview", font=("Helvetica", 12))
         row_style.configure("Treeview.Item", padding=(10, 5))
 
-        self.tree.column("ROW NUMBER", width=50)  # Adjust the width for each column
+        # Adjust the width for each column
+        self.tree.column("ROW NUMBER", width=50)
         self.tree.column("CUSTOMER", width=150)
         self.tree.column("DEVICES", width=250)
         self.tree.column("MAIN OPERATION", width=150)
@@ -270,7 +281,6 @@ class OperatorDashboard:
         self.tree.column("MO QUANTITY", width=100)
         self.tree.column("MO", width=100)
         self.tree.column("STATUS", width=100)
-
 
         for col in self.tree["columns"]:
             self.tree.column(col, anchor="center")
@@ -326,29 +336,28 @@ class OperatorDashboard:
                     running_qty = item["running_qty"]
                     wip_entity_name = item["wip_entity_name"]
                     status = item.get("status", "")
-                    extracted_data.append((customer, device, main_opt, package, running_qty, wip_entity_name, status))
+                    extracted_data.append(
+                        (customer, device, main_opt, package, running_qty, wip_entity_name, status))
             return extracted_data
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
-                print("Error reading mo_logs.json or extracting data.")
-                return []
-        
+            print("Error reading mo_logs.json or extracting data.")
+            return []
 
     def read_mo_logs(self):
         try:
             with open('data/mo_logs.json', 'r') as json_file:
                 mo_logs = json.load(json_file)
             return mo_logs
-        
+
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             print("Error reading mo_logs.json or extracting data.")
             return []
-        
+
     def read_json_file_with_status(self):
         main_data = None
-        
+
         mo_logs = self.read_mo_logs()
-        
-        
+
         with open("data/main.json", "r") as json_file:
             main_data = json.load(json_file)
 
@@ -357,12 +366,12 @@ class OperatorDashboard:
         for item in main_data["data"]:
             wip_entity_name = item["wip_entity_name"]
             status = ""
-            
+
             for mo_log_entry in mo_logs["data"]:
                 if mo_log_entry["wip_entity_name"] == wip_entity_name:
                     status = mo_log_entry["status"]
                     break
-            
+
             extracted_data.append((
                 item["customer"],
                 item["device"],
@@ -374,9 +383,9 @@ class OperatorDashboard:
             ))
 
         return extracted_data
-    
+
     def populate_table(self):
-        
+
         if os.stat("data/mo_logs.json").st_size == 0:
             print("mo_logs.json is empty.")
             data = self.read_json_file()
@@ -384,7 +393,8 @@ class OperatorDashboard:
             for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
                 self.tree.insert(
                     "", "end", iid=i, text=str(i),
-                    values=(i, customer, device, main_opt, package, running_qty, wip_entity_name, status)
+                    values=(i, customer, device, main_opt, package,
+                            running_qty, wip_entity_name, status)
                 )
 
         else:
@@ -394,7 +404,8 @@ class OperatorDashboard:
             for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
                 self.tree.insert(
                     "", "end", iid=i, text=str(i),
-                    values=(i, customer, device, main_opt, package, running_qty, wip_entity_name, status)
+                    values=(i, customer, device, main_opt, package,
+                            running_qty, wip_entity_name, status)
                 )
 
     def update_table(self):
@@ -404,7 +415,6 @@ class OperatorDashboard:
 
         self.populate_table()
         # self.root.after(15000, self.update_table)
-
 
     def show_popup_view(self, event):
         selected_item = self.tree.selection()
@@ -541,17 +551,6 @@ class OperatorDashboard:
     def GButton_213_command(self):
         print("command")
 
-    def show_mo_details_function(self, data):
-        # Check if the details window is already open
-        if self.details_window is None or not self.details_window.winfo_exists():
-            self.details_window = tk.Toplevel(self.root)
-            show_mo_details_window = MoDetails(
-                self.details_window, self.extracted_fullname, self.extracted_employee_no,
-                self.extracted_photo_url, self.extracted_username, data, self.update_table )
-        else:
-            # Bring the existing details window to the front if it's already open
-            self.details_window.lift()
-
     def logout(self):
         response = messagebox.askyesno(
             "Logout", "Are you sure you want to logout?")
@@ -565,16 +564,58 @@ class OperatorDashboard:
         show_ticket_dashboard = RequestTicket(
             self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
         )
-    
+
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
-        
+
         if ticket_present:
             self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             self.ticket_checking.destroy()
 
+    def show_mo_details_function(self, data):
+        if self.details_window is None or not self.details_window.winfo_exists():
+            self.details_window = tk.Toplevel(self.root)
+            show_mo_details_window = MoDetails(
+                self.details_window, self.extracted_fullname, self.extracted_employee_no,
+                self.extracted_photo_url, self.extracted_username, data, self.update_table)
+            self.window_open = True
+        else:
+            self.details_window.lift()
+
+    def check_window_active(self):
+        if self.details_window is not None and self.details_window.winfo_exists():
+            if self.idle_started:
+                self.idle_started = False
+                self.log_event("IDLE_STOP")
+        else:
+            if not self.idle_started:
+                self.idle_started = True
+                self.log_event("IDLE_START")
+
+        self.root.after(10000, self.check_window_active)
+        
+    def log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+    def load_idle_state(self):
+        try:
+            with open('config/idle_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                return state.get('idle_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_idle_state(self):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': self.idle_started}, state_file)
 
 
 if __name__ == "__main__":

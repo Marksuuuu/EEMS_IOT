@@ -81,7 +81,6 @@ class App:
         self.get_data = TimeData('../data')
 
         # self.receiver = ReceiveAndRequest(self.socketio_path())
-        self.downtime_started = self.load_downtime_state()
         self.total_running_qty = self.quantity_data.total_running_qty()
         self.calculate_oee = self.get_data.calculate_oee
         self.total_remaining_qty_value = self.quantity_data.total_remaining_qty()
@@ -90,6 +89,8 @@ class App:
         self.get_downtime_hrs = self.get_data.calculate_total_downtime()
         self.last_ticket_status = None
         # self.downtime_started = False
+        self.downtime_started = self.load_downtime_state()
+        print('test', self.downtime_started )
         self.update_interval = 50000
         self.root = root
 
@@ -610,10 +611,14 @@ class App:
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
         if ticket_present:
+            print(f"==>> ticket_present: {ticket_present}")
             self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
             if not self.downtime_started:
+                print("==>> go here:")
                 self.downtime_started = True
+                print(f"==>> downtime_started: {self.downtime_started}")
                 self.log_event("DOWNTIME_START")
+                print("==>> DOWNTIME_START: ")
         else:
             if self.downtime_started:
                 self.downtime_started = False
@@ -622,6 +627,7 @@ class App:
 
     def log_event(self, msg):
         current_time = datetime.datetime.now()
+        print(f"==>> current_time: {current_time}")
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
 
@@ -631,14 +637,14 @@ class App:
 
     def load_downtime_state(self):
         try:
-            with open('data/logs/downtime_state.json', 'r') as state_file:
+            with open('config/downtime_state.json', 'r') as state_file:
                 state = json.load(state_file)
                 return state.get('downtime_started', False)
         except FileNotFoundError:
             return False
 
     def save_downtime_state(self):
-        with open('data/logs/downtime_state.json', 'w') as state_file:
+        with open('config/downtime_state.json', 'w') as state_file:
             json.dump({'downtime_started': self.downtime_started}, state_file)
 
 
