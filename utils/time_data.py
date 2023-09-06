@@ -15,6 +15,7 @@ class TimeData:
         self.get_available_hrs()
         self.calculate_oee()
         self.calculate_total_downtime()
+        self.calculate_total_idle()
 
     def get_script_directory(self):
         return os.path.dirname(os.path.realpath(__file__))
@@ -164,6 +165,50 @@ class TimeData:
 
         formatted_time = self.format_time(total_downtime_time)
         return formatted_time
+    
+    
+    def calculate_total_idle(self):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        log_folder = os.path.join(script_directory, self.file_path)
+        log_file_path = os.path.join(log_folder, 'logs/idle.csv')
+
+        data = []
+        with open(log_file_path, 'r') as csvfile:
+            csvreader = csv.reader(csvfile)
+            for row in csvreader:
+                data.append(row)
+
+        total_idle_time = 0
+        previous_event_time = None
+
+        for event in data:
+            event_type = event[0]
+            event_date = event[1]
+            event_time = event[2]
+
+            event_datetime = datetime.strptime(
+                event_date + " " + event_time, "%Y-%m-%d %H:%M:%S")
+
+            if previous_event_time:
+                time_difference = event_datetime - previous_event_time
+                if event_type == "IDLE_STOP":
+                    total_idle_time += time_difference.total_seconds()
+
+            previous_event_time = event_datetime
+
+        if not any(event[0].startswith("IDLE_STOP") for event in data):
+            current_datetime = datetime.now()
+            if previous_event_time:
+                time_difference = current_datetime - previous_event_time
+            else:
+                time_difference = current_datetime - \
+                    datetime.strptime("2000-01-01 00:00:00",
+                                    "%Y-%m-%d %H:%M:%S")
+            total_idle_time += time_difference.total_seconds()
+
+        formatted_time = self.format_time(total_idle_time)
+        return formatted_time
+
 
 
 if __name__ == "__main__":
