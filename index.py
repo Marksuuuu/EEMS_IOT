@@ -87,6 +87,7 @@ class App:
         self.get_available_hrs = self.get_data.get_available_hrs()
         self.get_productive_hrs = self.get_data.calculate_total_productive_time()
         self.get_downtime_hrs = self.get_data.calculate_total_downtime()
+        self.get_idle_hrs = self.get_data.calculate_total_idle()
         self.last_ticket_status = None
         # self.downtime_started = False
         self.downtime_started = self.load_downtime_state()
@@ -200,7 +201,6 @@ class App:
         self.idle["font"] = ft
         self.idle["fg"] = "#333333"
         self.idle["justify"] = "center"
-        self.idle["text"] = "IDLE"
         self.idle.place(x=610, y=900, width=580, height=90)
 
         self.statusHere = tk.Label(self.root)
@@ -438,8 +438,8 @@ class App:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
             self.statusHere["text"] = getStatus
-            self.status_card()
-        self.root.after(1000, self.update_status)
+        #     self.status_card()
+        # self.root.after(1000, self.update_status)
 
     def status_card(self):
         self.time_data()
@@ -470,7 +470,7 @@ class App:
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
-        root.after(50000, self.update_logs)
+        # root.after(50000, self.update_logs)
 
     def time_data(self):
         self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
@@ -512,7 +512,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        self.root.after(50000, self.create_total_qty_graph)
+        # self.root.after(50000, self.create_total_qty_graph)
         return img
 
     def create_oee_graph(self):
@@ -547,7 +547,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        self.root.after(50000, self.create_oee_graph)
+        # self.root.after(50000, self.create_oee_graph)
         return img
 
     def create_line_chart(self):
@@ -581,6 +581,7 @@ class App:
         self.total_quantity_to_process[
             "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
         self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
+        self.idle["text"] = f"TOTAL IDLETIME : {self.get_idle_hrs}"
         # self.root.after(50000, self.time_data)
         
         self.label_update_id = self.root.after(self.update_interval, self.time_data)
