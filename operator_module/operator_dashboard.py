@@ -16,12 +16,15 @@ import logging
 import datetime
 
 
+
 from utils.status_update import StatusUpdate
+
+from operator_module.operator_utils.new_request_ticket import RequestTicket
 
 
 # from mo_details import MO_Details
 from operator_module.operator_utils.mo_controller import MoDetails
-from operator_module.operator_utils.request_ticket import RequestTicket
+# from operator_module.operator_utils.request_ticket import RequestTicket
 from utils.ticket_status import TicketChecker
 # from request_ticket import RequestTicket
 # from move_mo import MOData
@@ -557,8 +560,10 @@ class OperatorDashboard:
             self.ticket_checking.destroy()
 
     def show_mo_details_function(self, data):
+
         if self.details_window is None or not self.details_window.winfo_exists():
             self.details_window = tk.Toplevel(self.root)
+
             show_mo_details_window = MoDetails(
                 self.details_window, self.extracted_fullname, self.extracted_employee_no,
                 self.extracted_photo_url, self.extracted_username, data, self.update_table)
