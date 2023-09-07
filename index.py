@@ -91,7 +91,8 @@ class UserPermissions:
 class App:
     def __init__(self, root):
         # setting title
-        root.title("EEMS_IOT - © 2023")
+        current_year = datetime.datetime.now().year
+        root.title(f"EEMS_IOT - © {current_year}")
         # setting window size
 
         ## GLOBAL VARIABLES##

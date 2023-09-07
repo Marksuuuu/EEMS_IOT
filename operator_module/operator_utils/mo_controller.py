@@ -61,6 +61,8 @@ class MoDetails:
         self.running_qty = data[5]
         self.wip_entity_name = data[6]
         self.idle_function()
+        self.idle_started = self.load_idle_state()
+        
 
         self.data_dict = {}
 
@@ -579,9 +581,38 @@ class MoDetails:
     def tick(self):
         if self.are_buttons_shown():
             if self.start_btn["state"] == "normal":
-                pass
+                if self.idle_started:
+                    self.idle_started = False
+                    self.log_event_idle("IDLE_START")
+                    print('idle')
         else:
-            pass
+            if not self.idle_started:
+                self.idle_started = True
+                self.log_event_idle("IDLE_STOP")
+                print('not idle')
+            
+    
+    def log_event_idle(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+    def load_idle_state(self):
+        try:
+            with open('config/idle_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                return state.get('idle_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_idle_state(self):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': self.idle_started}, state_file)
+
 
 
 if __name__ == "__main__":
