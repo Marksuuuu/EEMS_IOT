@@ -431,6 +431,10 @@ class OperatorDashboard:
         employee_number = simpledialog.askstring(
             "Employee ID", "Please enter your Employee ID."
         )
+        
+        if employee_number is None:
+            return
+
         with open(log_file_path, "r") as json_file:
             data = json.load(json_file)["result"]
 
@@ -447,6 +451,7 @@ class OperatorDashboard:
             self.validate_permissions(user_department)
         else:
             showerror('Error', 'Employee not found!')
+
 
     def validate_permissions(self, user_department):
         permissions = self.load_permissions()

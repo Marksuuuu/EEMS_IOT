@@ -110,7 +110,7 @@ class App:
         self.last_ticket_status = None
         # self.downtime_started = False
         self.downtime_started = self.load_downtime_state()
-        self.update_interval = 50000
+        # self.update_interval = 50000
         self.root = root
 
         # self.root = root
@@ -603,8 +603,8 @@ class App:
         self.idle["text"] = f"TOTAL IDLETIME : {self.get_idle_hrs}"
         # self.root.after(50000, self.time_data)
 
-        self.label_update_id = self.root.after(
-            self.update_interval, self.time_data)
+        # self.label_update_id = self.root.after(
+        #     self.update_interval, self.time_data)
 
     def charts(self):
         self.chart_img = self.create_oee_graph()
@@ -617,8 +617,8 @@ class App:
         if self.cpk_graph is not None:
             self.cpk_graph.configure(image=self.line_img)
 
-        self.chart_update_id = self.root.after(
-            self.update_interval, self.charts)
+        # self.chart_update_id = self.root.after(
+        #     self.update_interval, self.charts)
 
     def auto_update(self):
         """
