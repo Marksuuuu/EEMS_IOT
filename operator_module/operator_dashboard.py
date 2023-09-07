@@ -22,6 +22,7 @@ from utils.status_update import StatusUpdate
 # from mo_details import MO_Details
 from operator_module.operator_utils.mo_controller import MoDetails
 from operator_module.operator_utils.request_ticket import RequestTicket
+from operator_module.operator_utils.request_ticket_test import TicketRequestApp
 from utils.ticket_status import TicketChecker
 # from request_ticket import RequestTicket
 # from move_mo import MOData
@@ -548,8 +549,12 @@ class OperatorDashboard:
     def tickets_command(self):
         # self.root.withdraw()
         self.ticket_dashboard = Toplevel(self.root)
-        show_ticket_dashboard = RequestTicket(
-            self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
+        # show_ticket_dashboard = RequestTicket(
+        #     self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
+        # )
+        assets_dir = "assets"
+        show_ticket_dashboard = TicketRequestApp(
+            self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir
         )
 
     def verify_ticket_status(self):
