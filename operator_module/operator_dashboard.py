@@ -20,8 +20,9 @@ from utils.status_update import StatusUpdate
 
 
 # from mo_details import MO_Details
-from operator_module.operator_utils.mo_controller import MoDetails
-from operator_module.operator_utils.request_ticket import RequestTicket
+# from operator_module.operator_utils.mo_controller import MoDetails
+# from operator_module.operator_utils.request_ticket import RequestTicket
+from operator_module.operator_utils.request_ticket_test import RequestTicketTest
 from operator_module.operator_utils.mo_controller_test import MoDetailsTest
 from utils.ticket_status import TicketChecker
 # from request_ticket import RequestTicket
@@ -547,11 +548,15 @@ class OperatorDashboard:
 
     def tickets_command(self):
         # self.root.withdraw()
+        assets_dir = 'assets'
         self.ticket_dashboard = Toplevel(self.root)
-        show_ticket_dashboard = RequestTicket(
-            self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
-        )
+        # show_ticket_dashboard = RequestTicket(
+        #     self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
+        # )
 
+        show_ticket_dashboard = RequestTicketTest(
+            self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir
+        )
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
@@ -565,12 +570,12 @@ class OperatorDashboard:
         if self.details_window is None or not self.details_window.winfo_exists():
             self.details_window = tk.Toplevel(self.root)
             assets_dir = 'assets'
-            show_mo_details_window = MoDetails(
-                self.details_window, self.extracted_fullname, self.extracted_employee_no,
-                self.extracted_photo_url, self.extracted_username, data, self.update_table)
-            # show_mo_details_window = MoDetailsTest(
+            # show_mo_details_window = MoDetails(
             #     self.details_window, self.extracted_fullname, self.extracted_employee_no,
-            #     self.extracted_photo_url, self.extracted_username, data, self.update_table, assets_dir)
+            #     self.extracted_photo_url, self.extracted_username, data, self.update_table)
+            show_mo_details_window = MoDetailsTest(
+                self.details_window, self.extracted_fullname, self.extracted_employee_no,
+                self.extracted_photo_url, self.extracted_username, data, self.update_table, assets_dir)
             self.window_open = True
         else:
             self.details_window.lift()

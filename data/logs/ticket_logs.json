@@ -5,5 +5,12 @@
         "downtime_type_id": "1",
         "checkbox_value": 1,
         "remarks_value": "TEST TICKET"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "4",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
     }
 ]
