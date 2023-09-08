@@ -1,23 +1,12 @@
-import json
-import os
-import tkinter as tk
-import tkinter.font as tkFont
-from datetime import date
-from datetime import datetime
-from tkinter import ttk
-from tkinter.messagebox import showinfo, showerror
-
-import requests
-
 from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Facilitiestemp\Desktop\Github Desktop\EEMS_IOT\assets\frame0")
+
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -27,20 +16,19 @@ window = Tk()
 
 window.title("Request Ticket")
 window.geometry("1145x878")
-window.configure(bg = "#FFFFFF")
-
+window.configure(bg="#FFFFFF")
 
 canvas = Canvas(
     window,
-    bg = "#FFFFFF",
-    height = 878,
-    width = 1145,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
+    bg="#FFFFFF",
+    height=878,
+    width=1145,
+    bd=0,
+    highlightthickness=0,
+    relief="ridge"
 )
 
-canvas.place(x = 0, y = 0)
+canvas.place(x=0, y=0)
 canvas.create_text(
     326.0,
     20.0,
@@ -214,5 +202,3 @@ entry_2.place(
 )
 window.resizable(False, False)
 window.mainloop()
-
-

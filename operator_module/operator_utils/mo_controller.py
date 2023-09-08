@@ -1,33 +1,31 @@
-import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageTk
-import requests
-from io import BytesIO
-import tkinter.font as tkFont
-import os
 import csv
+import datetime
 import json
-from tkinter import Toplevel
+import os
+import tkinter as tk
+import tkinter.font as tkFont
+from io import BytesIO
+from threading import Timer
 from tkinter import messagebox
 from tkinter import simpledialog
-from tkinter.messagebox import showinfo, showwarning, showerror
-import datetime
-from threading import Timer
+from tkinter.messagebox import showinfo, showwarning
 
+import requests
+from PIL import Image, ImageTk
 
 from .mo_transaction import MOData
 
 
 class MoDetails:
     def __init__(
-        self,
-        root,
-        extracted_fullname,
-        extracted_employee_no,
-        extracted_photo_url,
-        extracted_username,
-        data,
-        update_table_function
+            self,
+            root,
+            extracted_fullname,
+            extracted_employee_no,
+            extracted_photo_url,
+            extracted_username,
+            data,
+            update_table_function
     ):
         # MO PROPERTIES
         # ///////////////////////////////////////////////////////////////
@@ -62,7 +60,6 @@ class MoDetails:
         self.wip_entity_name = data[6]
         self.idle_function()
         self.idle_started = self.load_idle_state()
-        
 
         self.data_dict = {}
 
@@ -237,8 +234,8 @@ class MoDetails:
                 data = json.load(json_file)
                 for entry in data["data"]:
                     if (
-                        "wip_entity_name" in entry
-                        and entry["wip_entity_name"] == self.wip_entity_name
+                            "wip_entity_name" in entry
+                            and entry["wip_entity_name"] == self.wip_entity_name
                     ):
                         remaining_qty = entry["remaining_qty"]
                         break
@@ -252,8 +249,8 @@ class MoDetails:
                     wip_entities = main_data.get("data", [])
                     for entry in wip_entities:
                         if (
-                            "wip_entity_name" in entry
-                            and entry["wip_entity_name"] == self.wip_entity_name
+                                "wip_entity_name" in entry
+                                and entry["wip_entity_name"] == self.wip_entity_name
                         ):
                             self.lbl_remaining_qty[
                                 "text"] = f"Remaining MO Quantity: {entry['running_qty']}"
@@ -300,40 +297,40 @@ class MoDetails:
 
         # TESTING PURPOSES ONLY
         # ///////////////////////////////////////////////////////////////
-        self.show_input_dialog()
+        # self.show_input_dialog()
 
-        # hris_password = simpledialog.askstring(
-        #     "Password",
-        #     "Enter Password", show='*'
-        # )
+        hris_password = simpledialog.askstring(
+            "Password",
+            "Enter Password", show='*'
+        )
 
-        # if hris_password is not None and hris_password.strip() != "":
-        #     input_password = str(hris_password)
+        if hris_password is not None and hris_password.strip() != "":
+            input_password = str(hris_password)
 
-        #     url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
-        #     response = requests.get(url).json()
-        #     if response['result'] == False or response['result'] == None:
-        #         print("FAILED")
-        #         # self.start_btn["state"] = "disabled"
-        #         # self.stop_btn["state"] = "normal"
+            url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
+            response = requests.get(url).json()
+            if response['result'] == False or response['result'] == None:
+                print("FAILED")
+                # self.start_btn["state"] = "disabled"
+                # self.stop_btn["state"] = "normal"
 
-        #         self.show_stop_btn()
-        #         showerror(
-        #         title="Login Failed",
-        #         message=f"Password is incorrect. Please try again.",
-        #     )
-        #         # self.show_input_dialog()
+                self.show_stop_btn()
+                showerror(
+                title="Login Failed",
+                message=f"Password is incorrect. Please try again.",
+            )
+                # self.show_input_dialog()
 
-        #     else:
-        #         # self.start_btn["state"] = "normal"    # Enable the START button
-        #         print("Success")
-        #         # self.stop_btn["state"] = "disabled"
+            else:
+                # self.start_btn["state"] = "normal"    # Enable the START button
+                print("Success")
+                # self.stop_btn["state"] = "disabled"
 
-        #         self.show_input_dialog()
-        #         self.mo_data = MOData()
-        #         self.mo_data.perform_check_and_swap()
-        # else:
-        #     pass
+                self.show_input_dialog()
+                self.mo_data = MOData()
+                self.mo_data.perform_check_and_swap()
+        else:
+            pass
 
     def read_machno(self):
         with open("data\main.json", "r") as json_file:
@@ -444,7 +441,7 @@ class MoDetails:
                     messagebox.showinfo(
                         title="Warning",
                         message="Input exceeded the set running Quantity: "
-                        + str(extracted_running_qty),
+                                + str(extracted_running_qty),
                     )
 
         else:
@@ -495,7 +492,7 @@ class MoDetails:
                         messagebox.showinfo(
                             title="Warning",
                             message="Input exceeded the set running Quantity: "
-                            + str(extracted_running_qty),
+                                    + str(extracted_running_qty),
                         )
                         print(
                             "Total finished is not less than or equal to extracted running qty."
@@ -504,7 +501,7 @@ class MoDetails:
                 else:
                     if extracted_running_qty == total_finished:
                         status = "COMPLETED" if extracted_running_qty - \
-                            total_finished == 0 else "NOT COMPLETED"
+                                                total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -523,13 +520,13 @@ class MoDetails:
                         messagebox.showinfo(
                             title="Warning",
                             message="Input exceeded the set running Quantity: "
-                            + str(extracted_running_qty),
+                                    + str(extracted_running_qty),
                         )
                     else:
                         self.show_start_btn()
 
                         status = "COMPLETED" if extracted_running_qty - \
-                            total_finished == 0 else "NOT COMPLETED"
+                                                total_finished == 0 else "NOT COMPLETED"
                         self.data_dict[self.wip_entity_name] = {
                             "wip_entity_name": self.wip_entity_name,
                             "running_qty": self.running_qty,
@@ -590,8 +587,7 @@ class MoDetails:
                 self.idle_started = True
                 self.log_event_idle("IDLE_STOP")
                 print('not idle')
-            
-    
+
     def log_event_idle(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
@@ -612,7 +608,6 @@ class MoDetails:
     def save_idle_state(self):
         with open('config/idle_state.json', 'w') as state_file:
             json.dump({'idle_started': self.idle_started}, state_file)
-
 
 
 if __name__ == "__main__":

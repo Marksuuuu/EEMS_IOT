@@ -23,7 +23,6 @@ class MoDetailsTest:
         self.assets_dir = assets_dir
         self.root.geometry("933x563")
         self.root.configure(bg="#FFFFFF")
-        self.center_window()
         # self.root.overrideredirect(True)
 
         self.canvas = Canvas(
@@ -82,7 +81,6 @@ class MoDetailsTest:
         self.button_image_1 = PhotoImage(
             file=self.relative_to_assets("button_1.png"))
         self.button_1 = Button(
-            self.root,
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
@@ -223,7 +221,6 @@ class MoDetailsTest:
         self.button_image_2 = PhotoImage(
             file=self.relative_to_assets("button_2.png"))
         self.button_2 = Button(
-            self.root,
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
@@ -242,7 +239,6 @@ class MoDetailsTest:
         self.button_image_3 = PhotoImage(
             file=self.relative_to_assets("button_3.png"))
         self.button_3 = Button(
-            self.root,
             image=self.button_image_3,
             borderwidth=0,
             highlightthickness=0,
@@ -256,6 +252,7 @@ class MoDetailsTest:
             height=37.0
         )
 
+        self.center_window()
 
         self.root.resizable(False, False)
         self.root.mainloop()

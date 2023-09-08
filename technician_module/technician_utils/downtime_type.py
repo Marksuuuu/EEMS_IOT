@@ -1,6 +1,7 @@
-import requests
 import json
-import time
+
+import requests
+
 
 class DownTimeType:
     def __init__(self):
@@ -10,7 +11,7 @@ class DownTimeType:
         self.ticket = ""
         self.ticket_status = ""
         self.checking()
-        
+
     def read_machno(self):
         with open("data\main.json", "r") as json_file:
             data = json.load(json_file)
@@ -56,6 +57,6 @@ class DownTimeType:
                 else:
                     pass
 
+
 if __name__ == "__main__":
     DownTimeType()
-

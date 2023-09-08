@@ -1,33 +1,30 @@
+import csv
+import datetime
 import json
 import os
 import tkinter as tk
 import tkinter.font as tkFont
-import csv
-from datetime import datetime
+# from datetime import datetime
 from io import BytesIO
 from tkinter import Toplevel
 from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
+# from datetime import datetime
+
 import requests
 from PIL import Image, ImageTk
-import logging
-import datetime
-
-
-from utils.status_update import StatusUpdate
-
 
 # from mo_details import MO_Details
 from operator_module.operator_utils.mo_controller import MoDetails
 from operator_module.operator_utils.request_ticket import RequestTicket
-from operator_module.operator_utils.mo_controller_test import MoDetailsTest
+from utils.status_update import StatusUpdate
 from utils.ticket_status import TicketChecker
+
+
 # from request_ticket import RequestTicket
 # from move_mo import MOData
-from tkinter import Canvas, Entry, Button, PhotoImage
-from pathlib import Path
 
 
 class UserPermissions:
@@ -285,7 +282,7 @@ class OperatorDashboard:
         for col in self.tree["columns"]:
             self.tree.column(col, anchor="center")
         self.populate_table()
-       # self.root.after(5000, self.update_table)
+        # self.root.after(5000, self.update_table)
 
         self.update_status()
 
@@ -388,7 +385,8 @@ class OperatorDashboard:
         if os.stat("data/mo_logs.json").st_size == 0:
             data = self.read_json_file()
 
-            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data,
+                                                                                                            start=1):
                 self.tree.insert(
                     "", "end", iid=i, text=str(i),
                     values=(i, customer, device, main_opt, package,
@@ -398,7 +396,8 @@ class OperatorDashboard:
         else:
             data = self.read_json_file_with_status()
 
-            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+            for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data,
+                                                                                                            start=1):
                 self.tree.insert(
                     "", "end", iid=i, text=str(i),
                     values=(i, customer, device, main_opt, package,
@@ -535,7 +534,7 @@ class OperatorDashboard:
         else:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
+            self.statusHere["text"] = 'OFFLINE'
         self.root.after(50000, self.update_status)
 
     def logout(self):
@@ -557,7 +556,8 @@ class OperatorDashboard:
         ticket_present = ticket_inspector.checking()
 
         if ticket_present:
-            self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+            self.ticket_checking[
+                "text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             self.ticket_checking.destroy()
 

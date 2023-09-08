@@ -1,35 +1,35 @@
 import csv
+# from ttkbootstrap.constants import *
+import datetime
 import json
 import logging
 import os
 import re
-import signal
+import time
 import tkinter as tk
 import tkinter.font as tkFont
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from tkinter import Toplevel
 from tkinter import messagebox
 from tkinter.messagebox import showerror
-import time
+import datetime
 import matplotlib.pyplot as plt
+import numpy as np
 import requests
 import socketio
 from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import numpy as np
-# from ttkbootstrap.constants import *
-import datetime
 
 from operator_module.operator_dashboard import OperatorDashboard
+# from utils.trigger_downtime import TriggerDowntime
+from socketio_utils.socketio_manager import SocketIOManager
 from technician_module.technician_dashboard import TechnicianDashboard
 from utils.quantity_data import QuantityData
 from utils.status_update import StatusUpdate
-from utils.time_data import TimeData
 from utils.ticket_status import TicketChecker
-# from utils.trigger_downtime import TriggerDowntime
-from socketio_utils.socketio_manager import SocketIOManager
+from utils.time_data import TimeData
 
 sio = socketio.Client(reconnection=True, reconnection_attempts=5,
                       reconnection_delay=1, reconnection_delay_max=5)
@@ -175,7 +175,7 @@ class App:
         self.quantity_graph.place(x=1200, y=130, width=580, height=550)
 
         self.productive_hrs = tk.Label(self.root)
-        self.productive_hrs["bg"] = "#ffffff"
+        self.productive_hrs["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.productive_hrs["font"] = ft
         self.productive_hrs["fg"] = "#333333"
@@ -183,7 +183,7 @@ class App:
         self.productive_hrs.place(x=20, y=700, width=580, height=90)
 
         self.available_hrs = tk.Label(self.root)
-        self.available_hrs["bg"] = "#ffffff"
+        self.available_hrs["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.available_hrs["font"] = ft
         self.available_hrs["fg"] = "#333333"
@@ -191,32 +191,31 @@ class App:
         self.available_hrs.place(x=20, y=800, width=580, height=90)
 
         self.total_quantity_to_process = tk.Label(self.root)
-        self.total_quantity_to_process["bg"] = "#ffffff"
+        self.total_quantity_to_process["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.total_quantity_to_process["font"] = ft
         self.total_quantity_to_process["fg"] = "#333333"
         self.total_quantity_to_process["justify"] = "left"
-        self.total_quantity_to_process.place(
-            x=610, y=700, width=580, height=90)
+        self.total_quantity_to_process.place(x=20, y=900, width=580, height=90)
 
         self.total_remaining_qty = tk.Label(self.root)
-        self.total_remaining_qty["bg"] = "#ffffff"
+        self.total_remaining_qty["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.total_remaining_qty["font"] = ft
         self.total_remaining_qty["fg"] = "#333333"
         self.total_remaining_qty["justify"] = "left"
-        self.total_remaining_qty.place(x=20, y=900, width=580, height=90)
+        self.total_remaining_qty.place(x=610, y=900, width=580, height=90)
 
         self.downtime = tk.Label(self.root)
-        self.downtime["bg"] = "#ffffff"
+        self.downtime["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.downtime["font"] = ft
         self.downtime["fg"] = "#333333"
         self.downtime["justify"] = "center"
-        self.downtime.place(x=610, y=900, width=580, height=90)
+        self.downtime.place(x=610, y=700, width=580, height=90)
 
         self.idle = tk.Label(self.root)
-        self.idle["bg"] = "#ffffff"
+        self.idle["bg"] = "#FFFFFF"
         ft = tkFont.Font(family='Times', size=22)
         self.idle["font"] = ft
         self.idle["fg"] = "#333333"
@@ -369,7 +368,7 @@ class App:
             print("Employee not found.")
 
     def validate_permissions(self, user_department, user_position, dataJson):
-        employee_number = self.employee_id.get()
+        self.employee_number = self.employee_id.get()
 
         permissions = self.load_permissions()
         if permissions.is_department_allowed(user_department) and permissions.is_position_allowed(user_position):
@@ -380,19 +379,37 @@ class App:
                 print(f"{user_position} is an operator.")
                 self.show_operator_dashboard(
                     user_department, user_position, dataJson)
+                data = {
+                    "msg": f'User login successful. ID NUM: {self.employee_number}',
+                    "emp_id": self.employee_number
+                }
+                sio.emit('activity_log', {
+                    'data': data})
                 self.log_activity(
-                    logging.INFO, f'User login successful. ID NUM: {employee_number}')
+                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
+                sio.emit('activity_log', {'data': data})
 
             else:
                 self.log_activity(
-                    logging.INFO, f'User login unsuccessful. ID NUM: {employee_number}')
-
+                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
+                data = {
+                    "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
+                    "emp_id": self.employee_number
+                }
+                sio.emit('activity_log', {
+                    'data': data})
                 showerror(title='Login Failed',
                           message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
 
         else:
             self.log_activity(
-                logging.INFO, f'User login unsuccessful. ID NUM: {employee_number}')
+                logging.INFO, f'User login unsuccessful. ID NUM: {self.employee_number}')
+            data = {
+                "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
+                "emp_id": self.employee_number
+            }
+            sio.emit('activity_log', {
+                     'data': data})
             showerror(title='Login Failed',
                       message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
 
@@ -454,12 +471,14 @@ class App:
             self.statusHere["bg"] = "#4CAF50"
             self.statusHere["fg"] = "#ffffff"
             self.statusHere["text"] = getStatus
+            self.time_data()
         else:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
-        #     self.status_card()
-        # self.root.after(1000, self.update_status)
+            self.statusHere["text"] = 'OFFLINE'
+            self.delete_file_data()
+            self.time_data()
+        self.root.after(1000, self.update_status)
 
     def status_card(self):
         self.time_data()
@@ -469,10 +488,29 @@ class App:
         self.get_data.calculate_total_productive_time()
 
     def delete_file_data(self):
-        filename = os.path.join(
+        idle = os.path.join(
+            self.get_script_directory(), "data/logs", 'idle.csv')
+
+        downtime = os.path.join(
+            self.get_script_directory(), "data/logs", 'downtime.csv')
+
+        productive_hrs = os.path.join(
             self.get_script_directory(), "data", 'time.csv')
+
+        total_avail_hrs = os.path.join(
+            self.get_script_directory(), "data/logs", 'logs.csv')
+
         try:
-            with open(filename, 'w') as file:
+            with open(idle, 'w') as file:
+                file.truncate(0)
+
+            with open(productive_hrs, 'w') as file:
+                file.truncate(0)
+
+            with open(downtime, 'w') as file:
+                file.truncate(0)
+
+            with open(total_avail_hrs, 'w') as file:
                 file.truncate(0)
 
         except IOError:
@@ -490,12 +528,13 @@ class App:
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
-        # root.after(50000, self.update_logs)
+        root.after(60000, self.update_logs)
 
     def time_data(self):
         self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
         self.productive_hrs["text"] = f"PRODUCTIVE HRS : {self.get_productive_hrs}"
         self.available_hrs["text"] = f"AVAILABLE HRS : {self.get_available_hrs}"
+        self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
         self.total_quantity_to_process[
             "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
 
@@ -532,7 +571,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        # self.root.after(50000, self.create_total_qty_graph)
+        # self.root.after(60000, self.create_total_qty_graph)
         return img
 
     def create_oee_graph(self):
@@ -567,7 +606,7 @@ class App:
         pil_image = Image.frombytes(
             'RGB', canvas.get_width_height(), canvas.tostring_rgb())
         img = ImageTk.PhotoImage(image=pil_image)
-        # self.root.after(50000, self.create_oee_graph)
+        # self.root.after(60000, self.create_oee_graph)
         return img
 
     def create_line_chart(self):
@@ -595,14 +634,15 @@ class App:
         return ImageTk.PhotoImage(image=img)
 
     def time_data(self):
-        self.total_remaining_qty["text"] = f"TOTAL TO PROCESS : {self.total_running_qty}"
+        self.total_remaining_qty["text"] = f"TOTAL QUANTITY TO PROCESS : {self.total_running_qty}"
         self.productive_hrs["text"] = f"PRODUCTIVE HOURS : {self.get_productive_hrs}"
         self.available_hrs["text"] = f"AVAILABLE HOURS : {self.get_data.get_available_hrs()}"
+        # print(f"💻==>> self.get_data.get_available_hrs(): {self.get_data.get_available_hrs()}")
         self.total_quantity_to_process[
             "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
-        self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
+        self.downtime["text"] = f"DOWNTIME : {self.get_data.calculate_total_downtime()}"
         self.idle["text"] = f"TOTAL IDLETIME : {self.get_idle_hrs}"
-        # self.root.after(50000, self.time_data)
+        self.root.after(60000, self.time_data)
 
         # self.label_update_id = self.root.after(
         #     self.update_interval, self.time_data)
@@ -622,15 +662,12 @@ class App:
         #     self.update_interval, self.charts)
 
     def auto_update(self):
-        """
-        CAN BE ENABLED, BUT IT CAN EAT A LOT OF RESOURCES
-        """
-        pass
+        # self.charts()
         # self.time_data()
         # self.get_data.calculate_oee
-        # self.create_oee_graph()
-        # self.create_line_chart()
-        # self.root.after(50000, self.auto_update)
+        self.create_oee_graph()
+        self.create_line_chart()
+        self.root.after(60000, self.auto_update)
 
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
@@ -666,8 +703,7 @@ class App:
     def save_downtime_state(self):
         with open('config/downtime_state.json', 'w') as state_file:
             json.dump({'downtime_started': self.downtime_started}, state_file)
-            
-    
+
     @sio.event
     def my_message(data):
         print('Message received with', data)

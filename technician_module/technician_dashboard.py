@@ -2,24 +2,18 @@ import json
 import os
 import tkinter as tk
 import tkinter.font as tkFont
-import csv
-from datetime import datetime
 from io import BytesIO
-from tkinter import Toplevel
 from tkinter import messagebox
-from tkinter import simpledialog
-from tkinter import ttk
-from tkinter.messagebox import showinfo, showwarning, showerror
-# from ttkbootstrap.constants import *
-
 
 import requests
 from PIL import Image, ImageTk
 
+from utils.status_update import StatusUpdate
 # from technician_module.technician_utils.downtime_type import DownTimeType
 from utils.ticket_status import TicketChecker
-from utils.status_update import StatusUpdate
 
+
+# from ttkbootstrap.constants import *
 
 
 class TechnicianDashboard:
@@ -36,7 +30,7 @@ class TechnicianDashboard:
         self.extracted_possition = data[5]
         self.downtime_type = ''
         self.root = root
-        
+
         # self.notes = ''
         # self.poppedData = self.downtime_type.pop()
         # print(f"==>> poppedData: {self.poppedData}")
@@ -56,8 +50,6 @@ class TechnicianDashboard:
         #     self.notes = ""
         #     print(f"==>> notes: {self.notes}")
 
-
-
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
         else:
@@ -72,7 +64,6 @@ class TechnicianDashboard:
             (desired_width, desired_height), Image.ANTIALIAS)
 
         self.image = ImageTk.PhotoImage(pil_image)
-
 
         ## FUNCTIONS ##
 
@@ -136,17 +127,17 @@ class TechnicianDashboard:
         self.statusHere["justify"] = "center"
         self.statusHere["text"] = "OFFLINE"
         self.statusHere.place(x=40, y=10, width=359, height=106)
-        
-        
-        self.ticket_checking=tk.Label(self.root)
+
+        self.ticket_checking = tk.Label(self.root)
         self.ticket_checking["bg"] = "#ffb800"
         self.ticket_checking["cursor"] = "circle"
-        ft = tkFont.Font(family='Times',size=13)
+        ft = tkFont.Font(family='Times', size=13)
         self.ticket_checking["font"] = ft
         self.ticket_checking["fg"] = "#000000"
         self.ticket_checking["justify"] = "center"
-        self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
-        self.ticket_checking.place(x=460,y=10,width=750,height=37)
+        self.ticket_checking[
+            "text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+        self.ticket_checking.place(x=460, y=10, width=750, height=37)
 
     def logout(self):
         response = messagebox.askyesno(
@@ -168,7 +159,7 @@ class TechnicianDashboard:
         else:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
+            self.statusHere["text"] = 'OFFLINE'
         self.root.after(5000, self.update_status)
 
     def verify_ticket_status(self):
@@ -176,10 +167,11 @@ class TechnicianDashboard:
         ticket_present = ticket_inspector.checking()
 
         if ticket_present:
-            self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+            self.ticket_checking[
+                "text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             self.ticket_checking.destroy()
-    
+
     def read_machno(self):
         with open("data/main.json", "r") as json_file:
             data = json.load(json_file)

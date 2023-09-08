@@ -1,4 +1,3 @@
-import os
 import json
 
 
@@ -20,12 +19,11 @@ class MOData:
         with open('data/main.json', 'w') as json_file:
             json.dump(main_json, json_file, indent=4)
 
-
     def perform_check_and_swap(self):
         print("RUN PERFORM CHECK AND SWAP")
         mo_logs = self.read_mo_logs()
         main_json = self.read_main_json()
- 
+
         main_array = main_json['data']
         mo_logs_array = mo_logs['data']
 
@@ -38,12 +36,13 @@ class MOData:
             if first_wip_entity_name in entry.get('wip_entity_name'):
                 if int(first_running_qty) == entry.get('total_finished'):
                     first_element = main_array.pop(0)  # Remove the first element
-                    main_array.append(first_element)    
+                    main_array.append(first_element)
                     self.edit_and_write_main_json(main_json)
                     print('COMPLETED')
                     break
                 else:
                     print('NOT COMPLETED')
+
 
 if __name__ == '__main__':
     MOData()
