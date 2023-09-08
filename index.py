@@ -23,7 +23,8 @@ import numpy as np
 import datetime
 
 from operator_module.operator_dashboard import OperatorDashboard
-from technician_module.technician_dashboard import TechnicianDashboard
+from technician_module.technician_dashboard_test import TechnicianDashboardTest
+# from technician_module.technician_dashboard import TechnicianDashboard
 from utils.quantity_data import QuantityData
 from utils.status_update import StatusUpdate
 from utils.time_data import TimeData
@@ -180,8 +181,9 @@ class App:
         self.productive_hrs["font"] = ft
         self.productive_hrs["fg"] = "#333333"
         self.productive_hrs["justify"] = "center"
-        self.productive_hrs.place(x=20, y=700, width=580, height=90)
+        self.productive_hrs.place(x=610, y=700, width=580, height=90)
 
+        
         self.available_hrs = tk.Label(self.root)
         self.available_hrs["bg"] = "#ffffff"
         ft = tkFont.Font(family='Times', size=22)
@@ -196,8 +198,7 @@ class App:
         self.total_quantity_to_process["font"] = ft
         self.total_quantity_to_process["fg"] = "#333333"
         self.total_quantity_to_process["justify"] = "left"
-        self.total_quantity_to_process.place(
-            x=610, y=700, width=580, height=90)
+        self.total_quantity_to_process.place(x=20, y=900, width=580, height=90)
 
         self.total_remaining_qty = tk.Label(self.root)
         self.total_remaining_qty["bg"] = "#ffffff"
@@ -205,7 +206,7 @@ class App:
         self.total_remaining_qty["font"] = ft
         self.total_remaining_qty["fg"] = "#333333"
         self.total_remaining_qty["justify"] = "left"
-        self.total_remaining_qty.place(x=20, y=900, width=580, height=90)
+        self.total_remaining_qty.place(x=610, y=900, width=580, height=90)
 
         self.downtime = tk.Label(self.root)
         self.downtime["bg"] = "#ffffff"
@@ -213,7 +214,7 @@ class App:
         self.downtime["font"] = ft
         self.downtime["fg"] = "#333333"
         self.downtime["justify"] = "center"
-        self.downtime.place(x=610, y=900, width=580, height=90)
+        self.downtime.place(x=20, y=700, width=580, height=90)
 
         self.idle = tk.Label(self.root)
         self.idle["bg"] = "#ffffff"
@@ -431,9 +432,11 @@ class App:
         root.withdraw()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
-        techDashboard = Toplevel(root)
-        tech_dashboard = TechnicianDashboard(
-            techDashboard, user_department, user_position, dataJson)
+        techDashboard = tk.Toplevel(root)
+        # tech_dashboard = TechnicianDashboard(
+        #     techDashboard, user_department, user_position, dataJson)
+        assets_dir = 'assets'
+        tech_dashboard = TechnicianDashboardTest(techDashboard, user_department, user_position, dataJson, assets_dir)
         root.withdraw()
 
     def update_clock(self):
@@ -458,8 +461,8 @@ class App:
             self.statusHere["bg"] = "#cc0000"
             self.statusHere["fg"] = "#ffffff"
             self.statusHere["text"] = getStatus
-        #     self.status_card()
-        # self.root.after(1000, self.update_status)
+            self.status_card()
+        self.root.after(1000, self.update_status)
 
     def status_card(self):
         self.time_data()
@@ -470,11 +473,19 @@ class App:
 
     def delete_file_data(self):
         filename = os.path.join(
+            self.get_script_directory(), "data/logs", 'downtime.csv')
+        filename1 = os.path.join(
+            self.get_script_directory(), "data/logs", 'idle.csv')
+        filename2 = os.path.join(
             self.get_script_directory(), "data", 'time.csv')
+        
         try:
             with open(filename, 'w') as file:
                 file.truncate(0)
-
+            with open(filename1, 'w') as file:
+                file.truncate(0)            
+            with open(filename2, 'w') as file:
+                file.truncate(0)
         except IOError:
             print(f"Error deleting data in '{filename}'.")
 
@@ -595,7 +606,7 @@ class App:
         return ImageTk.PhotoImage(image=img)
 
     def time_data(self):
-        self.total_remaining_qty["text"] = f"TOTAL TO PROCESS : {self.total_running_qty}"
+        self.total_remaining_qty["text"] = f"TOTAL QTY. TO PROCESS : {self.total_running_qty}"
         self.productive_hrs["text"] = f"PRODUCTIVE HOURS : {self.get_productive_hrs}"
         self.available_hrs["text"] = f"AVAILABLE HOURS : {self.get_data.get_available_hrs()}"
         self.total_quantity_to_process[

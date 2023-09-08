@@ -1,24 +1,15 @@
-import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from datetime import datetime
 
-class MyHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        if event.is_directory:
-            return
-        print(f'File {event.src_path} has been modified')
+# Define the given date and time
+given_datetime = datetime(2023, 8, 31, 8, 37, 53)
+# Get the current date and time
+current_datetime = datetime.now()
 
-if __name__ == "__main__":
-    path = "data/main_logs.json"  # Replace with the path you want to monitor
-    event_handler = MyHandler()
-    observer = Observer()
-    observer.schedule(event_handler, path, recursive=True)
-    observer.start()
+# Calculate the time difference
+time_difference = current_datetime - given_datetime
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
+# Calculate the number of hours passed
+hours_passed = time_difference.total_seconds() / 3600
 
-    observer.join()
+# Display the result
+print(f"Hours passed since {given_datetime}: {hours_passed:.2f} hours")

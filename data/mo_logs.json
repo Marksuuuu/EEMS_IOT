@@ -3,11 +3,11 @@
         {
             "wip_entity_name": "MO832784",
             "running_qty": 96359,
-            "total_finished": 101,
-            "remaining_qty": 96258,
+            "total_finished": 289077,
+            "remaining_qty": 0,
             "transaction_date": "2023-09-07 16:02:32",
             "last_person_assigned": "Llavanes, John Raymark M.",
-            "status": "NOT COMPLETED"
+            "status": "COMPLETED"
         }
     ]
 }

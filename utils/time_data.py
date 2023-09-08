@@ -88,6 +88,8 @@ class TimeData:
 
         formatted_time = self.format_time(total_available_seconds)
         return formatted_time
+    
+    
 
     def calculate_total_productive_time(self):
         script_directory = os.path.dirname(os.path.abspath(__file__))

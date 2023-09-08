@@ -346,5 +346,5 @@ class RequestTicketTest:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = TicketRequestApp(root)
+    app = RequestTicketTest(root)
     root.mainloop()
