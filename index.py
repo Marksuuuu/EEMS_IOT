@@ -145,6 +145,7 @@ class App:
         alignstr = '%dx%d+%d+%d' % (self.width, self.height, (self.screenwidth -
                                                               self.width) / 2, (self.screenheight - self.height) / 2)
         self.root.geometry(alignstr)
+
         self.root.resizable(width=False, height=False)
 
     def mainGui(self):
@@ -702,7 +703,7 @@ class App:
         sio.emit('my_response', {'response': 'my response'})
 
 
-sio.connect('http://10.0.2.150:8083')
+# sio.connect('http://10.0.2.150:8083')
 
 # receiver.sio.wait()
 if __name__ == "__main__":

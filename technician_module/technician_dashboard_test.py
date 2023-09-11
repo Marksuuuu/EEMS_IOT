@@ -203,7 +203,7 @@ class TechnicianDashboardTest:
         )
         self.center_window()
         self.root.resizable(False, False)
-
+        self.root.attributes('-topmost', True)
         # self.notes = ''
         # self.poppedData = self.downtime_type.pop()
         # print(f"==>> poppedData: {self.poppedData}")

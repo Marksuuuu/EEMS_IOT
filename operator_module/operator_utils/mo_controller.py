@@ -60,10 +60,10 @@ class MoDetails:
         self.package = data[4]
         self.running_qty = data[5]
         self.wip_entity_name = data[6]
+
         self.idle_function()
         self.idle_started = self.load_idle_state()
         
-
         self.data_dict = {}
 
         current_time = datetime.datetime.now()
@@ -152,15 +152,6 @@ class MoDetails:
         lbl_mo_qty["text"] = f"MO Quantity : {data[5]}"
         lbl_mo_qty.place(x=20, y=540, width=526, height=97)
 
-        # lbl_remaining_qty=tk.Label(root)
-        # lbl_remaining_qty["bg"] = "#ffffff"
-        # ft = tkFont.Font(family='Times',size=18)
-        # lbl_remaining_qty["font"] = ft
-        # lbl_remaining_qty["fg"] = "#333333"
-        # lbl_remaining_qty["justify"] = "left"
-        # lbl_remaining_qty["text"] = f"Remaining MO Quantity : {data[5]}"
-        # lbl_remaining_qty.place(x=450,y=540,width=526,height=97)
-
         lbl_fullname = tk.Label(root)
         ft = tkFont.Font(family="Times", size=24)
         lbl_fullname["font"] = ft
@@ -210,7 +201,6 @@ class MoDetails:
         lbl_remaining_qty["bg"] = "#ffffff"
         ft = tkFont.Font(family="Times", size=18)
         lbl_remaining_qty["font"] = ft
-        lbl_remaining_qty["fg"] = "#333333"
         lbl_remaining_qty["justify"] = "center"
         self.lbl_remaining_qty = lbl_remaining_qty
         lbl_remaining_qty.place(x=450, y=540, width=526, height=97)

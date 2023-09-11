@@ -1,15 +1,27 @@
-from datetime import datetime
+import tkinter as tk
 
-# Define the given date and time
-given_datetime = datetime(2023, 8, 31, 8, 37, 53)
-# Get the current date and time
-current_datetime = datetime.now()
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
+        self.widgets()
 
-# Calculate the time difference
-time_difference = current_datetime - given_datetime
+    def widgets(self):
+        self.master.grid_rowconfigure(0, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
 
-# Calculate the number of hours passed
-hours_passed = time_difference.total_seconds() / 3600
+        self.label = tk.Label(self.master, text="Label")
+        self.label.grid(row=0, column=0, sticky="nsew")
 
-# Display the result
-print(f"Hours passed since {given_datetime}: {hours_passed:.2f} hours")
+        self.button1 = tk.Button(self.master, text="Button 1")
+        self.button1.grid(row=0, column=1, sticky="nsew")
+
+        self.button2 = tk.Button(self.master, text="Button 2")
+        self.button2.grid(row=1, column=0, sticky="nsew")
+
+        self.canvas = tk.Canvas(self.master, bg="red")
+        self.canvas.grid(row=1, column=1, sticky="nsew")
+
+root = tk.Tk()
+app = Application(master=root)
+app.mainloop()
