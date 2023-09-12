@@ -42,13 +42,16 @@ class MoDetailsTest:
         self.root.geometry("933x563")
         self.root.configure(bg="#FFFFFF")
         self.center_window()
-        # self.root.overrideredirect(True)
+        self.root.overrideredirect(True)
 
         self.customer = data[1]
         self.device = data[2]
         self.main_opt = data[3]
         self.package = data[4]
         self.running_qty = data[5]
+        self.formatted_running_qty = "{:,}".format(self.running_qty)
+        print('self.formatted_running_qty: ', self.formatted_running_qty)
+
         self.wip_entity_name = data[6]
         self.data_dict = {}
 
@@ -177,7 +180,7 @@ class MoDetailsTest:
             anchor="nw",
             text=self.main_opt,
             fill="#868E96",
-            font=("ArialMT", 32 * -1)
+            font=("ArialMT", 24 * -1)
         )
         # DEVICE
         # ///////////////////////////////////////////////////////////////
@@ -196,7 +199,7 @@ class MoDetailsTest:
             anchor="nw",
             text=data[2],
             fill="#868E96",
-            font=("ArialMT", 32 * -1)
+            font=("ArialMT", 24 * -1)
         )
 
         # PACKAGE
@@ -216,7 +219,7 @@ class MoDetailsTest:
             anchor="nw",
             text=data[4],
             fill="#868E96",
-            font=("ArialMT", 32 * -1)
+            font=("ArialMT", 24 * -1)
         )
 
 
@@ -237,7 +240,19 @@ class MoDetailsTest:
             anchor="nw",
             text=data[1],
             fill="#868E96",
-            font=("ArialMT", 32 * -1)
+            font=("ArialMT", 24 * -1)
+        )
+
+        # LAST PERSON ASSIGNED
+        # ///////////////////////////////////////////////////////////////
+
+        self.canvas.create_text(
+            519.0,
+            390.0,
+            anchor="nw",
+            text="LAST PERSON ASSIGNED: ",
+            fill="#D45151",
+            font=("Arial BoldMT", 12 * -1, "italic")
         )
 
         self.image_image_4 = PhotoImage(
@@ -263,7 +278,7 @@ class MoDetailsTest:
             64.0,
             457.0,
             anchor="nw",
-            text=data[5],
+            text=self.formatted_running_qty,
             fill="#FFFFFF",
             font=("Arial BoldMT", 48 * -1)
         )
@@ -405,11 +420,14 @@ class MoDetailsTest:
             except FileNotFoundError:
                 pass
 
-            self.lbl_remaining_qty["text"] = "N/A"
+            self.lbl_remaining_qty["text"] = " "
             return None
-
-        self.lbl_remaining_qty["text"] = f"{remaining_qty}"
+        formatted_remaining_qty = "{:,}".format(remaining_qty)
+        self.lbl_remaining_qty["text"] = formatted_remaining_qty
+        # self.lbl_remaining_qty["text"] = f"{remaining_qty}"
         return remaining_qty
+
+
 
     def log_event(self, msg):
         current_time = datetime.datetime.now()
@@ -536,6 +554,27 @@ class MoDetailsTest:
                     # self.mo_data.perform_check_and_swap()
 
                     self.root.destroy()
+
+    # def get_last_person_assigned(self):
+        # try:
+        #     with open("data/mo_logs.json", "r") as json_file:
+        #         data = json.load(json_file)
+        #         for entry in data["data"]:
+        #             if ("wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name):
+        #                 if "last_person_assigned" in entry:
+        #                     print(entry["last_person_assigned"])
+        #                     return entry["last_person_assigned"]
+        # except FileNotFoundError:
+        #     pass
+
+
+        # for entry in data:
+        #     wip_entity_name = entry.get("wip_entity_name")
+        #     if wip_entity_name == self.wip_entity_name:
+        #         if "last_person_assigned" in entry:
+        #             print(entry["last_person_assigned"])
+        #             return entry["last_person_assigned"]
+
 
     def show_input_dialog(self):
 

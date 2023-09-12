@@ -223,17 +223,6 @@ class OperatorDashboard:
         self.logout_btn.place(x=1640, y=110, width=149, height=50)
         self.logout_btn["command"] = self.logout
 
-        # self.refresh_btn = tk.Button(self.root)
-        # self.refresh_btn["bg"] = "#999999"
-        # self.refresh_btn["cursor"] = "circle"
-        # ft = tkFont.Font(family="Times", size=16)
-        # self.refresh_btn["font"] = ft
-        # self.refresh_btn["fg"] = "#333333"
-        # self.refresh_btn["justify"] = "center"
-        # self.refresh_btn["text"] = "REFRESH"
-        # self.refresh_btn["command"] = self.update_table
-        # self.refresh_btn.place(x=1450, y=110, width=150, height=50)
-
         self.statusHere = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=56)
         self.statusHere["font"] = ft

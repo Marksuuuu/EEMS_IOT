@@ -1,7 +1,7 @@
 import csv
 import json
 import logging
-import os
+import os   
 import re
 import signal
 import tkinter as tk
@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime, timedelta
 from tkinter import Toplevel
 from tkinter import messagebox
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror 
 import time
 import matplotlib.pyplot as plt
 import requests
@@ -22,7 +22,8 @@ import numpy as np
 # from ttkbootstrap.constants import *
 import datetime
 
-from operator_module.operator_dashboard import OperatorDashboard
+# from operator_module.operator_dashboard import OperatorDashboard
+from operator_module.operator_dashboard_test import OperatorDashboardTest
 from technician_module.technician_dashboard_test import TechnicianDashboardTest
 # from technician_module.technician_dashboard import TechnicianDashboard
 from utils.quantity_data import QuantityData
@@ -428,8 +429,10 @@ class App:
 
     def show_operator_dashboard(self, user_department, user_position, data_json):
         OpeDashboard = tk.Toplevel(root)
-        ope_dashboard = OperatorDashboard(
-            OpeDashboard, user_department, user_position, data_json)
+        assets_dir = 'assets'
+
+        ope_dashboard = OperatorDashboardTest(
+            OpeDashboard, user_department, user_position, data_json, assets_dir)
         root.withdraw()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):

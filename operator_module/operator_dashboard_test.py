@@ -95,9 +95,8 @@ class CSVMonitor:
 
         return self.new_data_count
 
-
-class OperatorDashboard:
-    def __init__(self, root, user_department, user_position, dataJson):
+class OperatorDashboardTest:
+    def __init__(self, root, user_department, user_position, dataJson, assets_dir):
         data = dataJson["data"]
 
         ## GLOBAL VARIABLE ##
@@ -109,11 +108,14 @@ class OperatorDashboard:
         self.extracted_photo_url = data[4]
         self.extracted_possition = data[5]
         self.extracted_username = data[6]
+
+
+
+
         self.idle_started = self.load_idle_state()
         self.details_window = None
+        self.ticket_window = None
         self.window_open = False
-
-        self.details_window = None
 
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
@@ -130,116 +132,149 @@ class OperatorDashboard:
 
         self.image = ImageTk.PhotoImage(pil_image)
 
-        ## FUNCTIONS ##
-
-        self.gui_operator()
-        self.update_status()
-        self.create_tree_view()
-        self.verify_ticket_status()
-        self.update_table()
-        self.check_window_active()
-        self.save_idle_state()
-        # self.save_idle_state()
-
-        ## END ##
-
+        self.assets_dir = assets_dir
+        self.root.geometry("1024x600")
+        self.root.configure(bg="#E5E5E5")
         root.title(
             f"OPERATOR DASHBOARD - {self.extracted_employee_no} -- POSITION - {self.extracted_possition}"
         )
-        width = 1800
-        height = 1013
-        screenwidth = root.winfo_screenwidth()
-        screenheight = root.winfo_screenheight()
-        alignstr = '%dx%d+%d+%d' % (width, height,
-                                    (screenwidth - width) / 2, (screenheight - height) / 2)
-        root.geometry(alignstr)
-        root.resizable(width=False, height=False)
 
-    def load_permissions(self):
-        log_file_path = os.path.join(
-            self.get_script_directory(), "../config", "settings.json"
+
+        button1 = "assets\\frame_operator\\button_1.png"
+        button2 = "assets\\frame_operator\\button_2.png"
+        button3 = "assets\\frame_operator\\button_3.png"
+
+        img_1 = "assets\\frame_operator\\image_1.png"
+        img_2 = "assets\\frame_operator\\image_2.png"
+        img_3 = "assets\\frame_operator\\image_3.png"
+
+        button1_pill = Image.open(button1)
+        button2_pill = Image.open(button2)
+        button3_pill = Image.open(button3)
+
+        image_1 = Image.open(img_1)
+        image_2 = Image.open(img_2)
+        image_3 = Image.open(img_3)
+
+        self.tk_btn_1 = ImageTk.PhotoImage(button1_pill)
+        self.tk_btn_2 = ImageTk.PhotoImage(button2_pill)
+        self.tk_btn_3 = ImageTk.PhotoImage(button3_pill)
+
+        self.tk_image_1 = ImageTk.PhotoImage(image_1)
+        self.tk_image_2 = ImageTk.PhotoImage(image_2)
+        self.tk_image_3 = ImageTk.PhotoImage(image_3)
+
+        
+        self.canvas = Canvas(
+            self.root,
+            bg="#E5E5E5",
+            height=600,
+            width=1024,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge"
         )
-        permissions = UserPermissions(log_file_path)
-        permissions.load_permissions()
-        return permissions
+        self.canvas.place(x=0, y=0)
 
-    def get_script_directory(self):
-        return os.path.dirname(os.path.abspath(__file__))
+        self.canvas.create_rectangle(
+            0.0,
+            0.0,
+            1024.0,
+            100.0,
+            fill="#FFFFFF",
+            outline=""
+        )
 
-    def gui_operator(self):
-        self.set_fullname = tk.Label(self.root)
-        self.set_fullname["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=18)
-        self.set_fullname["font"] = ft
-        self.set_fullname["fg"] = "#333333"
-        self.set_fullname["justify"] = "center"
-        self.set_fullname["text"] = self.extracted_fullname
-        self.set_fullname.place(x=1390, y=10, width=400, height=75)
+        self.canvas.create_rectangle(
+            31.0,
+            181.0,
+            994.0,
+            581.0,
+            fill="#FFFFFF",
+            outline="")
 
-        self.set_img = tk.Label(self.root, image=self.image)
-        self.set_img["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=10)
-        self.set_img["font"] = ft
-        self.set_img["fg"] = "#333333"
-        self.set_img["justify"] = "center"
-        self.set_img["text"] = "label"
-        self.set_img.place(x=1270, y=10, width=109, height=75)
 
-        self.ticket_checking = tk.Label(self.root)
-        self.ticket_checking["bg"] = "#ffb800"
-        # self.ticket_checking["cursor"] = "circle"
-        ft = tkFont.Font(family='Times', size=10)
-        self.ticket_checking["font"] = ft
-        self.ticket_checking["fg"] = "#000000"
-        self.ticket_checking["justify"] = "center"
-        self.ticket_checking.place(x=460, y=10, width=750, height=37)
 
-        # self.GLabel_703 = tk.Label(self.root)
-        # self.GLabel_703["bg"] = "#ffffff"
-        # ft = tkFont.Font(family='Times', size=10)
-        # self.GLabel_703["font"] = ft
-        # self.GLabel_703["fg"] = "#333333"
-        # self.GLabel_703["justify"] = "center"
-        # self.GLabel_703["text"] = "label"
-        # self.GLabel_703.place(x=40, y=200, width=1730, height=582)
+        # self.image_image_1 = self.canvas.create_image(
+        #     64.0,
+        #     47.0,
+        #     image=self.tk_image_1
+        # )
 
-        self.show_mo_details = tk.Button(self.root)
-        self.show_mo_details["bg"] = "#01aaed"
-        ft = tkFont.Font(family='Times', size=16)
-        self.show_mo_details["font"] = ft
-        self.show_mo_details["fg"] = "#ffffff"
-        self.show_mo_details["justify"] = "center"
-        self.show_mo_details["text"] = 'REQUEST TICKET'
-        self.show_mo_details.place(x=40, y=810, width=236, height=77)
-        self.show_mo_details["command"] = self.tickets_command
 
-        self.logout_btn = tk.Button(self.root)
-        self.logout_btn["bg"] = "#cc0000"
-        ft = tkFont.Font(family='Times', size=16)
-        self.logout_btn["font"] = ft
-        self.logout_btn["fg"] = "#ffffff"
-        self.logout_btn["justify"] = "center"
-        self.logout_btn["text"] = "LOG ME OUT"
-        self.logout_btn.place(x=1640, y=110, width=149, height=50)
-        self.logout_btn["command"] = self.logout
+        
+        self.image_image_3 = self.canvas.create_image(
+            728.0,
+            48.0,
+            image=self.image
+        )
 
-        # self.refresh_btn = tk.Button(self.root)
-        # self.refresh_btn["bg"] = "#999999"
-        # self.refresh_btn["cursor"] = "circle"
-        # ft = tkFont.Font(family="Times", size=16)
-        # self.refresh_btn["font"] = ft
-        # self.refresh_btn["fg"] = "#333333"
-        # self.refresh_btn["justify"] = "center"
-        # self.refresh_btn["text"] = "REFRESH"
-        # self.refresh_btn["command"] = self.update_table
-        # self.refresh_btn.place(x=1450, y=110, width=150, height=50)
 
-        self.statusHere = tk.Label(self.root)
-        ft = tkFont.Font(family='Times', size=56)
-        self.statusHere["font"] = ft
-        self.statusHere["justify"] = "center"
-        self.statusHere["text"] = "ONLINE"
-        self.statusHere.place(x=40, y=10, width=359, height=106)
+
+
+        self.button_1 = tk.Button(
+            self.root,
+            image=self.tk_btn_1,
+            borderwidth=0,
+            highlightthickness=0,
+            command=self.signout,
+            relief="flat",
+        )
+
+        self.button_1.place(
+            x=872.0,
+            y=119.0,
+            width=122.0,
+            height=42.0
+        )
+
+
+        # FULL NAME
+        # ///////////////////////////////////////////
+        self.canvas.create_text(
+            769.0,
+            39.0,
+            anchor="nw",
+            text=self.extracted_fullname,
+            fill="#343A40",
+            font=("Roboto Bold", 20 * -1)
+        )
+
+
+        self.button_2 = tk.Button(
+            self.root,
+            image=self.tk_btn_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=self.tickets_command,
+            relief="flat",
+        )
+
+        self.button_2.place(
+            x=31.0,
+            y=118.0,
+            width=162.0,
+            height=43.0
+        )
+
+
+
+        # FUNCTIONS
+        # /////////////////////////////////////
+        self.update_status()
+        self.verify_ticket_status()
+        # self.update_table()
+        self.check_window_active()
+        self.save_idle_state()
+
+        self.create_tree_view()
+        self.center_window()
+        self.online_status_card()
+        self.root.resizable(False, False)
+        # self.root.attributes('-topmost', True)
+
+    def test(self):
+        print("clicked 1")
 
     def create_tree_view(self):
         self.tree = ttk.Treeview(
@@ -254,6 +289,7 @@ class OperatorDashboard:
                 "MO QUANTITY",
                 "MO",
                 "STATUS",
+                # "ACTION",
             ),
         )
         self.tree.heading("ROW NUMBER", text="#")
@@ -264,40 +300,173 @@ class OperatorDashboard:
         self.tree.heading("MO QUANTITY", text="MO QUANTITY")
         self.tree.heading("MO", text="MO NUMBER")
         self.tree.heading("STATUS", text="STATUS")
-        self.tree.pack(pady=120)
+        # self.tree.heading("ACTION", text="ACTION")
+        self.tree.pack(pady=10)
 
         header_style = ttk.Style()
-        header_style.configure("Treeview.Heading", font=("Helvetica", 15))
+        header_style.configure("Treeview.Heading", font=("Helvetica", 13))
+
 
         row_style = ttk.Style()
         row_style.configure("Treeview", font=("Helvetica", 12))
-        row_style.configure("Treeview.Item", padding=(10, 5))
+        row_style.configure("Treeview.Item", padding=(0, 0))
+        row_style.configure('Treeview', rowheight=40)
 
         # Adjust the width for each column
-        self.tree.column("ROW NUMBER", width=50)
-        self.tree.column("CUSTOMER", width=150)
-        self.tree.column("DEVICES", width=250)
-        self.tree.column("MAIN OPERATION", width=150)
-        self.tree.column("PACKAGE", width=100)
-        self.tree.column("MO QUANTITY", width=100)
-        self.tree.column("MO", width=100)
-        self.tree.column("STATUS", width=100)
+        self.tree.column("ROW NUMBER",minwidth=0, width=50, stretch=False)
+        self.tree.column("CUSTOMER",minwidth=0, width=100, stretch=False)
+        self.tree.column("DEVICES",minwidth=0, width=180, stretch=False)
+        self.tree.column("MAIN OPERATION",minwidth=0, width=110, stretch=False)
+        self.tree.column("PACKAGE",minwidth=0, width=100, stretch=False)
+        self.tree.column("MO QUANTITY",minwidth=0, width=130, stretch=False)
+        self.tree.column("MO",minwidth=0, width=120, stretch=False)
+        self.tree.column("STATUS",minwidth=0, width=150, stretch=False)
+        # self.tree.column("ACTION",minwidth=0, width=90, stretch=False)
+        # self.tree.column("ACTION", width=90, anchor="center")
 
         for col in self.tree["columns"]:
             self.tree.column(col, anchor="center")
         self.populate_table()
-       # self.root.after(5000, self.update_table)
 
         self.update_status()
 
         self.tree.bind("<Double-1>", self.double_click_handler)
-        self.tree.place(x=40, y=200, width=1730, height=582)
+        self.tree.place(x=31.0, y=181.0, width=964, height=400)
+
+
+    def online_status_card(self):
+        self.canvas.create_rectangle(
+            31.0,
+            10.0,
+            282.0,
+            86.97332763671875,
+            fill="#D3F9D8",
+            outline=""
+        )
+
+        self.canvas.create_text(
+            97.0,
+            27.0,
+            anchor="nw",
+            text="MACHINE",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        self.canvas.create_text(
+            97.0,
+            44.0,
+            anchor="nw",
+            text="ONLINE",
+            fill="#343A40",
+            font=("Roboto Medium", 24 * -1)
+        )
+
+        self.image_image_2 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_2
+        )
+
+    def offline_status_card(self):
+        self.canvas.create_rectangle(
+            31.0,
+            10.0,
+            282.0,
+            86.97332763671875,
+            fill="#FFCECE",
+            outline=""
+        )
+
+        self.canvas.create_text(
+            97.0,
+            27.0,
+            anchor="nw",
+            text="MACHINE",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        self.canvas.create_text(
+            97.0,
+            44.0,
+            anchor="nw",
+            text="OFFLINE",
+            fill="#343A40",
+            font=("Roboto Medium", 24 * -1)
+        )
+
+        self.image_image_1 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_1
+        )
+
+
+    def show_ticket_button(self):
+        self.button_3 = tk.Button(
+            self.root,
+            image=self.tk_btn_3,
+            borderwidth=0,
+            highlightthickness=0,
+            command=self.test,
+            relief="flat",
+        )
+
+        self.button_3.place(
+            x=326.0,
+            y=115.0,
+            width=372.0,
+            height=51.0
+        )
+
+    # def populate_table(self):
+    #     if os.stat("data/mo_logs.json").st_size == 0:
+    #         data = self.read_json_file()
+    #         for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+    #             self.tree.insert(
+    #                 "", "end", iid=i, text=str(i),
+    #                 values=(i, customer, device, main_opt, package,
+    #                         running_qty, wip_entity_name, status)
+    #             )
+
+    #     else:
+    #         data = self.read_json_file_with_status()
+    #         for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
+    #             self.tree.insert(
+    #                 "", "end", iid=i, text=str(i),
+    #                 values=(i, customer, device, main_opt, package,
+    #                         running_qty, wip_entity_name, status)
+    #             )
+                # toggle_button = tk.Button(self.tree, text="Toggle")
+                # toggle_button.grid(row=self.tree.index(i), column=1, padx=5, pady=2, sticky="e")
+
+                # Create a button-like label in the ACTION column
+                # button_label = tk.Label(self.tree, text="Button", relief="raised", padx=10, pady=5)
+                # button_label.grid(row=i, column=8, padx=5, pady=5, sticky="nsew")
+                # button_label.bind("<ButtonRelease-1>", lambda event, values=(i,): self.on_button_click(values))
+
+    def load_permissions(self):
+        log_file_path = os.path.join(
+            self.get_script_directory(), "../config", "settings.json"
+        )
+        permissions = UserPermissions(log_file_path)
+        permissions.load_permissions()
+        return permissions
+
+    def get_script_directory(self):
+        return os.path.dirname(os.path.abspath(__file__))
+
+    def on_button_click(self, values):
+        # Implement the action to be taken when the button in the ACTION column is clicked.
+        # You can use the 'values' parameter to identify which row was clicked.
+        print(f"Button clicked for row {values[0]}")
+
 
     def double_click_handler(self, event):
         if not self.get_last_offline_entry():
             self.show_popup_view(event)
-        # else:
-        #     showinfo("Offline Alert", "Cannot perform action while offline.")
+
 
     def get_last_offline_entry(self):
         last_offline_entry = None
@@ -309,8 +478,7 @@ class OperatorDashboard:
 
         if last_offline_entry:
             event_type, event_date, event_time = last_offline_entry[:3]
-            event_datetime = datetime.strptime(
-                f"{event_date} {event_time}", "%Y-%m-%d %H:%M:%S")
+            event_datetime = datetime.strptime(f"{event_date} {event_time}", "%Y-%m-%d %H:%M:%S")
             showwarning(
                 "MACHINE OFFLINE!",
                 "Attention! The machine is currently OFFLINE",
@@ -321,6 +489,7 @@ class OperatorDashboard:
             }
         else:
             return None
+
 
     def read_json_file(self):
         try:
@@ -384,6 +553,11 @@ class OperatorDashboard:
 
         return extracted_data
 
+
+    def update_table(self):
+        self.tree.delete(*self.tree.get_children())
+        self.populate_table()
+
     def populate_table(self):
 
         if os.stat("data/mo_logs.json").st_size == 0:
@@ -406,15 +580,11 @@ class OperatorDashboard:
                             running_qty, wip_entity_name, status)
                 )
 
-    def update_table(self):
-        self.tree.delete(*self.tree.get_children())
-        self.populate_table()
-
     def show_popup_view(self, event):
         selected_item = self.tree.selection()
 
         if not selected_item:
-            showinfo(title="Error", message="No data selected.")
+            showinfo(title="Error", message="No row is selected.")
             return
 
         item = self.tree.item(selected_item)
@@ -422,9 +592,9 @@ class OperatorDashboard:
 
         if selected_item[0] == "1":
             self.show_mo_details_function(data)
-
         else:
             self.validate_ppc_employee()
+        
 
     def validate_ppc_employee(self):
         employee_number = self.extracted_employee_no
@@ -444,8 +614,6 @@ class OperatorDashboard:
         for employee in data:
             if int(employee.get("employee_id_no")) == int(employee_number):
                 matching_employee = employee
-                # self.update_table()
-                # print("UPDATE TABLE RUN")
                 break
 
         if matching_employee:
@@ -454,15 +622,22 @@ class OperatorDashboard:
         else:
             showerror('Error', 'Employee not found!')
 
+
     def validate_permissions(self, user_department):
         permissions = self.load_permissions()
         if permissions.is_department_allowed(user_department):
-            selected_item = self.tree.selection()
-            self.swap_position(selected_item)
+            if user_department == "Materials Planning & Control and Purchasing":
+                selected_item = self.tree.selection()
+                self.swap_position(selected_item)
+            else:
+                showerror(
+                title="Login Failed",
+                message=f"User's department is not allowed. {user_department}",
+            )
         else:
             showerror(
                 title="Login Failed",
-                message=f"User's department or position is not allowed. {user_department}",
+                message=f"User's department is not allowed. {user_department}",
             )
 
     def swap_position(self, selected_item):
@@ -527,17 +702,15 @@ class OperatorDashboard:
         statusHere = StatusUpdate('data/logs/logs.csv')
         getStatus = statusHere.get_last_log_value()
         if getStatus is None or False:
-            self.statusHere["bg"] = "#ffffff"
-            self.statusHere["text"] = ''
+            pass
+
         elif getStatus == 'ONLINE':
-            self.statusHere["bg"] = "#4CAF50"
-            self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
+            self.online_status_card()
+
         else:
-            self.statusHere["bg"] = "#cc0000"
-            self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
-        self.root.after(50000, self.update_status)
+            self.offline_status_card()
+
+        self.root.after(1000, self.update_status)
 
     def logout(self):
         response = messagebox.askyesno(
@@ -547,24 +720,33 @@ class OperatorDashboard:
             os.system("python index.py")
 
     def tickets_command(self):
-        # self.root.withdraw()
-        assets_dir = 'assets'
-        self.ticket_dashboard = Toplevel(self.root)
-        # show_ticket_dashboard = RequestTicket(
-        #     self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no
-        # )
+        selected_item = self.tree.selection()
+        if not selected_item:
+            showinfo(title="Error", message="No data selected.")
+            return
+        item = self.tree.item(selected_item)
+        data = item["values"]
 
-        show_ticket_dashboard = RequestTicketTest(
-            self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir
-        )
+        if self.ticket_window is None or not self.ticket_window.winfo_exists():
+            self.ticket_dashboard = Toplevel(self.root)
+            assets_dir = 'assets'
+            show_ticket_dashboard = RequestTicketTest(
+                self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir, data)
+            self.ticket_window = self.ticket_dashboard  # Set the ticket window to the newly opened window
+        else:
+            self.ticket_window.lift()
+
     def verify_ticket_status(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
 
         if ticket_present:
-            self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+            self.show_ticket_button()
+            # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
-            self.ticket_checking.destroy()
+            # self.ticket_checking.destroy()
+            print("No ticket found")
+            pass
 
     def show_mo_details_function(self, data):
         if self.details_window is None or not self.details_window.winfo_exists():
@@ -579,6 +761,7 @@ class OperatorDashboard:
             self.window_open = True
         else:
             self.details_window.lift()
+            
 
     def check_window_active(self):
         if self.details_window is not None and self.details_window.winfo_exists():
@@ -614,9 +797,27 @@ class OperatorDashboard:
         with open('config/idle_state.json', 'w') as state_file:
             json.dump({'idle_started': self.idle_started}, state_file)
 
+    def signout(self):
+        response = messagebox.askyesno(
+            "Sign out", "Are you sure you want to Sign out?")
+        if response:
+            self.root.destroy()
+            os.system("python index.py")
+
+    def center_window(self):
+        self.root.update_idletasks()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        window_width = self.root.winfo_width()
+        window_height = self.root.winfo_height()
+
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.iconbitmap("config/ico/favicon.ico")
-    app = App(root)
+    app = OperatorDashboardTest(root)
     root.mainloop()
+

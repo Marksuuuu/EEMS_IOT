@@ -9,9 +9,9 @@
             "operation_seq_number": "10",
             "package": "WP",
             "running_qty": "96359",
-            "uph": "10353",
+            "uph": "173902",
             "wip_entity_id": "837352",
-            "wip_entity_name": "MO832784"
+            "wip_entity_name": "MO832785"
         },
         {
             "customer": "IXYS",
@@ -20,7 +20,7 @@
             "operation_seq_number": "10",
             "package": "WP",
             "running_qty": "96359",
-            "uph": "6921517",
+            "uph": "173902",
             "wip_entity_id": "837352",
             "wip_entity_name": "MO832784"
         },
@@ -33,7 +33,7 @@
             "running_qty": "96359",
             "uph": "173902",
             "wip_entity_id": "837352",
-            "wip_entity_name": "MO832784"
+            "wip_entity_name": "MO832786"
         }
     ]
 }

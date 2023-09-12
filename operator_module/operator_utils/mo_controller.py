@@ -210,7 +210,7 @@ class MoDetails:
 
         self.check_total_finished()
         self.get_remaining_qty_from_logs()
-
+        self.root.attributes('-topmost', True)
         root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def update_table_display(self):
@@ -282,9 +282,9 @@ class MoDetails:
     def start_command(self):
 
         self.log_event("START")
-        # self.checking() #comment this if there is a ticket for testing
+        self.checking() #comment this if there is a ticket for testing
 
-        self.show_stop_btn()  # uncomment this to show the start button
+        # self.show_stop_btn()  # uncomment this to show the start button
 
     def stop_command(self):
 

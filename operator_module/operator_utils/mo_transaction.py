@@ -22,7 +22,6 @@ class MOData:
 
 
     def perform_check_and_swap(self):
-        print("RUN PERFORM CHECK AND SWAP")
         mo_logs = self.read_mo_logs()
         main_json = self.read_main_json()
  

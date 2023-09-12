@@ -13,13 +13,16 @@ import requests
 
 
 class RequestTicketTest:
-    def __init__(self, root, extracted_fullname, extracted_employee_no, assets_dir):
+    def __init__(self, root, extracted_fullname, extracted_employee_no, assets_dir, data):
         self.root = root
         root.title("Ticket Request")
         self.assets_dir = assets_dir
         self.root.geometry("933x563")
         self.root.configure(bg="#FFFFFF")
-        # self.root.overrideredirect(True)
+        
+        # self.root.overrideredirect(True) 
+        # self.root.update_idletasks()
+        self.center_window()
 
         self.fullname = extracted_fullname
         self.employee_no = extracted_employee_no
@@ -27,6 +30,9 @@ class RequestTicketTest:
         now = datetime.now()
         today = date.today()
         self.current_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+
+        self.wip_entity_name = data[6]
+        print('self.wip_entity_name: ', self.wip_entity_name)
 
         self.dropdown_var = tk.StringVar()
 
@@ -41,9 +47,9 @@ class RequestTicketTest:
         # )
         # self.button_1.place(x=506.0, y=454.0, width=172.0, height=59.0)
 
-        button1 = "assets\\frame_ticket\\button_1.png"
-        button2 = "assets\\frame_ticket\\button_2.png"
-        entry1 = "assets\\frame_ticket\\entry_1.png"
+        button1 = "assets/frame_ticket/button_1.png"
+        button2 = "assets/frame_ticket/button_2.png"
+        entry1 = "assets/frame_ticket/entry_1.png"
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)
@@ -118,13 +124,13 @@ class RequestTicketTest:
             text="MO Number",
             fill="#343A40",
             font=("Arial BoldMT", 24 * -1),
-        )
+        ) 
 
         self.canvas.create_text(
             50.0,
             206.0,
             anchor="nw",
-            text="MO_01",
+            text=self.wip_entity_name,
             fill="#868E96",
             font=("ArialMT", 32 * -1),
         )
@@ -216,7 +222,7 @@ class RequestTicketTest:
         )
         self.button_3.place(x=884.0, y=0.0, width=49.0, height=37.0)
 
-        self.center_window()
+        self.root.attributes('-topmost', True)
         self.root.resizable(False, False)
 
     def set_working_directory(self):
@@ -226,20 +232,8 @@ class RequestTicketTest:
     def relative_to_assets(self, filename):
         # No need to go up one directory since we changed the working directory
         full_path = os.path.join(self.assets_dir, "frame_ticket", filename)
-        print(f"==>> full_path: {full_path}")
         return full_path
 
-    def center_window(self):
-        self.root.update_idletasks()
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        window_width = self.root.winfo_width()
-        window_height = self.root.winfo_height()
-
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-
-        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
     def load_machno(self):
         log_file_path = os.path.join(
@@ -343,8 +337,19 @@ class RequestTicketTest:
     def close_window(self):
         self.root.destroy()
 
+    def center_window(self):
+        """Center the tkinter window on the screen."""
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        self.root.geometry(f"{width}x{height}+{x}+{y}")
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.eval('tk::PlaceWindow . center')
     app = RequestTicketTest(root)
     root.mainloop()
