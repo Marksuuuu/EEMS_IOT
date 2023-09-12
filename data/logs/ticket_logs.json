@@ -19,5 +19,89 @@
         "downtime_type_id": "1",
         "checkbox_value": 1,
         "remarks_value": "SAMPLE TICKET"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET FOR TESTING ONLY PLEASE DELETE "
+    },
+    {
+        "employee_no": "010387",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET"
+    },
+    {
+        "employee_no": "010387",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET CAN BE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "SAMPLE TICKET PLEASE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "SAMPLE TICKET PELASE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "SAMPLE TICKET PELASE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET PELASE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TESTI TICKET"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "SAMPLE TICKET"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": null,
+        "checkbox_value": 1,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET"
     }
 ]

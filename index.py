@@ -25,7 +25,7 @@ from matplotlib.figure import Figure
 from operator_module.operator_dashboard import OperatorDashboard
 # from utils.trigger_downtime import TriggerDowntime
 from socketio_utils.socketio_manager import SocketIOManager
-from technician_module.technician_dashboard import TechnicianDashboard
+from technician_module.technician_dashboard_test import TechnicianDashboardTest
 from utils.quantity_data import QuantityData
 from utils.status_update import StatusUpdate
 from utils.ticket_status import TicketChecker
@@ -449,8 +449,9 @@ class App:
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
         techDashboard = Toplevel(root)
-        tech_dashboard = TechnicianDashboard(
-            techDashboard, user_department, user_position, dataJson)
+        assets_dir = 'assets'
+        tech_dashboard = TechnicianDashboardTest(
+            techDashboard, user_department, user_position, dataJson, assets_dir)
         root.withdraw()
 
     def update_clock(self):

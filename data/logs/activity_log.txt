@@ -329,3 +329,35 @@
 [2023-09-08 15:27:50] INFO: User login successful. ID NUM: 10450
 [2023-09-08 15:49:03] INFO: User login successful. ID NUM: 10450
 [2023-09-08 17:00:50] INFO: User login successful. ID NUM: 10450
+[2023-09-08 17:24:24] INFO: User login successful. ID NUM: 10450
+[2023-09-08 18:08:46] INFO: User login successful. ID NUM: 8228
+[2023-09-08 18:40:24] INFO: User login successful. ID NUM: 8228
+[2023-09-08 19:16:22] INFO: User login successful. ID NUM: 8228
+[2023-09-11 10:23:10] INFO: User login successful. ID NUM: 10450
+[2023-09-11 10:41:36] INFO: User login successful. ID NUM: 10450
+[2023-09-11 12:06:48] INFO: User login successful. ID NUM: 9694
+[2023-09-11 12:42:13] INFO: User login unsuccessful. ID NUM: 9049
+[2023-09-11 13:28:16] INFO: User login successful. ID NUM: 10450
+[2023-09-11 13:34:32] INFO: User login successful. ID NUM: 10450
+[2023-09-11 15:39:16] INFO: User login successful. ID NUM: 10387
+[2023-09-11 15:39:35] INFO: User login successful. ID NUM: 10450
+[2023-09-11 15:49:34] INFO: User login successful. ID NUM: 10387
+[2023-09-11 15:51:24] INFO: User login successful. ID NUM: 10450
+[2023-09-11 15:52:09] INFO: User login successful. ID NUM: 9497
+[2023-09-11 16:44:33] INFO: User login successful. ID NUM: 10450
+[2023-09-12 08:01:51] INFO: User login successful. ID NUM: 9497
+[2023-09-12 08:43:20] INFO: User login unsuccessful. ID NUM: 9449
+[2023-09-12 08:58:53] INFO: User login successful. ID NUM: 10450
+[2023-09-12 08:59:31] INFO: Job order accepted successfully.. ID NUM: ('009496',)
+[2023-09-12 09:03:48] INFO: User login successful. ID NUM: 10450
+[2023-09-12 09:04:11] INFO: User login unsuccessful. ID NUM: 9949
+[2023-09-12 09:04:25] INFO: Job order accepted successfully.. ID NUM: ('009496',)
+[2023-09-12 09:06:12] INFO: User login successful. ID NUM: 10450
+[2023-09-12 09:06:37] INFO: Job order accepted successfully.. ID NUM: ('009496',)
+[2023-09-12 09:12:29] INFO: User login successful. ID NUM: 10450
+[2023-09-12 09:12:51] INFO: User login successful. ID NUM: 10450
+[2023-09-12 09:13:03] INFO: Job order accepted successfully.. ID NUM: ('009496',)
+[2023-09-12 09:14:57] INFO: User login successful. ID NUM: 10450
+[2023-09-12 14:24:54] INFO: User login successful. ID NUM: 10450
+[2023-09-12 14:27:34] INFO: User login successful. ID NUM: 10450
+[2023-09-12 14:29:17] INFO: Job order accepted successfully.. ID NUM: ('009496',)

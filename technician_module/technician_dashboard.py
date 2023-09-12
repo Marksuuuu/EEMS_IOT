@@ -144,7 +144,7 @@ class TechnicianDashboard:
             "Logout", "Are you sure you want to logout?")
         if response:
             self.root.destroy()
-            os.system("python index.py")
+            os.system("python index_test.py")
 
     def update_status(self):
         statusHere = StatusUpdate('data/logs/logs.csv')
