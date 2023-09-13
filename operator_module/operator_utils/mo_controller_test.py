@@ -44,13 +44,14 @@ class MoDetailsTest:
         self.center_window()
         self.root.overrideredirect(True)
 
+      
+
         self.customer = data[1]
         self.device = data[2]
         self.main_opt = data[3]
         self.package = data[4]
         self.running_qty = data[5]
         self.formatted_running_qty = "{:,}".format(self.running_qty)
-        print('self.formatted_running_qty: ', self.formatted_running_qty)
 
         self.wip_entity_name = data[6]
         self.data_dict = {}
@@ -65,6 +66,7 @@ class MoDetailsTest:
         else:
             # Replace with your image URL
             image_url = f"http://hris.teamglac.com/{self.extracted_photo_url}"
+
 
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
@@ -82,7 +84,23 @@ class MoDetailsTest:
         self.image = ImageTk.PhotoImage(pil_image)        
 
 
+        # FUNCTIONS
+        # ///////////////////////////////////////////////////////////////..       
+        self.initialize_gui()
+        self.idle_function()
+        self.idle_started = self.load_idle_state()
+        self.update_table_function = update_table_function
+        self.check_total_finished()
+        self.get_last_person_assigned()
+        self.get_remaining_qty_from_logs()
 
+
+        root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.root.resizable(False, False)
+        self.root.mainloop()
+
+
+    def initialize_gui(self):
         self.canvas = Canvas(
             self.root,
             bg="#FFFFFF",
@@ -92,8 +110,6 @@ class MoDetailsTest:
             highlightthickness=0,
             relief="ridge"
         )
-
-
         self.canvas.place(x=0, y=0)
 
 
@@ -121,7 +137,7 @@ class MoDetailsTest:
             104.0,
             37.0,
             anchor="nw",
-            text=data[6],
+            text=self.wip_entity_name,
             fill="#FFFFFF",
             font=("ArialMT", 48 * -1)
         )
@@ -141,7 +157,7 @@ class MoDetailsTest:
             597.0,
             57.0,
             anchor="nw",
-            text=extracted_fullname,
+            text=self.extracted_fullname,
             fill="#343A40",
             font=("Roboto Bold", 20 * -1)
         )
@@ -197,7 +213,7 @@ class MoDetailsTest:
             66.0,
             295.0,
             anchor="nw",
-            text=data[2],
+            text= self.device,
             fill="#868E96",
             font=("ArialMT", 24 * -1)
         )
@@ -217,7 +233,7 @@ class MoDetailsTest:
             526.0,
             170.0,
             anchor="nw",
-            text=data[4],
+            text=self.package,
             fill="#868E96",
             font=("ArialMT", 24 * -1)
         )
@@ -238,7 +254,7 @@ class MoDetailsTest:
             528.0,
             296.0,
             anchor="nw",
-            text=data[1],
+            text=self.customer,
             fill="#868E96",
             font=("ArialMT", 24 * -1)
         )
@@ -246,14 +262,7 @@ class MoDetailsTest:
         # LAST PERSON ASSIGNED
         # ///////////////////////////////////////////////////////////////
 
-        self.canvas.create_text(
-            519.0,
-            390.0,
-            anchor="nw",
-            text="LAST PERSON ASSIGNED: ",
-            fill="#D45151",
-            font=("Arial BoldMT", 12 * -1, "italic")
-        )
+       
 
         self.image_image_4 = PhotoImage(
             file=self.relative_to_assets("image_4.png"))
@@ -343,7 +352,7 @@ class MoDetailsTest:
         )
 
 
-        lbl_remaining_qty = tk.Label(root)
+        lbl_remaining_qty = tk.Label(self.root)
         lbl_remaining_qty["bg"] = "#FF6B6B"  
         ft = tkFont.Font(family="ArialMT", size=35)
         lbl_remaining_qty["font"] = ft
@@ -353,18 +362,16 @@ class MoDetailsTest:
         self.lbl_remaining_qty = lbl_remaining_qty
 
 
-        # FUNCTIONS
-        # ///////////////////////////////////////////////////////////////        
-        self.idle_function()
-        self.idle_started = self.load_idle_state()
-        self.update_table_function = update_table_function
-        self.check_total_finished()
-        self.get_remaining_qty_from_logs()
+        self.last_person_ass = self.canvas.create_text(
+            435.0,
+            388.0,
+            anchor="nw",
+            fill="#D45151",
+            font=("Arial BoldMT", 15 * -1, "italic")
+        )
 
 
-        root.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.root.resizable(False, False)
-        self.root.mainloop()
+
 
     def relative_to_assets(self, filename):
         # No need to go up one directory since we changed the working directory
@@ -387,6 +394,20 @@ class MoDetailsTest:
         # Call the update_table function when needed
         self.update_table_function()
 
+    def get_last_person_assigned(self):
+        try:
+            with open("data/mo_logs.json", "r") as json_file:
+                data = json.load(json_file)
+                for entry in data["data"]:
+                    if "wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name:
+                        last_person_assigned = entry["last_person_assigned"]
+                        print('last_person_assigned: ', last_person_assigned)
+                        self.canvas.itemconfig(self.last_person_ass, text=f"LAST PERSON ASSIGNED: {last_person_assigned}")
+        except FileNotFoundError:
+            pass
+        # If no matching entry is found, return None
+        return None
+    
     def get_remaining_qty_from_logs(self):
         self.lbl_remaining_qty["text"] = f" "
 
@@ -410,12 +431,9 @@ class MoDetailsTest:
                     main_data = json.load(json_file)
                     wip_entities = main_data.get("data", [])
                     for entry in wip_entities:
-                        if (
-                            "wip_entity_name" in entry
-                            and entry["wip_entity_name"] == self.wip_entity_name
-                        ):
-                            self.lbl_remaining_qty[
-                                "text"] = f"{entry['running_qty']}"
+                        if ("wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name):
+                            self.lbl_remaining_qty["text"] = f"{entry['running_qty']}"
+                            
                             return entry["running_qty"]
             except FileNotFoundError:
                 pass
@@ -543,18 +561,23 @@ class MoDetailsTest:
             # running_qty = entry["running_qty"]
             total_finished = entry["total_finished"]
             # remaining_qty = entry["remaining_qty"]
-
+            
+            test = entry.get("last_person_assigned")
             if wip_entity_name == self.wip_entity_name:
                 if self.running_qty == total_finished:
+
                     self.show_label_completed()
                     self.hide_start_and_stop_btn()
 
                     showinfo("MO COMPLETED!", "MO Already Completed!")
+
+
                     # self.mo_data = MOData()
                     # self.mo_data.perform_check_and_swap()
 
                     self.root.destroy()
-
+            else:
+                pass
     # def get_last_person_assigned(self):
         # try:
         #     with open("data/mo_logs.json", "r") as json_file:
@@ -733,6 +756,8 @@ class MoDetailsTest:
             self.mo_data.perform_check_and_swap()
             self.get_remaining_qty_from_logs()
             self.update_table_display()
+            self.get_last_person_assigned()
+
             self.log_event("STOP")
 
             # self.root.destroy()
