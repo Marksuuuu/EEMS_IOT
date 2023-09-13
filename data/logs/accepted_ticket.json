@@ -1,0 +1,47 @@
+[
+    {
+        "date_accept": "2023-09-11 14:42:43.638573",
+        "person_who_accept": "009496",
+        "ticket_number": "54223"
+    },
+    {
+        "date_accept": "2023-09-11 15:03:21.813559",
+        "person_who_accept": "009496",
+        "ticket_number": "54223"
+    },
+    {
+        "date_accept": "2023-09-11 15:32:57.907938",
+        "person_who_accept": "009496",
+        "ticket_number": "54223"
+    },
+    {
+        "date_accept": "2023-09-11 15:39:47.119151",
+        "person_who_accept": "009496",
+        "ticket_number": "54243"
+    },
+    {
+        "date_accept": "2023-09-11 15:42:02.014840",
+        "person_who_accept": "009496",
+        "ticket_number": "54243"
+    },
+    {
+        "date_accept": "2023-09-11 15:42:49.575081",
+        "person_who_accept": "009496",
+        "ticket_number": "54243"
+    },
+    {
+        "date_accept": "2023-09-11 15:50:08.102135",
+        "person_who_accept": "009496",
+        "ticket_number": "54244"
+    },
+    {
+        "date_accept": "2023-09-11 15:52:24.990798",
+        "person_who_accept": "009496",
+        "ticket_number": "54245"
+    },
+    {
+        "date_accept": "2023-09-11 15:53:46.090403",
+        "person_who_accept": "009496",
+        "ticket_number": "54245"
+    }
+]
