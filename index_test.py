@@ -449,7 +449,12 @@ class DashboardGUI:
         self.root.after(1000, self.update_clock)
 
     def create_total_qty_graph(self):
-        data = [10, 40]
+        self.quantity_data = QuantityData("../data")
+        if self.quantity_data.total_running_qty() == 0 and self.quantity_data.total_remaining_qty() == 0:
+            return None
+
+        result_qty = self.quantity_data.total_running_qty() - self.quantity_data.total_remaining_qty()
+        data = [self.quantity_data.total_remaining_qty(), result_qty]
         labels = ['', '']
         colors = ['#4CAF50', '#e74c3c']
         explode = (0.05, 0)
@@ -483,7 +488,12 @@ class DashboardGUI:
         return img
 
     def create_oee_graph(self):
-        data = [50, 46.8]
+        self.get_data = TimeData('../data')
+        calculated_oee = self.get_data.calculate_oee()
+        calculated_oee = max(0, min(calculated_oee, 100))
+
+        total = 100 - calculated_oee
+        data = [calculated_oee, total]
         labels = ['', '']
         colors = ['#4CAF50', '#e74c3c']
         explode = (0.05, 0)
