@@ -345,18 +345,19 @@ class MoDetails:
                     res = 1
                     break
             if res == 1:
+                self.hide_start_and_stop_btn()
+                
                 showwarning(
                     "TICKET ALERT!",
                     "Attention! The machine is temporarily unavailable.",
                 )
                 # self.stop_btn["state"] = "disabled"
-                self.hide_start_and_stop_btn()
-
             else:
+                print("ELSE TEST")
                 self.log_event("START")
-
                 # self.start_btn["state"] = "normal"
                 self.show_start_btn()
+
 
     def check_total_finished(self):
         with open("data/mo_logs.json", "r") as json_file:

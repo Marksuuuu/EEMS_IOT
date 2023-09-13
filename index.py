@@ -891,19 +891,22 @@ class DashboardGUI:
         self.root.after(1000, self.mch_label)
 
     def delete_file_data(self):
-        filename = os.path.join(
-            self.get_script_directory(), "data/logs", 'downtime.csv')
-        filename1 = os.path.join(
+        idle = os.path.join(
             self.get_script_directory(), "data/logs", 'idle.csv')
-        filename2 = os.path.join(
+        downtime = os.path.join(
+            self.get_script_directory(), "data/logs", 'downtime.csv')
+        productive_hrs = os.path.join(
             self.get_script_directory(), "data", 'time.csv')
-        
+        total_avail_hrs = os.path.join(
+            self.get_script_directory(), "data/logs", 'logs.csv')
         try:
-            with open(filename, 'w') as file:
+            with open(idle, 'w') as file:
                 file.truncate(0)
-            with open(filename1, 'w') as file:
-                file.truncate(0)            
-            with open(filename2, 'w') as file:
+            with open(productive_hrs, 'w') as file:
+                file.truncate(0)
+            with open(downtime, 'w') as file:
+                file.truncate(0)
+            with open(total_avail_hrs, 'w') as file:
                 file.truncate(0)
         except IOError:
             print(f"Error deleting data in '{filename}'.")

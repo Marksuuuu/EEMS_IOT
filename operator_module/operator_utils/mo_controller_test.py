@@ -502,7 +502,7 @@ class MoDetailsTest:
         self.log_event("START")
         self.checking() #comment this if there is a ticket for testing
 
-        self.show_stop_btn()  
+        # self.show_stop_btn()  
 
     def stop_command(self):
 
@@ -563,18 +563,22 @@ class MoDetailsTest:
                     res = 1
                     break
             if res == 1:
+                self.hide_start_and_stop_btn()
+
                 showwarning(
                     "TICKET ALERT!",
                     "Attention! The machine is temporarily unavailable.",
                 )
+                self.root.destroy()
                 # self.stop_btn["state"] = "disabled"
-                self.hide_start_and_stop_btn()
 
             else:
+                print("ELSE")
                 self.log_event("START")
-
                 # self.start_btn["state"] = "normal"
-                self.show_start_btn()
+                self.show_stop_btn()  
+
+                # self.show_start_btn()
 
     # def check_total_finished(self):
     #     with open("data/mo_logs.json", "r") as json_file:
