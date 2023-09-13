@@ -42,7 +42,7 @@ class MoDetailsTest:
         self.root.geometry("933x563")
         self.root.configure(bg="#FFFFFF")
         self.center_window()
-        self.root.overrideredirect(True)
+        # self.root.overrideredirect(True)
 
       
 
@@ -500,48 +500,48 @@ class MoDetailsTest:
     def start_command(self):
 
         self.log_event("START")
-        # self.checking() #comment this if there is a ticket for testing
+        self.checking() #comment this if there is a ticket for testing
 
-        self.show_stop_btn()  # uncomment this to show the start button
+        self.show_stop_btn()  
 
     def stop_command(self):
 
         # TESTING PURPOSES ONLY
         # ///////////////////////////////////////////////////////////////
-        self.show_input_dialog()
+        # self.show_input_dialog()
 
-        # hris_password = simpledialog.askstring(
-        #     "Password",
-        #     "Enter Password", show='*'
-        # )
+        hris_password = simpledialog.askstring(
+            "Password",
+            "Enter Password", show='*'
+        )
 
-        # if hris_password is not None and hris_password.strip() != "":
-        #     input_password = str(hris_password)
+        if hris_password is not None and hris_password.strip() != "":
+            input_password = str(hris_password)
 
-        #     url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
-        #     response = requests.get(url).json()
-        #     if response['result'] == False or response['result'] == None:
-        #         print("FAILED")
-        #         # self.start_btn["state"] = "disabled"
-        #         # self.stop_btn["state"] = "normal"
+            url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
+            response = requests.get(url).json()
+            if response['result'] == False or response['result'] == None:
+                print("FAILED")
+                # self.start_btn["state"] = "disabled"
+                # self.stop_btn["state"] = "normal"
 
-        #         self.show_stop_btn()
-        #         showerror(
-        #         title="Login Failed",
-        #         message=f"Password is incorrect. Please try again.",
-        #     )
-        #         # self.show_input_dialog()
+                self.show_stop_btn()
+                showerror(
+                title="Login Failed",
+                message=f"Password is incorrect. Please try again.",
+            )
+                # self.show_input_dialog()
 
-        #     else:
-        #         # self.start_btn["state"] = "normal"    # Enable the START button
-        #         print("Success")
-        #         # self.stop_btn["state"] = "disabled"
+            else:
+                # self.start_btn["state"] = "normal"    # Enable the START button
+                print("Success")
+                # self.stop_btn["state"] = "disabled"
 
-        #         self.show_input_dialog()
-        #         self.mo_data = MOData()
-        #         self.mo_data.perform_check_and_swap()
-        # else:
-        #     pass
+                self.show_input_dialog()
+                self.mo_data = MOData()
+                self.mo_data.perform_check_and_swap()
+        else:
+            pass
 
     def read_machno(self): 
         with open("data\main.json", "r") as json_file:

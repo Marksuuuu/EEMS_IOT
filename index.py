@@ -641,6 +641,7 @@ class DashboardGUI:
             self.online_status_card()
         else:
             self.offline_status_card()
+            self.delete_file_data()
         self.root.after(1000, self.update_status)
 
     def disable_label(self):
@@ -888,6 +889,24 @@ class DashboardGUI:
         # print('test')
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
         self.root.after(1000, self.mch_label)
+
+    def delete_file_data(self):
+        filename = os.path.join(
+            self.get_script_directory(), "data/logs", 'downtime.csv')
+        filename1 = os.path.join(
+            self.get_script_directory(), "data/logs", 'idle.csv')
+        filename2 = os.path.join(
+            self.get_script_directory(), "data", 'time.csv')
+        
+        try:
+            with open(filename, 'w') as file:
+                file.truncate(0)
+            with open(filename1, 'w') as file:
+                file.truncate(0)            
+            with open(filename2, 'w') as file:
+                file.truncate(0)
+        except IOError:
+            print(f"Error deleting data in '{filename}'.")
 
     @sio.event
     def my_message(data):
