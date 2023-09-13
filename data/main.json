@@ -22,7 +22,7 @@
             "running_qty": "96359",
             "uph": "173902",
             "wip_entity_id": "837352",
-            "wip_entity_name": "MO832785"
+            "wip_entity_name": "MO832784"
         },
         {
             "customer": "IXYS",
@@ -33,7 +33,7 @@
             "running_qty": "96359",
             "uph": "173902",
             "wip_entity_id": "837352",
-            "wip_entity_name": "MO832784"
+            "wip_entity_name": "MO832785"
         }
     ]
 }

@@ -222,7 +222,7 @@ class RequestTicketTest:
         )
         self.button_3.place(x=884.0, y=0.0, width=49.0, height=37.0)
 
-        self.root.attributes('-topmost', True)
+        # self.root.attributes('-topmost', True)
         self.root.resizable(False, False)
 
     def set_working_directory(self):
@@ -317,7 +317,8 @@ class RequestTicketTest:
                 showinfo(
                     "Success", f"Job order created successfully. \nDTNO {dtno_value}"
                 )
-            print(value_url["dtno"])
+                self.root.destroy()
+                print(value_url["dtno"])
         else:
             showerror("Error", "Error in creating job order.")
 

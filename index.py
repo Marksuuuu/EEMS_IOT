@@ -1,37 +1,43 @@
 import csv
+# from ttkbootstrap.constants import *
+import datetime
 import json
 import logging
-import os   
+import os
 import re
-import signal
+import time
 import tkinter as tk
 import tkinter.font as tkFont
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from tkinter import Toplevel
 from tkinter import messagebox
-from tkinter.messagebox import showerror 
-import time
+from tkinter.messagebox import showerror
+import datetime
 import matplotlib.pyplot as plt
+import numpy as np
 import requests
 import socketio
 from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import numpy as np
-# from ttkbootstrap.constants import *
-import datetime
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
-# from operator_module.operator_dashboard import OperatorDashboard
+
+## IMPORTS ##
+
+
 from operator_module.operator_dashboard_test import OperatorDashboardTest
 from technician_module.technician_dashboard_test import TechnicianDashboardTest
-# from technician_module.technician_dashboard import TechnicianDashboard
-from utils.quantity_data import QuantityData
-from utils.status_update import StatusUpdate
-from utils.time_data import TimeData
-from utils.ticket_status import TicketChecker
 # from utils.trigger_downtime import TriggerDowntime
 from socketio_utils.socketio_manager import SocketIOManager
+from utils.quantity_data import QuantityData
+from utils.status_update import StatusUpdate
+from utils.ticket_status import TicketChecker
+from utils.time_data import TimeData
+
+
+# from utils.trigger_downtime import TriggerDowntime
 
 sio = socketio.Client(reconnection=True, reconnection_attempts=5,
                       reconnection_delay=1, reconnection_delay_max=5)
@@ -90,188 +96,605 @@ class UserPermissions:
         return position in self.operator
 
 
-class App:
+class DashboardGUI:
     def __init__(self, root):
-        # setting title
+        self.root = root
+        self.root.geometry("1024x600")
+        self.root.configure(bg="#E5E5E5")
         current_year = datetime.datetime.now().year
-        root.title(f"EEMS_IOT - © {current_year}")
-        # setting window size
+        self.root.title(f"EEMS_IOT - © {current_year}")
 
-        ## GLOBAL VARIABLES##
+        ## GLOBAL VARIABLE ##
+
+        button1 = "assets\\frame_dashboard\\button_1.png"
+        button2 = "assets\\frame_technician\\ticket.png"
+
+        img_1 = "assets\\frame_dashboard\\image_1.png"
+        img_2 = "assets\\frame_dashboard\\image_2.png"
+        img_3 = "assets\\frame_dashboard\\image_3.png"
+        img_4 = "assets\\frame_dashboard\\image_4.png"
+        img_5 = "assets\\frame_dashboard\\image_5.png"
+        img_6 = "assets\\frame_dashboard\\image_6.png"
+        img_7 = "assets\\frame_dashboard\\image_7.png"
+        img_8 = "assets\\frame_dashboard\\image_8.png"
+        img_9 = "assets\\frame_dashboard\\image_9.png"
+        img_10 = "assets\\frame_dashboard\\image_10.png"
+        img_11 = "assets\\frame_dashboard\\image_11.png"
+        img_12 = "assets\\frame_dashboard\\image_12.png"
+        img_13 = "assets\\frame_dashboard\\image_13.png"
+        img_14 = "assets\\frame_dashboard\\image_14.png"
+
+        entry1 = "assets\\frame_dashboard\\entry_1.png"
+
+        button1_pill = Image.open(button1)
+        button2_pill = Image.open(button2)
+
+        self.tk_btn_1 = ImageTk.PhotoImage(button1_pill)
+        self.tk_btn_2 = ImageTk.PhotoImage(button2_pill)
+
+        entry_1 = Image.open(entry1)
+
+        image_1 = Image.open(img_1)
+        image_2 = Image.open(img_2)
+        image_3 = Image.open(img_3)
+        image_4 = Image.open(img_4)
+        image_5 = Image.open(img_5)
+        image_6 = Image.open(img_6)
+        image_7 = Image.open(img_7)
+        image_8 = Image.open(img_8)
+        image_9 = Image.open(img_9)
+        image_10 = Image.open(img_10)
+        image_11 = Image.open(img_11)
+        image_12 = Image.open(img_12)
+        image_13 = Image.open(img_13)
+        image_14 = Image.open(img_14)
+
+        self.tk_entry_1 = ImageTk.PhotoImage(entry_1)
+
+        self.tk_image_1 = ImageTk.PhotoImage(image_1)
+        self.tk_image_2 = ImageTk.PhotoImage(image_2)
+        self.tk_image_3 = ImageTk.PhotoImage(image_3)
+        self.tk_image_4 = ImageTk.PhotoImage(image_4)
+        self.tk_image_5 = ImageTk.PhotoImage(image_5)
+        self.tk_image_6 = ImageTk.PhotoImage(image_6)
+        self.tk_image_7 = ImageTk.PhotoImage(image_7)
+        self.tk_image_8 = ImageTk.PhotoImage(image_8)
+        self.tk_image_9 = ImageTk.PhotoImage(image_9)
+        self.tk_image_10 = ImageTk.PhotoImage(image_10)
+        self.tk_image_11 = ImageTk.PhotoImage(image_11)
+        self.tk_image_12 = ImageTk.PhotoImage(image_12)
+        self.tk_image_13 = ImageTk.PhotoImage(image_13)
+        self.tk_image_14 = ImageTk.PhotoImage(image_14)
+        self.total_img = self.create_total_qty_graph()
+        self.oee_img = self.create_oee_graph()
+        self.line_graph_img = self.create_line_chart()
+        self.downtime_started = self.load_downtime_state()
 
         self.quantity_data = QuantityData("../data")
         self.get_data = TimeData('../data')
-        self.sio_manager = SocketIOManager()
+        self.ticket_inspector = TicketChecker()
+        self.ticket_present = self.ticket_inspector.checking()
+        # self.sio_manager = SocketIOManager()
         # self.receiver = ReceiveAndRequest(self.socketio_path())
         self.total_running_qty = self.quantity_data.total_running_qty()
-        self.calculate_oee = self.get_data.calculate_oee
+        # self.calculate_oee = self.get_data.calculate_oee
         self.total_remaining_qty_value = self.quantity_data.total_remaining_qty()
         self.get_available_hrs = self.get_data.get_available_hrs()
         self.get_productive_hrs = self.get_data.calculate_total_productive_time()
         self.get_downtime_hrs = self.get_data.calculate_total_downtime()
         self.get_idle_hrs = self.get_data.calculate_total_idle()
-        self.last_ticket_status = None
-        # self.downtime_started = False
-        self.downtime_started = self.load_downtime_state()
-        # self.update_interval = 50000
-        self.root = root
 
-        # self.root = root
+        # if self.oee_graph is not None:
+        #     self.oee_graph.configure(image=self.chart_img)
+        # if self.quantity_graph is not None:
+        #     self.quantity_graph.configure(image=self.total_img)
+        # if self.cpk_graph is not None:
+        #     self.cpk_graph.configure(image=self.line_img)
 
-        ## FUNCTIONS##
+        ## FUNCTIONS ##
 
-        self.makeCenter()
-        self.mainGui()
-        self.init_logging()
+        self.create_gui_elements()
         self.update_clock()
-        self.update_status()
-        self.time_data()
         self.update_logs()
-        self.create_total_qty_graph()
-        self.create_oee_graph()
-        self.charts()
+        self.update_status()
         self.verify_ticket_status()
-        self.auto_update()
         self.save_downtime_state()
-        # self.downtime_trigger_record()
-        # self.continuously_check_tickets()
+        self.makeCenter()
+        self.mch_label()
+        self.checking_ticket()
 
-        ## END##
+        ## END ##
 
     def makeCenter(self):
-        self.width = 1800
-        self.height = 1013
+        self.width = 1024
+        self.height = 600
         self.screenwidth = self.root.winfo_screenwidth()
         self.screenheight = self.root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (self.width, self.height, (self.screenwidth -
                                                               self.width) / 2, (self.screenheight - self.height) / 2)
         self.root.geometry(alignstr)
-
         self.root.resizable(width=False, height=False)
 
-    def mainGui(self):
-        self.cpk_graph = tk.Label(self.root)
-        self.cpk_graph["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=10)
-        self.cpk_graph["font"] = ft
-        self.cpk_graph["fg"] = "#333333"
-        self.cpk_graph["justify"] = "center"
-        self.cpk_graph["text"] = "CPK"
-        self.cpk_graph.place(x=20, y=130, width=580, height=550)
+    def create_gui_elements(self):
+        self.canvas = Canvas(
+            self.root,
+            bg="#E5E5E5",
+            height=600,
+            width=1024,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge"
+        )
+        self.canvas.place(x=0, y=0)
+        self.canvas.create_rectangle(
+            0.0,
+            0.0,
+            1024.0,
+            100.0,
+            fill="#FFFFFF",
+            outline=""
+        )
 
-        self.oee_graph = tk.Label(self.root)
-        self.oee_graph["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=10)
-        self.oee_graph["font"] = ft
-        self.oee_graph["fg"] = "#333333"
-        self.oee_graph["justify"] = "center"
-        self.oee_graph["text"] = "label"
-        self.oee_graph.place(x=610, y=130, width=580, height=550)
+        self.canvas.create_rectangle(
+            31.0,
+            10.0,
+            282.0,
+            86.97332763671875,
+            fill="#D3F9D8",
+            outline="")
 
-        self.quantity_graph = tk.Label(self.root)
-        self.quantity_graph["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=10)
-        self.quantity_graph["font"] = ft
-        self.quantity_graph["fg"] = "#333333"
-        self.quantity_graph["justify"] = "center"
-        self.quantity_graph["text"] = "QTY GRAPH"
-        self.quantity_graph.place(x=1200, y=130, width=580, height=550)
+        self.image_1 = self.canvas.create_image(
+            516.0,
+            49.0,
+            image=self.tk_image_1
+        )
 
-        self.productive_hrs = tk.Label(self.root)
-        self.productive_hrs["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.productive_hrs["font"] = ft
-        self.productive_hrs["fg"] = "#333333"
-        self.productive_hrs["justify"] = "center"
-        self.productive_hrs.place(x=610, y=700, width=580, height=90)
+        self.image_2 = self.canvas.create_image(
+            872.0,
+            49.0,
+            image=self.tk_image_2
+        )
 
-        
-        self.available_hrs = tk.Label(self.root)
-        self.available_hrs["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.available_hrs["font"] = ft
-        self.available_hrs["fg"] = "#333333"
-        self.available_hrs["justify"] = "left"
-        self.available_hrs.place(x=20, y=800, width=580, height=90)
+        entry_bg_1 = self.canvas.create_image(
+            533.5,
+            50.0,
+            image=self.tk_entry_1
+        )
+        self.employee_id = Entry(
+            self.root,
+            bd=0,
+            bg="#EFEFEF",
+            fg="#000716",
+            highlightthickness=0,
+            font=("arial", 30),
+            justify='center'  # Set text alignment to center
+        )
 
-        self.total_quantity_to_process = tk.Label(self.root)
-        self.total_quantity_to_process["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.total_quantity_to_process["font"] = ft
-        self.total_quantity_to_process["fg"] = "#333333"
-        self.total_quantity_to_process["justify"] = "left"
-        self.total_quantity_to_process.place(x=20, y=900, width=580, height=90)
+        self.employee_id.place(
+            x=378.0,
+            y=28.0,
+            width=311.0,
+            height=42.0
+        )
 
-        self.total_remaining_qty = tk.Label(self.root)
-        self.total_remaining_qty["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.total_remaining_qty["font"] = ft
-        self.total_remaining_qty["fg"] = "#333333"
-        self.total_remaining_qty["justify"] = "left"
-        self.total_remaining_qty.place(x=610, y=900, width=580, height=90)
+        self.employee_id.bind("<KeyRelease>", self.validate_employee_number)
 
-        self.downtime = tk.Label(self.root)
-        self.downtime["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.downtime["font"] = ft
-        self.downtime["fg"] = "#333333"
-        self.downtime["justify"] = "center"
-        self.downtime.place(x=20, y=700, width=580, height=90)
+        image_3 = self.canvas.create_image(
+            782.0,
+            48.0,
+            image=self.tk_image_3
+        )
 
-        self.idle = tk.Label(self.root)
-        self.idle["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=22)
-        self.idle["font"] = ft
-        self.idle["fg"] = "#333333"
-        self.idle["justify"] = "center"
-        self.idle.place(x=610, y=800, width=580, height=90)
+        self.clock = self.canvas.create_text(
+            806.0,
+            38.0,
+            anchor="nw",
+            fill="#343A40",
+            font=("Roboto Regular", 16 * -1)
+        )
 
-        self.statusHere = tk.Label(self.root)
-        ft = tkFont.Font(family='Times', size=58)
-        self.statusHere["font"] = ft
-        self.statusHere["justify"] = "center"
-        self.statusHere.place(x=20, y=10, width=359, height=106)
+        image_4 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_4
+        )
 
-        self.employee_id = tk.Entry(self.root)
-        self.employee_id["bg"] = "#ffffff"
-        self.employee_id["borderwidth"] = "1px"
-        ft = tkFont.Font(family='Times', size=83)
-        self.employee_id["font"] = ft
-        self.employee_id["fg"] = "#333333"
-        self.employee_id["justify"] = "center"
-        self.employee_id["text"] = "10450"
-        self.employee_id.bind(
-            '<KeyRelease>', self.validate_employee_number)
-        self.employee_id.place(x=650, y=10, width=500, height=106)
+        image_5 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_5
 
-        self.logs_message = tk.Message(self.root)
-        self.logs_message["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=15)
-        self.logs_message["font"] = ft
-        self.logs_message["fg"] = "#333333"
-        self.logs_message["justify"] = "left"
-        self.logs_message['width'] = 580
-        self.logs_message.place(x=1200, y=700, width=580, height=290)
+        )
 
-        self.date_time = tk.Label(self.root)
-        self.date_time["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times', size=15)
-        self.date_time["font"] = ft
-        self.date_time["fg"] = "#333333"
-        self.date_time["justify"] = "center"
-        self.date_time.place(x=1480, y=10, width=300, height=60)
+        image_6 = self.canvas.create_image(
+            512.0,
+            259.0,
+            image=self.tk_image_6
+        )
 
-        self.ticket = tk.Label(root)
-        self.ticket["bg"] = "#ffb800"
-        self.ticket["cursor"] = "circle"
-        ft = tkFont.Font(family='Times', size=9)
-        self.ticket["font"] = ft
-        self.ticket["fg"] = "#000000"
-        self.ticket["justify"] = "left"
-        self.ticket.place(x=1199, y=73, width=581, height=43)
+        self.canvas.create_text(
+            97.0,
+            27.0,
+            anchor="nw",
+            text="MACHINE",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        self.canvas.create_text(
+            97.0,
+            44.0,
+            anchor="nw",
+            text="ONLINE",
+            fill="#343A40",
+            font=("Roboto Medium", 24 * -1)
+        )
+
+        image_7 = self.canvas.create_image(
+            167.0,
+            259.0,
+            image=self.tk_image_7
+        )
+
+        image_8 = self.canvas.create_image(
+            167.0,
+            260.0,
+            image=self.oee_img
+        )
+
+        image_9 = self.canvas.create_image(
+            340.0,
+            509.0,
+            image=self.tk_image_9
+        )
+
+        self.machine_data_lbl = self.canvas.create_text(
+            24.0,
+            442.0,
+            anchor="nw",
+            fill="#343A40",
+            font=("Roboto Medium", 20 * -1)
+        )
+
+        image_10 = self.canvas.create_image(
+            855.0,
+            509.0,
+            image=self.tk_image_10
+        )
+
+        image_11 = self.canvas.create_image(
+            856.0,
+            259.0,
+            image=self.tk_image_11
+        )
+
+        self.canvas.create_text(
+            700.0,
+            435.0,
+            anchor="nw",
+            # text="LOGS",
+            fill="#343A40",
+            width=100,
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        self.canvas.create_text(
+            689.0,
+            112.0,
+            anchor="nw",
+            text="Total Quantity",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        self.canvas.create_text(
+            0.0,
+            112.0,
+            anchor="nw",
+            text="Overall Equipment Effectiveness",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1),
+        )
+
+        self.canvas.create_text(
+            345.0,
+            112.0,
+            anchor="nw",
+            text="Process Capability Index",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+
+        image_12 = self.canvas.create_image(
+            362.0,
+            49.0,
+            image=self.tk_image_12
+        )
+
+        self.button_1 = Button(
+            image=self.tk_btn_1,
+            borderwidth=0,
+            highlightthickness=0,
+            relief="flat"
+        )
+
+        image_13 = self.canvas.create_image(
+            871.0,
+            263.0,
+            image=self.total_img
+
+        )
+
+        image_14 = self.canvas.create_image(
+            512.0,
+            264.0,
+            image=self.line_graph_img
+        )
+
+        self.set_logs = self.canvas.create_text(
+            709.0,
+            435.0,
+            anchor="nw",
+            fill="#343A40",
+            font=("Roboto Medium", 8 * -1)
+        )
+
+        # Add the rest of your GUI elements here
 
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
+
+    def update_clock(self):
+        current_time = time.strftime('%H:%M:%S')
+        current_date = time.strftime('%Y-%m-%d')
+
+        dateNTime = current_date + ' ' + current_time
+        self.canvas.itemconfig(self.clock, text=dateNTime)
+        self.root.after(1000, self.update_clock)
+
+    def create_total_qty_graph(self):
+        self.quantity_data = QuantityData("../data")
+        if self.quantity_data.total_running_qty() == 0 and self.quantity_data.total_remaining_qty() == 0:
+            return None
+
+        result_qty = self.quantity_data.total_running_qty(
+        ) - self.quantity_data.total_remaining_qty()
+        data = [self.quantity_data.total_remaining_qty(), result_qty]
+        labels = ['', '']
+        colors = ['#4CAF50', '#e74c3c']
+        explode = (0.05, 0)
+
+        figure = Figure(figsize=(3, 2), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        autotexts = plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
+                             startangle=90, pctdistance=0.85, explode=explode)
+
+        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+        plot.add_artist(centre_circle)
+
+        plot.set_facecolor('none')
+        plot.axis('equal')
+
+        autopct_values = [f'{p}' for p in autotexts]
+        legend_labels = ['QUANTITY COMPLETED', 'PROCESS QUANTITY']
+
+        # Move the legend outside the plot
+        plot.legend(legend_labels, loc='center right',
+                    bbox_to_anchor=(1, 0.5), fontsize='small')
+
+        canvas = FigureCanvasTkAgg(figure, master=self.root)
+        canvas_widget = canvas.get_tk_widget()
+
+        canvas.draw()
+        pil_image = Image.frombytes(
+            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
+        img = ImageTk.PhotoImage(image=pil_image)
+
+        return img
+
+    def create_oee_graph(self):
+        self.get_data = TimeData('../data')
+        calculated_oee = self.get_data.calculate_oee()
+        calculated_oee = max(0, min(calculated_oee, 100))
+
+        total = 100 - calculated_oee
+        data = [calculated_oee, total]
+        labels = ['', '']
+        colors = ['#4CAF50', '#e74c3c']
+        explode = (0.05, 0)
+
+        figure = Figure(figsize=(3, 2), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        autotexts = plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
+                             startangle=90, pctdistance=0.85, explode=explode)
+
+        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+        plot.add_artist(centre_circle)
+
+        plot.set_facecolor('none')
+        plot.axis('equal')
+
+        autopct_values = [f'{p}' for p in autotexts]
+        legend_labels = ['EFFECTIVENESS', 'INEFFECTIVENESS']
+
+        # Move the legend outside the plot
+        plot.legend(legend_labels, loc='center right',
+                    bbox_to_anchor=(1, 0.5), fontsize='small')
+
+        canvas = FigureCanvasTkAgg(figure, master=self.root)
+        canvas_widget = canvas.get_tk_widget()
+
+        canvas.draw()
+        pil_image = Image.frombytes(
+            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
+        img = ImageTk.PhotoImage(image=pil_image)
+
+        return img
+
+    def create_line_chart(self):
+        fig = Figure(figsize=(3, 2), dpi=100)
+        ax = fig.add_subplot(1, 1, 1)
+
+        days = np.arange(1, 8)
+        values = [10, 0, 2, 11, 4, 2, 15]
+
+        ax.plot(days, values, marker='o', label="7-Day Data")
+        plt.rcParams.update({'font.size': 6})
+        ax.set_xlabel("Day")
+        ax.set_ylabel("Value")
+        ax.set_title("CPK GRAPH")
+        ax.legend()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.root)
+        canvas.draw()
+        img = self.convert_figure_to_photoimage(canvas)
+        return img
+
+    def convert_figure_to_photoimage(self, fig_canvas):
+        buf = fig_canvas.buffer_rgba()
+        img_data = buf.tobytes()  # Convert memoryview to bytes
+        img = Image.frombytes("RGBA", fig_canvas.get_width_height(), img_data)
+        return ImageTk.PhotoImage(image=img)
+
+    def update_logs(self):
+        log_file_path = os.path.join(
+            self.get_script_directory(), 'data/logs', 'activity_log.txt')
+        try:
+            with open(log_file_path, 'r') as file:
+                log_content = file.read()
+            lines = log_content.split('\n')
+            last_5_logs = '\n'.join(lines[-16:])
+            self.canvas.itemconfig(self.set_logs, text=last_5_logs)
+
+        except FileNotFoundError:
+            self.logs["text"] = "Log file not found."
+        self.root.after(60000, self.update_logs)
+
+    def online_status_card(self):
+        self.canvas.create_rectangle(
+            31.0,
+            10.0,
+            282.0,
+            86.97332763671875,
+            fill="#D3F9D8",
+            outline=""
+        )
+        self.canvas.create_text(
+            97.0,
+            27.0,
+            anchor="nw",
+            text="MACHINE",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+        self.canvas.create_text(
+            97.0,
+            44.0,
+            anchor="nw",
+            text="ONLINE",
+            fill="#343A40",
+            font=("Roboto Medium", 24 * -1)
+        )
+        self.image_image_2 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_5
+        )
+
+    def offline_status_card(self):
+        self.canvas.create_rectangle(
+            31.0,
+            10.0,
+            282.0,
+            86.97332763671875,
+            fill="#FFCECE",
+            outline=""
+        )
+        self.canvas.create_text(
+            97.0,
+            27.0,
+            anchor="nw",
+            text="MACHINE",
+            fill="#343A40",
+            font=("Roboto Medium", 14 * -1)
+        )
+        self.canvas.create_text(
+            97.0,
+            44.0,
+            anchor="nw",
+            text="OFFLINE",
+            fill="#343A40",
+            font=("Roboto Medium", 24 * -1)
+        )
+        self.image_image_1 = self.canvas.create_image(
+            64.0,
+            47.0,
+            image=self.tk_image_4
+        )
+
+    def update_status(self):
+        statusHere = StatusUpdate('data/logs/logs.csv')
+        getStatus = statusHere.get_last_log_value()
+        if getStatus is None or False:
+            pass
+        elif getStatus == 'ONLINE':
+            self.online_status_card()
+        else:
+            self.offline_status_card()
+        self.root.after(1000, self.update_status)
+
+    def disable_label(self):
+        self.button_1.place_forget()
+
+    def enable_label(self):
+        self.button_1.place(
+            x=689.0,
+            y=553.0725708007812,
+            width=335.0,
+            height=45.92742919921875
+        )
+        
+    def checking_ticket(self):
+        pass
+        # if self.ticket_present:
+        #     pass
+        # else:
+        #     self.downtime_started = False
+        # # self.root.after(1000, self.checking_ticket)
+
+    def verify_ticket_status(self):
+        if self.ticket_present:
+            self.enable_label()
+            if not self.downtime_started:
+                self.downtime_started = True
+                self.log_event("DOWNTIME_START")
+        else:
+            # print(f"💻==>> self.ticket_present: {self.ticket_present}")
+            self.disable_label()
+            if self.downtime_started:
+                self.downtime_started = False
+                self.log_event("DOWNTIME_STOP")
+
+    def log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/downtime.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+    def load_downtime_state(self):
+        try:
+            with open('config/downtime_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                return state.get('downtime_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_downtime_state(self):
+        with open('config/downtime_state.json', 'w') as state_file:
+            json.dump({'downtime_started': self.downtime_started}, state_file)
 
     def socketio_path(self):
         path_here = os.path.join(
@@ -372,7 +795,7 @@ class App:
             print("Employee not found.")
 
     def validate_permissions(self, user_department, user_position, dataJson):
-        employee_number = self.employee_id.get()
+        self.employee_number = self.employee_id.get()
 
         permissions = self.load_permissions()
         if permissions.is_department_allowed(user_department) and permissions.is_position_allowed(user_position):
@@ -383,19 +806,37 @@ class App:
                 print(f"{user_position} is an operator.")
                 self.show_operator_dashboard(
                     user_department, user_position, dataJson)
+                data = {
+                    "msg": f'User login successful. ID NUM: {self.employee_number}',
+                    "emp_id": self.employee_number
+                }
+                sio.emit('activity_log', {
+                    'data': data})
                 self.log_activity(
-                    logging.INFO, f'User login successful. ID NUM: {employee_number}')
+                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
+                sio.emit('activity_log', {'data': data})
 
             else:
                 self.log_activity(
-                    logging.INFO, f'User login unsuccessful. ID NUM: {employee_number}')
-
+                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
+                data = {
+                    "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
+                    "emp_id": self.employee_number
+                }
+                sio.emit('activity_log', {
+                    'data': data})
                 showerror(title='Login Failed',
                           message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
 
         else:
             self.log_activity(
-                logging.INFO, f'User login unsuccessful. ID NUM: {employee_number}')
+                logging.INFO, f'User login unsuccessful. ID NUM: {self.employee_number}')
+            data = {
+                "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
+                "emp_id": self.employee_number
+            }
+            sio.emit('activity_log', {
+                     'data': data})
             showerror(title='Login Failed',
                       message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
 
@@ -428,261 +869,26 @@ class App:
         logging.log(level, message)
 
     def show_operator_dashboard(self, user_department, user_position, data_json):
-        OpeDashboard = tk.Toplevel(root)
+        OpeDashboard = tk.Toplevel(self.root)
         assets_dir = 'assets'
-
         ope_dashboard = OperatorDashboardTest(
             OpeDashboard, user_department, user_position, data_json, assets_dir)
-        root.withdraw()
+        self.root.withdraw()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
-        techDashboard = tk.Toplevel(root)
-        # tech_dashboard = TechnicianDashboard(
-        #     techDashboard, user_department, user_position, dataJson)
+        techDashboard = Toplevel(self.root)
         assets_dir = 'assets'
-        tech_dashboard = TechnicianDashboardTest(techDashboard, user_department, user_position, dataJson, assets_dir)
-        root.withdraw()
+        tech_dashboard = TechnicianDashboardTest(
+            techDashboard, user_department, user_position, dataJson, assets_dir)
+        self.root.withdraw()
 
-    def update_clock(self):
-        current_time = time.strftime('%H:%M:%S')
-        current_date = time.strftime('%Y-%m-%d')
-
-        dateNTime = current_date + ' ' + current_time
-        self.date_time["text"] = 'DATETIME: ' + dateNTime
-        root.after(1000, self.update_clock)
-
-    def update_status(self):
-        statusHere = StatusUpdate('data/logs/logs.csv')
-        getStatus = statusHere.get_last_log_value()
-        if getStatus is None or False:
-            self.statusHere["bg"] = "#ffffff"
-            self.statusHere["text"] = ''
-        elif getStatus == 'ONLINE':
-            self.statusHere["bg"] = "#4CAF50"
-            self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
-        else:
-            self.statusHere["bg"] = "#cc0000"
-            self.statusHere["fg"] = "#ffffff"
-            self.statusHere["text"] = getStatus
-            self.status_card()
-        self.root.after(1000, self.update_status)
-
-    def status_card(self):
-        self.time_data()
-        self.get_data.calculate_oee
-        self.charts()
-        self.delete_file_data()
-        self.get_data.calculate_total_productive_time()
-
-    def delete_file_data(self):
-        filename = os.path.join(
-            self.get_script_directory(), "data/logs", 'downtime.csv')
-        filename1 = os.path.join(
-            self.get_script_directory(), "data/logs", 'idle.csv')
-        filename2 = os.path.join(
-            self.get_script_directory(), "data", 'time.csv')
-        
-        try:
-            with open(filename, 'w') as file:
-                file.truncate(0)
-            with open(filename1, 'w') as file:
-                file.truncate(0)            
-            with open(filename2, 'w') as file:
-                file.truncate(0)
-        except IOError:
-            print(f"Error deleting data in '{filename}'.")
-
-    def update_logs(self):
-        log_file_path = os.path.join(
-            self.get_script_directory(), 'data/logs', 'activity_log.txt')
-        try:
-            with open(log_file_path, 'r') as file:
-                log_content = file.read()
-            lines = log_content.split('\n')
-            last_5_logs = '\n'.join(lines[-6:])
-            self.logs_message["text"] = last_5_logs
-
-        except FileNotFoundError:
-            self.logs["text"] = "Log file not found."
-        # root.after(50000, self.update_logs)
-
-    def time_data(self):
-        self.total_remaining_qty["text"] = f"TOTAL PROCESS : {self.total_running_qty}"
-        self.productive_hrs["text"] = f"PRODUCTIVE HRS : {self.get_productive_hrs}"
-        self.available_hrs["text"] = f"AVAILABLE HRS : {self.get_available_hrs}"
-        self.total_quantity_to_process[
-            "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
-
-    def create_total_qty_graph(self):
-        if self.total_running_qty == 0 and self.total_remaining_qty_value == 0:
-            return None
-
-        result_qty = self.total_running_qty - self.total_remaining_qty_value
-        data = [self.total_remaining_qty_value, result_qty]
-        labels = ['QUANTITY COMPLETED', 'PROCESS QUANTITY']
-        colors = ['#4CAF50', '#e74c3c']
-        explode = (0.05, 0)
-
-        figure = Figure(figsize=(5, 4), dpi=100)
-        plot = figure.add_subplot(1, 1, 1)
-        plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
-                 startangle=90, pctdistance=0.85, explode=explode)
-
-        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
-        plot.add_artist(centre_circle)
-
-        center_text = 'QUANTITY'
-        plot.text(0, 0, center_text, va='center', ha='center', fontsize=12)
-
-        plot.axis('equal')
-        # plot.set_title('QUANTITY GRAPH')
-
-        plot.legend(loc='upper center', labels=labels, fontsize='small')
-
-        canvas = FigureCanvasTkAgg(figure, master=self.root)
-        canvas_widget = canvas.get_tk_widget()
-
-        canvas.draw()
-        pil_image = Image.frombytes(
-            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
-        img = ImageTk.PhotoImage(image=pil_image)
-        # self.root.after(50000, self.create_total_qty_graph)
-        return img
-
-    def create_oee_graph(self):
-        calculated_oee = self.calculate_oee()
-        calculated_oee = max(0, min(calculated_oee, 100))
-
-        total = 100 - calculated_oee
-        data = [calculated_oee, total]
-        labels = ['EFFECTIVENESS', 'INEFFECTIVENESS']
-        colors = ['#4CAF50', '#e74c3c']
-        explode = (0.05, 0)
-
-        figure = Figure(figsize=(5, 4), dpi=100)
-        plot = figure.add_subplot(1, 1, 1)
-        plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
-                 startangle=90, pctdistance=0.85, explode=explode)
-
-        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
-        plot.add_artist(centre_circle)
-
-        center_text = 'OEE'
-        plot.text(0, 0, center_text, va='center', ha='center', fontsize=12)
-        plot.legend(loc='upper center', labels=labels, fontsize='small')
-
-        plot.axis('equal')
-        # plot.set_title('OEE GRAPH')
-
-        canvas = FigureCanvasTkAgg(figure, master=self.root)
-        canvas_widget = canvas.get_tk_widget()
-
-        canvas.draw()
-        pil_image = Image.frombytes(
-            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
-        img = ImageTk.PhotoImage(image=pil_image)
-        # self.root.after(50000, self.create_oee_graph)
-        return img
-
-    def create_line_chart(self):
-        fig = Figure(figsize=(6, 4), dpi=100)
-        ax = fig.add_subplot(1, 1, 1)
-
-        days = np.arange(1, 8)
-        values = [10, 0, 2, 11, 4, 2, 15]
-
-        ax.plot(days, values, marker='o', label="7-Day Data")
-        ax.set_xlabel("Day")
-        ax.set_ylabel("Value")
-        ax.set_title("CPK GRAPH")
-        ax.legend()
-
-        canvas = FigureCanvasTkAgg(fig, master=self.root)
-        canvas.draw()
-        img = self.convert_figure_to_photoimage(canvas)
-        return img
-
-    def convert_figure_to_photoimage(self, fig_canvas):
-        buf = fig_canvas.buffer_rgba()
-        img_data = buf.tobytes()  # Convert memoryview to bytes
-        img = Image.frombytes("RGBA", fig_canvas.get_width_height(), img_data)
-        return ImageTk.PhotoImage(image=img)
-
-    def time_data(self):
-        self.total_remaining_qty["text"] = f"TOTAL QTY. TO PROCESS : {self.total_running_qty}"
-        self.productive_hrs["text"] = f"PRODUCTIVE HOURS : {self.get_productive_hrs}"
-        self.available_hrs["text"] = f"AVAILABLE HOURS : {self.get_data.get_available_hrs()}"
-        self.total_quantity_to_process[
-            "text"] = f"QUANTITY PROCESSED : {self.total_remaining_qty_value}"
-        self.downtime["text"] = f"DOWNTIME : {self.get_downtime_hrs}"
-        self.idle["text"] = f"TOTAL IDLETIME : {self.get_idle_hrs}"
-        # self.root.after(50000, self.time_data)
-
-        # self.label_update_id = self.root.after(
-        #     self.update_interval, self.time_data)
-
-    def charts(self):
-        self.chart_img = self.create_oee_graph()
-        self.total_img = self.create_total_qty_graph()
-        self.line_img = self.create_line_chart()
-        if self.oee_graph is not None:
-            self.oee_graph.configure(image=self.chart_img)
-        if self.quantity_graph is not None:
-            self.quantity_graph.configure(image=self.total_img)
-        if self.cpk_graph is not None:
-            self.cpk_graph.configure(image=self.line_img)
-
-        # self.chart_update_id = self.root.after(
-        #     self.update_interval, self.charts)
-
-    def auto_update(self):
+    def mch_label(self):
+        machine_details = f"""DOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nPRODUCTIVE HRS: \t{self.get_productive_hrs}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nTOTAL IDLE HRS: \t\t{self.get_idle_hrs}\nQTY PROCESSED: \t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
         """
-        CAN BE ENABLED, BUT IT CAN EAT A LOT OF RESOURCES
-        """
-        pass
-        # self.time_data()
-        # self.get_data.calculate_oee
-        # self.create_oee_graph()
-        # self.create_line_chart()
-        # self.root.after(50000, self.auto_update)
+        # print('test')
+        self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
+        self.root.after(1000, self.mch_label)
 
-    def verify_ticket_status(self):
-        ticket_inspector = TicketChecker()
-        ticket_present = ticket_inspector.checking()
-        if ticket_present:
-            self.ticket["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
-            if not self.downtime_started:
-                self.downtime_started = True
-                self.log_event("DOWNTIME_START")
-        else:
-            if self.downtime_started:
-                self.downtime_started = False
-                self.log_event("DOWNTIME_STOP")
-            self.ticket.destroy()
-
-    def log_event(self, msg):
-        current_time = datetime.datetime.now()
-        date = current_time.strftime("%Y-%m-%d")
-        time = current_time.strftime("%H:%M:%S")
-
-        with open('data/logs/downtime.csv', mode="a", newline="") as csv_file:
-            csv_writer = csv.writer(csv_file)
-            csv_writer.writerow([msg, date, time])
-
-    def load_downtime_state(self):
-        try:
-            with open('config/downtime_state.json', 'r') as state_file:
-                state = json.load(state_file)
-                return state.get('downtime_started', False)
-        except FileNotFoundError:
-            return False
-
-    def save_downtime_state(self):
-        with open('config/downtime_state.json', 'w') as state_file:
-            json.dump({'downtime_started': self.downtime_started}, state_file)
-            
-    
     @sio.event
     def my_message(data):
         print('Message received with', data)
@@ -706,11 +912,12 @@ class App:
         sio.emit('my_response', {'response': 'my response'})
 
 
-# sio.connect('http://10.0.2.150:8083')
+sio.connect('http://10.0.2.150:8083')
 
-# receiver.sio.wait()
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = App(root)
-    root.iconbitmap("config/ico/favicon.ico")
-    root.mainloop()
+    window = tk.Tk()
+    window.resizable(False, False)
+    app = DashboardGUI(window)
+    window.iconbitmap("config/ico/favicon.ico")
+    window.mainloop()

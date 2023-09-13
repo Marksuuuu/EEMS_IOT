@@ -394,19 +394,47 @@ class MoDetailsTest:
         # Call the update_table function when needed
         self.update_table_function()
 
+    # def get_last_person_assigned(self):
+    #     try:
+    #         with open("data/mo_logs.json", "r") as json_file:
+    #             data = json.load(json_file)
+    #             for entry in data["data"]:
+    #                 if "wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name:
+    #                     last_person_assigned = entry["last_person_assigned"]
+    #                     print('last_person_assigned: ', last_person_assigned)
+    #                     self.canvas.itemconfig(self.last_person_ass, text=f"LAST PERSON ASSIGNED: {last_person_assigned}")
+    #     except FileNotFoundError:
+    #         pass
+    #     # If no matching entry is found, return None
+    #     return None
+
     def get_last_person_assigned(self):
         try:
             with open("data/mo_logs.json", "r") as json_file:
-                data = json.load(json_file)
-                for entry in data["data"]:
-                    if "wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name:
-                        last_person_assigned = entry["last_person_assigned"]
-                        print('last_person_assigned: ', last_person_assigned)
-                        self.canvas.itemconfig(self.last_person_ass, text=f"LAST PERSON ASSIGNED: {last_person_assigned}")
+                # Read the contents of the file and check if it's empty
+                file_contents = json_file.read()
+                if not file_contents:
+                    return  # File is empty, no need to proceed
+
+                json_data = json.loads(file_contents)
+
+            data = json_data["data"]
+
+            for entry in data:
+                if "wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name:
+                    last_person_assigned = entry["last_person_assigned"]
+                    print('last_person_assigned: ', last_person_assigned)
+                    self.canvas.itemconfig(self.last_person_ass, text=f"LAST PERSON ASSIGNED: {last_person_assigned}")
+                    break  # Exit the loop once the matching entry is found
+
         except FileNotFoundError:
-            pass
+            pass  # Handle the case where the file is not found
+
         # If no matching entry is found, return None
-        return None
+        return None    
+
+
+
     
     def get_remaining_qty_from_logs(self):
         self.lbl_remaining_qty["text"] = f" "
@@ -548,55 +576,67 @@ class MoDetailsTest:
                 # self.start_btn["state"] = "normal"
                 self.show_start_btn()
 
-    def check_total_finished(self):
-        with open("data/mo_logs.json", "r") as json_file:
-            json_data = json.load(json_file)
+    # def check_total_finished(self):
+    #     with open("data/mo_logs.json", "r") as json_file:
+    #         json_data = json.load(json_file)
 
-        # Now you can access the data within the JSON structure
-        data = json_data["data"]
+    #     # Now you can access the data within the JSON structure
+    #     data = json_data["data"]
 
-        # Accessing the values within the data
-        for entry in data:
-            wip_entity_name = entry.get("wip_entity_name")
-            # running_qty = entry["running_qty"]
-            total_finished = entry["total_finished"]
-            # remaining_qty = entry["remaining_qty"]
+    #     # Accessing the values within the data
+    #     for entry in data:
+    #         wip_entity_name = entry.get("wip_entity_name")
+    #         # running_qty = entry["running_qty"]
+    #         total_finished = entry["total_finished"]
+    #         # remaining_qty = entry["remaining_qty"]
             
-            test = entry.get("last_person_assigned")
-            if wip_entity_name == self.wip_entity_name:
-                if self.running_qty == total_finished:
+    #         test = entry.get("last_person_assigned")
+    #         if wip_entity_name == self.wip_entity_name:
+    #             if self.running_qty == total_finished:
 
-                    self.show_label_completed()
-                    self.hide_start_and_stop_btn()
+    #                 self.show_label_completed()
+    #                 self.hide_start_and_stop_btn()
 
-                    showinfo("MO COMPLETED!", "MO Already Completed!")
-
-
-                    # self.mo_data = MOData()
-                    # self.mo_data.perform_check_and_swap()
-
-                    self.root.destroy()
-            else:
-                pass
-    # def get_last_person_assigned(self):
-        # try:
-        #     with open("data/mo_logs.json", "r") as json_file:
-        #         data = json.load(json_file)
-        #         for entry in data["data"]:
-        #             if ("wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name):
-        #                 if "last_person_assigned" in entry:
-        #                     print(entry["last_person_assigned"])
-        #                     return entry["last_person_assigned"]
-        # except FileNotFoundError:
-        #     pass
+    #                 showinfo("MO COMPLETED!", "MO Already Completed!")
 
 
-        # for entry in data:
-        #     wip_entity_name = entry.get("wip_entity_name")
-        #     if wip_entity_name == self.wip_entity_name:
-        #         if "last_person_assigned" in entry:
-        #             print(entry["last_person_assigned"])
-        #             return entry["last_person_assigned"]
+    #                 # self.mo_data = MOData()
+    #                 # self.mo_data.perform_check_and_swap()
+
+    #                 self.root.destroy()
+    #         else:
+    #             pass
+                
+    def check_total_finished(self):
+        try:
+            with open("data/mo_logs.json", "r") as json_file:
+                # Read the contents of the file and check if it's empty
+                file_contents = json_file.read()
+                if not file_contents:
+                    return  # File is empty, no need to proceed
+
+                # Parse the JSON data
+                json_data = json.loads(file_contents)
+
+            # Now you can access the data within the JSON structure
+            data = json_data["data"]
+
+            # Accessing the values within the data
+            for entry in data:
+                wip_entity_name = entry.get("wip_entity_name")
+                total_finished = entry["total_finished"]
+
+                if wip_entity_name == self.wip_entity_name:
+                    if self.running_qty == total_finished:
+                        self.show_label_completed()
+                        self.hide_start_and_stop_btn()
+                        showinfo("MO COMPLETED!", "MO Already Completed!")
+                        return  # No need to continue processing
+        except FileNotFoundError:
+            pass
+
+    # If the file was empty or not found, you can handle it here
+    print("MO logs file is empty or not found")
 
 
     def show_input_dialog(self):
