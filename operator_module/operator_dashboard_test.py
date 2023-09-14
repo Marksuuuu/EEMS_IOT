@@ -124,7 +124,7 @@ class OperatorDashboardTest:
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
         desired_width = 83
-        desired_height = 60
+        desired_height = 74
         pil_image = pil_image.resize(
             (desired_width, desired_height), Image.ANTIALIAS)
 
@@ -132,7 +132,7 @@ class OperatorDashboardTest:
 
         self.assets_dir = assets_dir
         self.root.geometry("1024x600")
-        self.root.configure(bg="#E5E5E5")
+        self.root.configure(bg="#D45151")
         root.title(
             f"OPERATOR DASHBOARD - {self.extracted_employee_no} -- POSITION - {self.extracted_possition}"
         )
@@ -165,7 +165,7 @@ class OperatorDashboardTest:
         
         self.canvas = Canvas(
             self.root,
-            bg="#E5E5E5",
+            bg="#F7F7F7",
             height=600,
             width=1024,
             bd=0,
@@ -314,7 +314,7 @@ class OperatorDashboardTest:
         self.tree.column("ROW NUMBER",minwidth=0, width=50, stretch=False)
         self.tree.column("CUSTOMER",minwidth=0, width=100, stretch=False)
         self.tree.column("DEVICES",minwidth=0, width=180, stretch=False)
-        self.tree.column("MAIN OPERATION",minwidth=0, width=110, stretch=False)
+        self.tree.column("MAIN OPERATION",minwidth=0, width=130, stretch=False)
         self.tree.column("PACKAGE",minwidth=0, width=100, stretch=False)
         self.tree.column("MO QUANTITY",minwidth=0, width=130, stretch=False)
         self.tree.column("MO",minwidth=0, width=120, stretch=False)

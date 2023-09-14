@@ -3,9 +3,9 @@
         {
             "wip_entity_name": "MO842158",
             "running_qty": 18889,
-            "total_finished": 1,
-            "remaining_qty": 18888,
-            "transaction_date": "2023-09-14 10:18:21",
+            "total_finished": 889,
+            "remaining_qty": 18000,
+            "transaction_date": "2023-09-14 10:23:06",
             "last_person_assigned": "Mercado, Alex Fernan F.",
             "status": "NOT COMPLETED"
         }

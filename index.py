@@ -106,7 +106,7 @@ class DashboardGUI:
     def __init__(self, root):
         self.root = root
         self.root.geometry("1024x600")
-        self.root.configure(bg="#E5E5E5")
+        self.root.configure(bg="#FBFBFB")
         current_year = datetime.datetime.now().year
         self.root.title(f"EEMS_IOT - © {current_year}")
 
@@ -228,7 +228,7 @@ class DashboardGUI:
     def create_gui_elements(self):
         self.canvas = Canvas(
             self.root,
-            bg="#E5E5E5",
+            bg="#FBFBFB",
             height=600,
             width=1024,
             bd=0,

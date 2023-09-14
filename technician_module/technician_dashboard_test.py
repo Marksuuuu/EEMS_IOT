@@ -41,7 +41,7 @@ class TechnicianDashboardTest:
         self.log_configured = False 
         self.root = root
         self.root.geometry("1024x600")
-        self.root.configure(bg="#E5E5E5")
+        self.root.configure(bg="#FBFBFB")
         self.ticket_logging()
         
 
@@ -54,7 +54,7 @@ class TechnicianDashboardTest:
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
         desired_width = 83
-        desired_height = 60
+        desired_height = 74
         pil_image = pil_image.resize(
             (desired_width, desired_height), Image.ANTIALIAS)
 
@@ -83,7 +83,7 @@ class TechnicianDashboardTest:
 
         self.canvas = Canvas(
             self.root,
-            bg="#E5E5E5",
+            bg="#FBFBFB",
             height=600,
             width=1024,
             bd=0,

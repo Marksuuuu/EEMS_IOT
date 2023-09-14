@@ -85,7 +85,7 @@ class MoDetails:
         response = requests.get(image_url)
         pil_image = Image.open(BytesIO(response.content))
         desired_width = 83
-        desired_height = 60
+        desired_height = 74
         pil_image = pil_image.resize(
             (desired_width, desired_height), Image.ANTIALIAS)
 
