@@ -10,7 +10,7 @@ from tkinter import ttk
 from tkinter.messagebox import showinfo, showerror
 
 import requests
-
+from utils.ticket_status import TicketChecker
 
 class RequestTicketTest:
     def __init__(self, root, extracted_fullname, extracted_employee_no, assets_dir, data):
@@ -23,6 +23,7 @@ class RequestTicketTest:
         # self.root.overrideredirect(True) 
         # self.root.update_idletasks()
         self.center_window()
+
 
         self.fullname = extracted_fullname
         self.employee_no = extracted_employee_no
@@ -50,6 +51,10 @@ class RequestTicketTest:
         button1 = "assets/frame_ticket/button_1.png"
         button2 = "assets/frame_ticket/button_2.png"
         entry1 = "assets/frame_ticket/entry_1.png"
+        
+        button3 = "assets\\frame_operator\\button_3.png"
+        button3_pill = Image.open(button3)
+        self.tk_btn_3 = ImageTk.PhotoImage(button3_pill)
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)
@@ -312,6 +317,7 @@ class RequestTicketTest:
             if value_url["status"] == "meron":
                 dtno_value = value_url["dtno"]
                 showinfo("warning", f"Already have ticket . \nDTNO {dtno_value}")
+                self.root.destroy()
             else:
                 dtno_value = value_url["dtno"]
                 showinfo(
@@ -330,6 +336,36 @@ class RequestTicketTest:
                 selected_id = item["ID"]
                 break
         return selected_id
+    
+    def verify_ticket_status(self):
+        ticket_inspector = TicketChecker()
+        ticket_present = ticket_inspector.checking()
+
+        if ticket_present:
+            self.show_ticket_button()
+            # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+        else:
+            # self.ticket_checking.destroy()
+            print("No ticket found")
+            pass
+
+    def show_ticket_button(self):
+        self.button_3 = tk.Button(
+            self.root,
+            image=self.tk_btn_3,
+            borderwidth=0,
+            highlightthickness=0,
+            command=self.test,
+            relief="flat",
+        )
+
+        self.button_3.place(
+            x=326.0,
+            y=115.0,
+            width=372.0,
+            height=51.0
+        )
+
 
     def submit(self):
         print("Submit")

@@ -110,8 +110,6 @@ class OperatorDashboardTest:
         self.extracted_username = data[6]
 
 
-
-
         self.idle_started = self.load_idle_state()
         self.details_window = None
         self.ticket_window = None
@@ -698,20 +696,34 @@ class OperatorDashboardTest:
         showinfo("Success", "Data swapped successfully!")
         self.update_table()
 
+    # def update_status(self):
+    #     statusHere = StatusUpdate('data/logs/logs.csv')
+    #     getStatus = statusHere.get_last_log_value()
+    #     if getStatus is None or False:
+    #         pass
+    #     elif getStatus == 'ONLINE':
+    #         self.online_status_card()
+
+    #     else:
+    #         self.offline_status_card()
+
+    #     self.root.after(1000, self.update_status)
+
     def update_status(self):
         statusHere = StatusUpdate('data/logs/logs.csv')
         getStatus = statusHere.get_last_log_value()
         if getStatus is None or False:
             pass
-
         elif getStatus == 'ONLINE':
             self.online_status_card()
-
         else:
             self.offline_status_card()
+            # Disable opening MoDetailsTest and show a warning
+            if self.details_window is not None and self.details_window.winfo_exists():
+                self.details_window.destroy()
+                showwarning("Machine Offline", "Machine is currently OFFLINE.")
 
         self.root.after(1000, self.update_status)
-
     def logout(self):
         response = messagebox.askyesno(
             "Logout", "Are you sure you want to logout?")
@@ -761,7 +773,7 @@ class OperatorDashboardTest:
             self.window_open = True
         else:
             self.details_window.lift()
-            
+          
 
     def check_window_active(self):
         if self.details_window is not None and self.details_window.winfo_exists():

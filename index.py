@@ -1,4 +1,5 @@
 import csv
+
 # from ttkbootstrap.constants import *
 import datetime
 import json
@@ -29,6 +30,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 from operator_module.operator_dashboard_test import OperatorDashboardTest
 from technician_module.technician_dashboard_test import TechnicianDashboardTest
+
 # from utils.trigger_downtime import TriggerDowntime
 from socketio_utils.socketio_manager import SocketIOManager
 from utils.quantity_data import QuantityData
@@ -39,24 +41,28 @@ from utils.time_data import TimeData
 
 # from utils.trigger_downtime import TriggerDowntime
 
-sio = socketio.Client(reconnection=True, reconnection_attempts=5,
-                      reconnection_delay=1, reconnection_delay_max=5)
+sio = socketio.Client(
+    reconnection=True,
+    reconnection_attempts=5,
+    reconnection_delay=1,
+    reconnection_delay_max=5,
+)
 client = str(uuid.uuid4())
 filename = os.path.basename(__file__)
-removeExtension = re.sub('.py', '', filename)
+removeExtension = re.sub(".py", "", filename)
 
 
 @sio.event
 def connect():
-    print('Connected to server')
-    sio.emit('client_connected', {'machine_name': filename, 'client': client})
-    sio.emit('controller', {'machine_name': filename})
-    sio.emit('client', {'machine_name': filename, 'client': client})
+    print("Connected to server")
+    sio.emit("client_connected", {"machine_name": filename, "client": client})
+    sio.emit("controller", {"machine_name": filename})
+    sio.emit("client", {"machine_name": filename, "client": client})
 
 
 @sio.event
 def disconnect():
-    print('disconnected to server')
+    print("disconnected to server")
 
 
 class UserPermissions:
@@ -171,7 +177,7 @@ class DashboardGUI:
         self.downtime_started = self.load_downtime_state()
 
         self.quantity_data = QuantityData("../data")
-        self.get_data = TimeData('../data')
+        self.get_data = TimeData("../data")
         self.ticket_inspector = TicketChecker()
         self.ticket_present = self.ticket_inspector.checking()
         # self.sio_manager = SocketIOManager()
@@ -210,8 +216,12 @@ class DashboardGUI:
         self.height = 600
         self.screenwidth = self.root.winfo_screenwidth()
         self.screenheight = self.root.winfo_screenheight()
-        alignstr = '%dx%d+%d+%d' % (self.width, self.height, (self.screenwidth -
-                                                              self.width) / 2, (self.screenheight - self.height) / 2)
+        alignstr = "%dx%d+%d+%d" % (
+            self.width,
+            self.height,
+            (self.screenwidth - self.width) / 2,
+            (self.screenheight - self.height) / 2,
+        )
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
 
@@ -223,43 +233,22 @@ class DashboardGUI:
             width=1024,
             bd=0,
             highlightthickness=0,
-            relief="ridge"
+            relief="ridge",
         )
         self.canvas.place(x=0, y=0)
         self.canvas.create_rectangle(
-            0.0,
-            0.0,
-            1024.0,
-            100.0,
-            fill="#FFFFFF",
-            outline=""
+            0.0, 0.0, 1024.0, 100.0, fill="#FFFFFF", outline=""
         )
 
         self.canvas.create_rectangle(
-            31.0,
-            10.0,
-            282.0,
-            86.97332763671875,
-            fill="#D3F9D8",
-            outline="")
-
-        self.image_1 = self.canvas.create_image(
-            516.0,
-            49.0,
-            image=self.tk_image_1
+            31.0, 10.0, 282.0, 86.97332763671875, fill="#D3F9D8", outline=""
         )
 
-        self.image_2 = self.canvas.create_image(
-            872.0,
-            49.0,
-            image=self.tk_image_2
-        )
+        self.image_1 = self.canvas.create_image(516.0, 49.0, image=self.tk_image_1)
 
-        entry_bg_1 = self.canvas.create_image(
-            533.5,
-            50.0,
-            image=self.tk_entry_1
-        )
+        self.image_2 = self.canvas.create_image(872.0, 49.0, image=self.tk_image_2)
+
+        entry_bg_1 = self.canvas.create_image(533.5, 50.0, image=self.tk_entry_1)
         self.employee_id = Entry(
             self.root,
             bd=0,
@@ -267,50 +256,24 @@ class DashboardGUI:
             fg="#000716",
             highlightthickness=0,
             font=("arial", 30),
-            justify='center'  # Set text alignment to center
+            justify="center",  # Set text alignment to center
         )
 
-        self.employee_id.place(
-            x=378.0,
-            y=28.0,
-            width=311.0,
-            height=42.0
-        )
+        self.employee_id.place(x=378.0, y=28.0, width=311.0, height=42.0)
 
         self.employee_id.bind("<KeyRelease>", self.validate_employee_number)
 
-        image_3 = self.canvas.create_image(
-            782.0,
-            48.0,
-            image=self.tk_image_3
-        )
+        image_3 = self.canvas.create_image(782.0, 48.0, image=self.tk_image_3)
 
         self.clock = self.canvas.create_text(
-            806.0,
-            38.0,
-            anchor="nw",
-            fill="#343A40",
-            font=("Roboto Regular", 16 * -1)
+            806.0, 38.0, anchor="nw", fill="#343A40", font=("Roboto Regular", 16 * -1)
         )
 
-        image_4 = self.canvas.create_image(
-            64.0,
-            47.0,
-            image=self.tk_image_4
-        )
+        image_4 = self.canvas.create_image(64.0, 47.0, image=self.tk_image_4)
 
-        image_5 = self.canvas.create_image(
-            64.0,
-            47.0,
-            image=self.tk_image_5
+        image_5 = self.canvas.create_image(64.0, 47.0, image=self.tk_image_5)
 
-        )
-
-        image_6 = self.canvas.create_image(
-            512.0,
-            259.0,
-            image=self.tk_image_6
-        )
+        image_6 = self.canvas.create_image(512.0, 259.0, image=self.tk_image_6)
 
         self.canvas.create_text(
             97.0,
@@ -318,7 +281,7 @@ class DashboardGUI:
             anchor="nw",
             text="MACHINE",
             fill="#343A40",
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
 
         self.canvas.create_text(
@@ -327,46 +290,22 @@ class DashboardGUI:
             anchor="nw",
             text="ONLINE",
             fill="#343A40",
-            font=("Roboto Medium", 24 * -1)
+            font=("Roboto Medium", 24 * -1),
         )
 
-        image_7 = self.canvas.create_image(
-            167.0,
-            259.0,
-            image=self.tk_image_7
-        )
+        image_7 = self.canvas.create_image(167.0, 259.0, image=self.tk_image_7)
 
-        image_8 = self.canvas.create_image(
-            167.0,
-            260.0,
-            image=self.oee_img
-        )
+        image_8 = self.canvas.create_image(167.0, 260.0, image=self.oee_img)
 
-        image_9 = self.canvas.create_image(
-            340.0,
-            509.0,
-            image=self.tk_image_9
-        )
+        image_9 = self.canvas.create_image(340.0, 509.0, image=self.tk_image_9)
 
         self.machine_data_lbl = self.canvas.create_text(
-            24.0,
-            442.0,
-            anchor="nw",
-            fill="#343A40",
-            font=("Roboto Medium", 20 * -1)
+            24.0, 442.0, anchor="nw", fill="#343A40", font=("Roboto Medium", 20 * -1)
         )
 
-        image_10 = self.canvas.create_image(
-            855.0,
-            509.0,
-            image=self.tk_image_10
-        )
+        image_10 = self.canvas.create_image(855.0, 509.0, image=self.tk_image_10)
 
-        image_11 = self.canvas.create_image(
-            856.0,
-            259.0,
-            image=self.tk_image_11
-        )
+        image_11 = self.canvas.create_image(856.0, 259.0, image=self.tk_image_11)
 
         self.canvas.create_text(
             700.0,
@@ -375,7 +314,7 @@ class DashboardGUI:
             # text="LOGS",
             fill="#343A40",
             width=100,
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
 
         self.canvas.create_text(
@@ -384,7 +323,7 @@ class DashboardGUI:
             anchor="nw",
             text="Total Quantity",
             fill="#343A40",
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
 
         self.canvas.create_text(
@@ -402,41 +341,21 @@ class DashboardGUI:
             anchor="nw",
             text="Process Capability Index",
             fill="#343A40",
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
 
-        image_12 = self.canvas.create_image(
-            362.0,
-            49.0,
-            image=self.tk_image_12
-        )
+        image_12 = self.canvas.create_image(362.0, 49.0, image=self.tk_image_12)
 
         self.button_1 = Button(
-            image=self.tk_btn_1,
-            borderwidth=0,
-            highlightthickness=0,
-            relief="flat"
+            image=self.tk_btn_1, borderwidth=0, highlightthickness=0, relief="flat"
         )
 
-        image_13 = self.canvas.create_image(
-            871.0,
-            263.0,
-            image=self.total_img
+        image_13 = self.canvas.create_image(871.0, 263.0, image=self.total_img)
 
-        )
-
-        image_14 = self.canvas.create_image(
-            512.0,
-            264.0,
-            image=self.line_graph_img
-        )
+        image_14 = self.canvas.create_image(512.0, 264.0, image=self.line_graph_img)
 
         self.set_logs = self.canvas.create_text(
-            709.0,
-            435.0,
-            anchor="nw",
-            fill="#343A40",
-            font=("Roboto Medium", 8 * -1)
+            709.0, 435.0, anchor="nw", fill="#343A40", font=("Roboto Medium", 8 * -1)
         )
 
         # Add the rest of your GUI elements here
@@ -445,88 +364,111 @@ class DashboardGUI:
         return os.path.dirname(os.path.abspath(__file__))
 
     def update_clock(self):
-        current_time = time.strftime('%H:%M:%S')
-        current_date = time.strftime('%Y-%m-%d')
+        current_time = time.strftime("%H:%M:%S")
+        current_date = time.strftime("%Y-%m-%d")
 
-        dateNTime = current_date + ' ' + current_time
+        dateNTime = current_date + " " + current_time
         self.canvas.itemconfig(self.clock, text=dateNTime)
         self.root.after(1000, self.update_clock)
 
     def create_total_qty_graph(self):
         self.quantity_data = QuantityData("../data")
-        if self.quantity_data.total_running_qty() == 0 and self.quantity_data.total_remaining_qty() == 0:
+        if (
+            self.quantity_data.total_running_qty() == 0
+            and self.quantity_data.total_remaining_qty() == 0
+        ):
             return None
 
-        result_qty = self.quantity_data.total_running_qty(
-        ) - self.quantity_data.total_remaining_qty()
+        result_qty = (
+            self.quantity_data.total_running_qty()
+            - self.quantity_data.total_remaining_qty()
+        )
         data = [self.quantity_data.total_remaining_qty(), result_qty]
-        labels = ['', '']
-        colors = ['#4CAF50', '#e74c3c']
+        labels = ["", ""]
+        colors = ["#4CAF50", "#e74c3c"]
         explode = (0.05, 0)
 
         figure = Figure(figsize=(3, 2), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
-        autotexts = plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
-                             startangle=90, pctdistance=0.85, explode=explode)
+        autotexts = plot.pie(
+            data,
+            labels=labels,
+            colors=colors,
+            autopct="%1.1f%%",
+            startangle=90,
+            pctdistance=0.85,
+            explode=explode,
+        )
 
-        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+        centre_circle = plt.Circle((0, 0), 0.70, fc="white")
         plot.add_artist(centre_circle)
 
-        plot.set_facecolor('none')
-        plot.axis('equal')
+        plot.set_facecolor("none")
+        plot.axis("equal")
 
-        autopct_values = [f'{p}' for p in autotexts]
-        legend_labels = ['QUANTITY COMPLETED', 'PROCESS QUANTITY']
+        autopct_values = [f"{p}" for p in autotexts]
+        legend_labels = ["QUANTITY COMPLETED", "PROCESS QUANTITY"]
 
         # Move the legend outside the plot
-        plot.legend(legend_labels, loc='center right',
-                    bbox_to_anchor=(1, 0.5), fontsize='small')
+        plot.legend(
+            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize="small"
+        )
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
         canvas_widget = canvas.get_tk_widget()
 
         canvas.draw()
         pil_image = Image.frombytes(
-            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
+            "RGB", canvas.get_width_height(), canvas.tostring_rgb()
+        )
         img = ImageTk.PhotoImage(image=pil_image)
 
         return img
 
     def create_oee_graph(self):
-        self.get_data = TimeData('../data')
+        self.get_data = TimeData("../data")
         calculated_oee = self.get_data.calculate_oee()
         calculated_oee = max(0, min(calculated_oee, 100))
 
         total = 100 - calculated_oee
         data = [calculated_oee, total]
-        labels = ['', '']
-        colors = ['#4CAF50', '#e74c3c']
+        labels = ["", ""]
+        colors = ["#4CAF50", "#e74c3c"]
         explode = (0.05, 0)
 
         figure = Figure(figsize=(3, 2), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
-        autotexts = plot.pie(data, labels=labels, colors=colors, autopct='%1.1f%%',
-                             startangle=90, pctdistance=0.85, explode=explode)
+        autotexts = plot.pie(
+            data,
+            labels=labels,
+            colors=colors,
+            autopct="%1.1f%%",
+            startangle=90,
+            pctdistance=0.85,
+            explode=explode,
+        )
 
-        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+        centre_circle = plt.Circle((0, 0), 0.70, fc="white")
         plot.add_artist(centre_circle)
 
-        plot.set_facecolor('none')
-        plot.axis('equal')
+        plot.set_facecolor("none")
+        plot.axis("equal")
 
-        autopct_values = [f'{p}' for p in autotexts]
-        legend_labels = ['EFFECTIVENESS', 'INEFFECTIVENESS']
+        autopct_values = [f"{p}" for p in autotexts]
+        legend_labels = ["EFFECTIVENESS", "INEFFECTIVENESS"]
 
         # Move the legend outside the plot
-        plot.legend(legend_labels, loc='center right',
-                    bbox_to_anchor=(1, 0.5), fontsize='small')
+        plot.legend(
+            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize="small"
+        )
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
         canvas_widget = canvas.get_tk_widget()
 
         canvas.draw()
         pil_image = Image.frombytes(
-            'RGB', canvas.get_width_height(), canvas.tostring_rgb())
+            "RGB", canvas.get_width_height(), canvas.tostring_rgb()
+        )
         img = ImageTk.PhotoImage(image=pil_image)
 
         return img
@@ -538,8 +480,8 @@ class DashboardGUI:
         days = np.arange(1, 8)
         values = [10, 0, 2, 11, 4, 2, 15]
 
-        ax.plot(days, values, marker='o', label="7-Day Data")
-        plt.rcParams.update({'font.size': 6})
+        ax.plot(days, values, marker="o", label="7-Day Data")
+        plt.rcParams.update({"font.size": 6})
         ax.set_xlabel("Day")
         ax.set_ylabel("Value")
         ax.set_title("CPK GRAPH")
@@ -558,12 +500,13 @@ class DashboardGUI:
 
     def update_logs(self):
         log_file_path = os.path.join(
-            self.get_script_directory(), 'data/logs', 'activity_log.txt')
+            self.get_script_directory(), "data/logs", "activity_log.txt"
+        )
         try:
-            with open(log_file_path, 'r') as file:
+            with open(log_file_path, "r") as file:
                 log_content = file.read()
-            lines = log_content.split('\n')
-            last_5_logs = '\n'.join(lines[-16:])
+            lines = log_content.split("\n")
+            last_5_logs = "\n".join(lines[-16:])
             self.canvas.itemconfig(self.set_logs, text=last_5_logs)
 
         except FileNotFoundError:
@@ -572,12 +515,7 @@ class DashboardGUI:
 
     def online_status_card(self):
         self.canvas.create_rectangle(
-            31.0,
-            10.0,
-            282.0,
-            86.97332763671875,
-            fill="#D3F9D8",
-            outline=""
+            31.0, 10.0, 282.0, 86.97332763671875, fill="#D3F9D8", outline=""
         )
         self.canvas.create_text(
             97.0,
@@ -585,7 +523,7 @@ class DashboardGUI:
             anchor="nw",
             text="MACHINE",
             fill="#343A40",
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
         self.canvas.create_text(
             97.0,
@@ -593,22 +531,13 @@ class DashboardGUI:
             anchor="nw",
             text="ONLINE",
             fill="#343A40",
-            font=("Roboto Medium", 24 * -1)
+            font=("Roboto Medium", 24 * -1),
         )
-        self.image_image_2 = self.canvas.create_image(
-            64.0,
-            47.0,
-            image=self.tk_image_5
-        )
+        self.image_image_2 = self.canvas.create_image(64.0, 47.0, image=self.tk_image_5)
 
     def offline_status_card(self):
         self.canvas.create_rectangle(
-            31.0,
-            10.0,
-            282.0,
-            86.97332763671875,
-            fill="#FFCECE",
-            outline=""
+            31.0, 10.0, 282.0, 86.97332763671875, fill="#FFCECE", outline=""
         )
         self.canvas.create_text(
             97.0,
@@ -616,7 +545,7 @@ class DashboardGUI:
             anchor="nw",
             text="MACHINE",
             fill="#343A40",
-            font=("Roboto Medium", 14 * -1)
+            font=("Roboto Medium", 14 * -1),
         )
         self.canvas.create_text(
             97.0,
@@ -624,23 +553,22 @@ class DashboardGUI:
             anchor="nw",
             text="OFFLINE",
             fill="#343A40",
-            font=("Roboto Medium", 24 * -1)
+            font=("Roboto Medium", 24 * -1),
         )
-        self.image_image_1 = self.canvas.create_image(
-            64.0,
-            47.0,
-            image=self.tk_image_4
-        )
+        self.image_image_1 = self.canvas.create_image(64.0, 47.0, image=self.tk_image_4)
 
     def update_status(self):
-        statusHere = StatusUpdate('data/logs/logs.csv')
+        statusHere = StatusUpdate("data/logs/logs.csv")
         getStatus = statusHere.get_last_log_value()
         if getStatus is None or False:
             pass
-        elif getStatus == 'ONLINE':
+        elif getStatus == "ONLINE":
             self.online_status_card()
+            self.verify_ticket_status()
+            # self.downtime_started = False
         else:
             self.offline_status_card()
+          
             self.delete_file_data()
         self.root.after(1000, self.update_status)
 
@@ -649,12 +577,9 @@ class DashboardGUI:
 
     def enable_label(self):
         self.button_1.place(
-            x=689.0,
-            y=553.0725708007812,
-            width=335.0,
-            height=45.92742919921875
+            x=689.0, y=553.0725708007812, width=335.0, height=45.92742919921875
         )
-        
+
     def checking_ticket(self):
         pass
         # if self.ticket_present:
@@ -675,31 +600,32 @@ class DashboardGUI:
             if self.downtime_started:
                 self.downtime_started = False
                 self.log_event("DOWNTIME_STOP")
+        self.root.after(1000, self.verify_ticket_status)
 
+        
     def log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
 
-        with open('data/logs/downtime.csv', mode="a", newline="") as csv_file:
+        with open("data/logs/downtime.csv", mode="a", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
 
     def load_downtime_state(self):
         try:
-            with open('config/downtime_state.json', 'r') as state_file:
+            with open("config/downtime_state.json", "r") as state_file:
                 state = json.load(state_file)
-                return state.get('downtime_started', False)
+                return state.get("downtime_started", False)
         except FileNotFoundError:
             return False
 
     def save_downtime_state(self):
-        with open('config/downtime_state.json', 'w') as state_file:
-            json.dump({'downtime_started': self.downtime_started}, state_file)
+        with open("config/downtime_state.json", "w") as state_file:
+            json.dump({"downtime_started": self.downtime_started}, state_file)
 
     def socketio_path(self):
-        path_here = os.path.join(
-            self.get_script_directory(), "data", 'main.json')
+        path_here = os.path.join(self.get_script_directory(), "data", "main.json")
         return path_here
 
     def check_internet_connection_requests(self):
@@ -725,22 +651,24 @@ class DashboardGUI:
     def validate_online_employee(self, employee_number):
         try:
             employee_number = int(employee_number)
-            hris_url = f'http://hris.teamglac.com/api/users/emp-num?empno={employee_number}'
+            hris_url = (
+                f"http://hris.teamglac.com/api/users/emp-num?empno={employee_number}"
+            )
             response = requests.get(hris_url)
 
             if response.status_code == 200:
                 try:
-                    data = json.loads(response.text)['result']
+                    data = json.loads(response.text)["result"]
 
                     # Check if data is a dictionary before accessing its values
                     if isinstance(data, dict):
-                        user_department = data.get('employee_department')
-                        fullname = data.get('fullname')
-                        user_position = data.get('employee_position')
-                        employee_no = data.get('employee_no')
-                        employee_department = data.get('employee_department')
-                        photo_url = data.get('photo_url')
-                        username = data.get('username')
+                        user_department = data.get("employee_department")
+                        fullname = data.get("fullname")
+                        user_position = data.get("employee_position")
+                        employee_no = data.get("employee_no")
+                        employee_department = data.get("employee_department")
+                        photo_url = data.get("photo_url")
+                        username = data.get("username")
 
                         data = [
                             user_department,
@@ -749,13 +677,14 @@ class DashboardGUI:
                             employee_department,
                             photo_url,
                             user_position,
-                            username
+                            username,
                         ]
-                        dataJson = {'data': data}
+                        dataJson = {"data": data}
 
                         if user_department and user_position:
                             self.validate_permissions(
-                                user_department, user_position, dataJson)
+                                user_department, user_position, dataJson
+                            )
                         else:
                             pass
                             # print(
@@ -771,24 +700,24 @@ class DashboardGUI:
                 print("Error accessing HRIS API:", response.status_code)
         except ValueError:
             tk.messagebox.showerror(
-                "Invalid Input", "Please enter a valid integer employee number.")
+                "Invalid Input", "Please enter a valid integer employee number."
+            )
 
     def validate_offline_employee(self, employee_number):
-        log_file_path = os.path.join(
-            self.get_script_directory(), "config", 'hris.json')
+        log_file_path = os.path.join(self.get_script_directory(), "config", "hris.json")
 
         with open(log_file_path, "r") as json_file:
-            data = json.load(json_file)['result']
+            data = json.load(json_file)["result"]
 
         matching_employee = None
         for employee in data:
-            if employee.get('employee_id_no') == employee_number:
+            if employee.get("employee_id_no") == employee_number:
                 matching_employee = employee
                 break
 
         if matching_employee:
-            user_department = matching_employee.get('employee_department')
-            user_position = matching_employee.get('employee_position')
+            user_department = matching_employee.get("employee_department")
+            user_position = matching_employee.get("employee_position")
             # user_empNo = matching_employee.get('employee_id_no')
 
             self.validate_permissions(user_department, user_position)
@@ -799,51 +728,58 @@ class DashboardGUI:
         self.employee_number = self.employee_id.get()
 
         permissions = self.load_permissions()
-        if permissions.is_department_allowed(user_department) and permissions.is_position_allowed(user_position):
+        if permissions.is_department_allowed(
+            user_department
+        ) and permissions.is_position_allowed(user_position):
             if permissions.is_technician(user_position):
-                self.show_tech_dashboard(
-                    user_department, user_position, dataJson)
+                self.show_tech_dashboard(user_department, user_position, dataJson)
             elif permissions.is_operator(user_position):
                 print(f"{user_position} is an operator.")
-                self.show_operator_dashboard(
-                    user_department, user_position, dataJson)
+                self.show_operator_dashboard(user_department, user_position, dataJson)
                 data = {
-                    "msg": f'User login successful. ID NUM: {self.employee_number}',
-                    "emp_id": self.employee_number
+                    "msg": f"User login successful. ID NUM: {self.employee_number}",
+                    "emp_id": self.employee_number,
                 }
-                sio.emit('activity_log', {
-                    'data': data})
+                sio.emit("activity_log", {"data": data})
                 self.log_activity(
-                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
-                sio.emit('activity_log', {'data': data})
+                    logging.INFO,
+                    f"User login successful. ID NUM: {self.employee_number}",
+                )
+                sio.emit("activity_log", {"data": data})
 
             else:
                 self.log_activity(
-                    logging.INFO,  f'User login successful. ID NUM: {self.employee_number}')
+                    logging.INFO,
+                    f"User login successful. ID NUM: {self.employee_number}",
+                )
                 data = {
                     "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
-                    "emp_id": self.employee_number
+                    "emp_id": self.employee_number,
                 }
-                sio.emit('activity_log', {
-                    'data': data})
-                showerror(title='Login Failed',
-                          message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
+                sio.emit("activity_log", {"data": data})
+                showerror(
+                    title="Login Failed",
+                    message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}",
+                )
 
         else:
             self.log_activity(
-                logging.INFO, f'User login unsuccessful. ID NUM: {self.employee_number}')
+                logging.INFO, f"User login unsuccessful. ID NUM: {self.employee_number}"
+            )
             data = {
                 "msg": f"User's department or position is not allowed. Please check, Current Department / Position: {user_department} {user_position}",
-                "emp_id": self.employee_number
+                "emp_id": self.employee_number,
             }
-            sio.emit('activity_log', {
-                     'data': data})
-            showerror(title='Login Failed',
-                      message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}")
+            sio.emit("activity_log", {"data": data})
+            showerror(
+                title="Login Failed",
+                message=f"User's department or position is not allowed. Please check, Current Department / Possition  {user_department + ' ' + user_position}",
+            )
 
     def load_permissions(self):
         log_file_path = os.path.join(
-            self.get_script_directory(), "config", 'settings.json')
+            self.get_script_directory(), "config", "settings.json"
+        )
         permissions = UserPermissions(log_file_path)
         permissions.load_permissions()
         return permissions
@@ -851,19 +787,23 @@ class DashboardGUI:
     def checking_allowed_user(self):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         log_folder = os.path.join(script_directory, "config")
-        log_file_path = os.path.join(log_folder, 'settings.json')
+        log_file_path = os.path.join(log_folder, "settings.json")
         try:
-            with open(log_file_path, 'r') as file:
+            with open(log_file_path, "r") as file:
                 log_content = file.read()
-                result = log_content['allowed_users']
+                result = log_content["allowed_users"]
         except FileNotFoundError as e:
             print(e)
 
     def init_logging(self):
-        log_file = 'data/logs/activity_log.txt'
-        logging.basicConfig(filename=log_file, level=logging.INFO,
-                            format='[%(asctime)s] %(levelname)s: %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S', filemode='a')
+        log_file = "data/logs/activity_log.txt"
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format="[%(asctime)s] %(levelname)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+            filemode="a",
+        )
         # print(f'Logging to {log_file}')-
 
     def log_activity(self, level, message):
@@ -871,70 +811,64 @@ class DashboardGUI:
 
     def show_operator_dashboard(self, user_department, user_position, data_json):
         OpeDashboard = tk.Toplevel(self.root)
-        assets_dir = 'assets'
+        assets_dir = "assets"
         ope_dashboard = OperatorDashboardTest(
             OpeDashboard, user_department, user_position, data_json, assets_dir)
         self.root.withdraw()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
         techDashboard = Toplevel(self.root)
-        assets_dir = 'assets'
+        assets_dir = "assets"
         tech_dashboard = TechnicianDashboardTest(
             techDashboard, user_department, user_position, dataJson, assets_dir)
         self.root.withdraw()
 
     def mch_label(self):
-        machine_details = f"""DOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nPRODUCTIVE HRS: \t{self.get_productive_hrs}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nTOTAL IDLE HRS: \t\t{self.get_idle_hrs}\nQTY PROCESSED: \t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
+        machine_details = f"""PRODUCTIVE HRS: \t{self.get_productive_hrs}\nTOTAL IDLE HRS: \t\t{self.get_idle_hrs}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
         """
         # print('test')
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
         self.root.after(1000, self.mch_label)
 
     def delete_file_data(self):
-        idle = os.path.join(
-            self.get_script_directory(), "data/logs", 'idle.csv')
+        idle = os.path.join(self.get_script_directory(), "data/logs", "idle.csv")
         downtime = os.path.join(
-            self.get_script_directory(), "data/logs", 'downtime.csv')
-        productive_hrs = os.path.join(
-            self.get_script_directory(), "data", 'time.csv')
-        total_avail_hrs = os.path.join(
-            self.get_script_directory(), "data/logs", 'logs.csv')
+            self.get_script_directory(), "data/logs", "downtime.csv"
+        )
+        productive_hrs = os.path.join(self.get_script_directory(), "data", "time.csv")
+        total_avail_hrs = os.path.join(self.get_script_directory(), "data/logs", "logs.csv")
         try:
-            with open(idle, 'w') as file:
+            with open(idle, "w") as file:
                 file.truncate(0)
-            with open(productive_hrs, 'w') as file:
+            with open(productive_hrs, "w") as file:
                 file.truncate(0)
-            with open(downtime, 'w') as file:
+            with open(downtime, "w") as file:
                 file.truncate(0)
-            with open(total_avail_hrs, 'w') as file:
+            with open(total_avail_hrs, "w") as file:
                 file.truncate(0)
         except IOError:
             print(f"Error deleting data in '{filename}'.")
 
     @sio.event
     def my_message(data):
-        print('Message received with', data)
-        toPassData = data['dataToPass']
-        machno = data['machno']
-        remove_py = re.sub('.py', '', filename)
-        fileNameWithIni = 'main.json'
-        folder_path = 'data'
-        file_path = f'{folder_path}/{fileNameWithIni}'
+        print("Message received with", data)
+        toPassData = data["dataToPass"]
+        machno = data["machno"]
+        remove_py = re.sub(".py", "", filename)
+        fileNameWithIni = "main.json"
+        folder_path = "data"
+        file_path = f"{folder_path}/{fileNameWithIni}"
 
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        with open(file_path, 'w') as file:
-            data = {
-                'machno': machno,
-                'filename': remove_py,
-                'data': toPassData
-            }
+        with open(file_path, "w") as file:
+            data = {"machno": machno, "filename": remove_py, "data": toPassData}
             json.dump(data, file)
-        sio.emit('my_response', {'response': 'my response'})
+        sio.emit("my_response", {"response": "my response"})
 
 
-sio.connect('http://10.0.2.150:8083')
+sio.connect("http://192.168.1.84:8083")
 
 
 if __name__ == "__main__":

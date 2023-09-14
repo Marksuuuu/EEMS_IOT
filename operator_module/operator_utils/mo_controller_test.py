@@ -640,7 +640,6 @@ class MoDetailsTest:
             pass
 
     # If the file was empty or not found, you can handle it here
-    print("MO logs file is empty or not found")
 
 
     def show_input_dialog(self):
