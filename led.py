@@ -16,14 +16,20 @@ def initialize_gpio():
 # Turn on the GREEN LED
 def turn_on_green():
     GPIO.output(GREEN_PIN, GPIO.HIGH)
+    GPIO.output(ORANGE_PIN, GPIO.LOW)
+    GPIO.output(RED_PIN, GPIO.LOW)
 
 # Turn on the ORANGE LED
 def turn_on_orange():
     GPIO.output(ORANGE_PIN, GPIO.HIGH)
+    GPIO.output(GREEN_PIN, GPIO.LOW)
+    GPIO.output(RED_PIN, GPIO.LOW)
 
 # Turn on the RED LED
 def turn_on_red():
     GPIO.output(RED_PIN, GPIO.HIGH)
+    GPIO.output(GREEN_PIN, GPIO.LOW)
+    GPIO.output(ORANGE_PIN, GPIO.LOW)
 
 # Turn off all LEDs
 def turn_off_all():
@@ -42,16 +48,13 @@ if __name__ == "__main__":
         # Test the LEDs
         turn_on_green()
         time.sleep(2)  # Keep GREEN LED on for 2 seconds
-        turn_off_all()
-        time.sleep(1)  # Wait for 1 second
 
         turn_on_orange()
         time.sleep(2)  # Keep ORANGE LED on for 2 seconds
-        turn_off_all()
-        time.sleep(1)  # Wait for 1 second
 
         turn_on_red()
         time.sleep(2)  # Keep RED LED on for 2 seconds
+
         turn_off_all()
 
     except KeyboardInterrupt:
