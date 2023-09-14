@@ -1,11 +1,12 @@
 import tkinter as tk
 import os
+import csv
 from pathlib import Path
 from PIL import Image, ImageTk
 import json
 import tkinter.font as tkFont
 from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showerror
 
@@ -13,17 +14,18 @@ import requests
 from utils.ticket_status import TicketChecker
 
 class RequestTicketTest:
-    def __init__(self, root, extracted_fullname, extracted_employee_no, assets_dir, data):
+    def __init__(self, root, extracted_fullname, extracted_employee_no, assets_dir, data, show_ticket_button):
         self.root = root
         root.title("Ticket Request")
         self.assets_dir = assets_dir
         self.root.geometry("933x563")
         self.root.configure(bg="#FFFFFF")
-        
+        self.show_ticket_button = show_ticket_button
         # self.root.overrideredirect(True) 
         # self.root.update_idletasks()
         self.center_window()
 
+        self.downtime_started = self.load_downtime_state()
 
         self.fullname = extracted_fullname
         self.employee_no = extracted_employee_no
@@ -33,7 +35,6 @@ class RequestTicketTest:
         self.current_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
         self.wip_entity_name = data[6]
-        print('self.wip_entity_name: ', self.wip_entity_name)
 
         self.dropdown_var = tk.StringVar()
 
@@ -52,7 +53,7 @@ class RequestTicketTest:
         button2 = "assets/frame_ticket/button_2.png"
         entry1 = "assets/frame_ticket/entry_1.png"
         
-        button3 = "assets\\frame_operator\\button_3.png"
+        button3 = "assets/frame_operator/button_3.png"
         button3_pill = Image.open(button3)
         self.tk_btn_3 = ImageTk.PhotoImage(button3_pill)
 
@@ -226,9 +227,14 @@ class RequestTicketTest:
             relief="flat",
         )
         self.button_3.place(x=884.0, y=0.0, width=49.0, height=37.0)
+        self.save_downtime_state()
+        self.verify_ticket_status()
 
         # self.root.attributes('-topmost', True)
         self.root.resizable(False, False)
+
+
+
 
     def set_working_directory(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -298,6 +304,7 @@ class RequestTicketTest:
             "downtime_type_id": downtime_type_id,
             "checkbox_value": checkbox_value,
             "remarks_value": remarks_value,
+            "date_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
         }
 
         # Add the new entry to the existing data
@@ -320,6 +327,7 @@ class RequestTicketTest:
                 self.root.destroy()
             else:
                 dtno_value = value_url["dtno"]
+                self.verify_ticket_status()
                 showinfo(
                     "Success", f"Job order created successfully. \nDTNO {dtno_value}"
                 )
@@ -327,6 +335,33 @@ class RequestTicketTest:
                 print(value_url["dtno"])
         else:
             showerror("Error", "Error in creating job order.")
+
+
+    def verify_ticket_status(self):
+        ticket_inspector = TicketChecker()
+        ticket_present = ticket_inspector.checking()
+
+        if ticket_present:
+            if not self.downtime_started:
+                self.show_ticket_button()
+                self.downtime_started = True
+                self.log_event("DOWNTIME_START")
+        else:
+            if self.downtime_started:
+                # self.hide_ticket_button()
+                self.downtime_started = False
+                self.log_event("DOWNTIME_STOP")
+        self.root.after(1000, self.verify_ticket_status)
+        
+    def log_event(self, msg):
+        current_time = datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open("data/logs/downtime.csv", mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
 
     def get_selected_downtime_type_id(self):
         selected_text = self.dropdown_var.get()
@@ -336,35 +371,29 @@ class RequestTicketTest:
                 selected_id = item["ID"]
                 break
         return selected_id
-    
-    def verify_ticket_status(self):
-        ticket_inspector = TicketChecker()
-        ticket_present = ticket_inspector.checking()
 
-        if ticket_present:
-            self.show_ticket_button()
-            # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
-        else:
-            # self.ticket_checking.destroy()
-            print("No ticket found")
-            pass
+    def load_downtime_state(self):
+        try:
+            with open("config/downtime_state.json", "r") as state_file:
+                state = json.load(state_file)
+                return state.get("downtime_started", False)
+        except FileNotFoundError:
+            return False   
 
-    def show_ticket_button(self):
-        self.button_3 = tk.Button(
-            self.root,
-            image=self.tk_btn_3,
-            borderwidth=0,
-            highlightthickness=0,
-            command=self.test,
-            relief="flat",
-        )
+    def save_downtime_state(self):
+        with open("config/downtime_state.json", "w") as state_file:
+            json.dump({"downtime_started": self.downtime_started}, state_file)
+    # def verify_ticket_status(self):
+    #     ticket_inspector = TicketChecker()
+    #     ticket_present = ticket_inspector.checking()
 
-        self.button_3.place(
-            x=326.0,
-            y=115.0,
-            width=372.0,
-            height=51.0
-        )
+    #     if ticket_present:
+    #         self.show_ticket_button()
+    #         # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
+    #     else:
+    #         # self.ticket_checking.destroy()
+    #         print("No ticket found")
+    #         pass
 
 
     def submit(self):

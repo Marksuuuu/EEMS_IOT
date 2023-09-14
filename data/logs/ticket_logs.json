@@ -180,5 +180,364 @@
         "downtime_type_id": "1",
         "checkbox_value": 0,
         "remarks_value": "test"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEst"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "2",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 13:19:03"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 13:20:47"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 13:23:17"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 13:23:17"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:27:06"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:28:04"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:43:57"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:44:48"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 13:46:44"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:48:30"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 13:50:47"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:05:41"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "2",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:08:15"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:18:54"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:22:00"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:29:22"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:29:27"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:29:36"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "3",
+        "checkbox_value": 0,
+        "remarks_value": "TESTING",
+        "date_time": "2023-09-14 14:35:13"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:43:26"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:47:01"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:49:19"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:51:37"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "",
+        "date_time": "2023-09-14 14:54:00"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:56:37"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 14:59:14"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "3",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 15:06:52"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 15:15:19"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": "1",
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 15:21:03"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-14 15:23:44"
     }
 ]

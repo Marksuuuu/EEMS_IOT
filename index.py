@@ -593,7 +593,7 @@ class DashboardGUI:
             self.enable_label()
             if not self.downtime_started:
                 self.downtime_started = True
-                self.log_event("DOWNTIME_START")
+                # self.log_event("DOWNTIME_START")
         else:
             # print(f"💻==>> self.ticket_present: {self.ticket_present}")
             self.disable_label()
@@ -868,7 +868,7 @@ class DashboardGUI:
         sio.emit("my_response", {"response": "my response"})
 
 
-sio.connect("http://192.168.1.84:8083")
+sio.connect("http://192.168.1.84:8085")
 
 
 if __name__ == "__main__":

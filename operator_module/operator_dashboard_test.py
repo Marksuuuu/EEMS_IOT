@@ -110,6 +110,7 @@ class OperatorDashboardTest:
         self.extracted_username = data[6]
 
 
+
         self.idle_started = self.load_idle_state()
         self.details_window = None
         self.ticket_window = None
@@ -271,8 +272,6 @@ class OperatorDashboardTest:
         self.root.resizable(False, False)
         # self.root.attributes('-topmost', True)
 
-    def test(self):
-        print("clicked 1")
 
     def create_tree_view(self):
         self.tree = ttk.Treeview(
@@ -407,7 +406,6 @@ class OperatorDashboardTest:
             image=self.tk_btn_3,
             borderwidth=0,
             highlightthickness=0,
-            command=self.test,
             relief="flat",
         )
 
@@ -743,7 +741,7 @@ class OperatorDashboardTest:
             self.ticket_dashboard = Toplevel(self.root)
             assets_dir = 'assets'
             show_ticket_dashboard = RequestTicketTest(
-                self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir, data)
+                self.ticket_dashboard, self.extracted_fullname, self.extracted_employee_no, assets_dir, data, self.show_ticket_button)
             self.ticket_window = self.ticket_dashboard  # Set the ticket window to the newly opened window
         else:
             self.ticket_window.lift()

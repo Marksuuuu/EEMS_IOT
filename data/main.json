@@ -4,36 +4,36 @@
     "data": [
         {
             "customer": "IXYS",
-            "device": "WP.IXCD1953 M1 MIL",
+            "device": "WP.IXGD1952 1M MIL ENGG",
             "main_opt": "Wafer Saw",
             "operation_seq_number": "10",
             "package": "WP",
-            "running_qty": "18889",
-            "uph": "10353",
-            "wip_entity_id": "846696",
-            "wip_entity_name": "MO842158"
+            "running_qty": "6057",
+            "uph": "13246",
+            "wip_entity_id": "842969",
+            "wip_entity_name": "MO838412"
         },
         {
             "customer": "IXYS",
-            "device": "WP.IXCD1953 M1 MIL",
+            "device": "WP.IXGD1952 1M MIL ENGG",
             "main_opt": "Wafer Saw",
             "operation_seq_number": "10",
             "package": "WP",
-            "running_qty": "18889",
-            "uph": "6921517",
-            "wip_entity_id": "846696",
-            "wip_entity_name": "MO842158"
+            "running_qty": "6057",
+            "uph": "9667009",
+            "wip_entity_id": "842969",
+            "wip_entity_name": "MO838412"
         },
         {
             "customer": "IXYS",
-            "device": "WP.IXCD1953 M1 MIL",
+            "device": "WP.IXGD1952 1M MIL ENGG",
             "main_opt": "Wafer Saw",
             "operation_seq_number": "10",
             "package": "WP",
-            "running_qty": "18889",
-            "uph": "173902",
-            "wip_entity_id": "846696",
-            "wip_entity_name": "MO842158"
+            "running_qty": "6057",
+            "uph": "242883",
+            "wip_entity_id": "842969",
+            "wip_entity_name": "MO838412"
         }
     ]
 }
