@@ -12,7 +12,7 @@ class DownTimeType:
         self.checking()
         
     def read_machno(self):
-        with open("data\main.json", "r") as json_file:
+        with open("data/main.json", "r") as json_file:
             data = json.load(json_file)
             extracted_machno = data["machno"]
         return extracted_machno

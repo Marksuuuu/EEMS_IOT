@@ -101,6 +101,7 @@ class OperatorDashboardTest:
 
         ## GLOBAL VARIABLE ##
         self.root = root
+        self.root.attributes('-fullscreen',True)
         self.extracted_user_department = data[0]
         self.extracted_fullname = data[1]
         self.extracted_employee_no = data[2]

@@ -541,7 +541,7 @@ class MoDetailsTest:
             pass
 
     def read_machno(self): 
-        with open("data\main.json", "r") as json_file:
+        with open("data/main.json", "r") as json_file:
             data = json.load(json_file)
             extracted_data = []
             extracted_machno = data["machno"]

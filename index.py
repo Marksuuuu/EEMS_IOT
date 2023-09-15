@@ -109,6 +109,7 @@ class DashboardGUI:
         self.root.configure(bg="#FBFBFB")
         current_year = datetime.datetime.now().year
         self.root.title(f"EEMS_IOT - © {current_year}")
+        self.root.attributes('-fullscreen',True)
         
         ## GLOBAL VARIABLE ##
 
