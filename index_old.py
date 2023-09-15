@@ -431,8 +431,7 @@ class App:
         OpeDashboard = tk.Toplevel(root)
         assets_dir = 'assets'
 
-        ope_dashboard = OperatorDashboardTest(
-            OpeDashboard, user_department, user_position, data_json, assets_dir)
+        ope_dashboard = OperatorDashboardTest(OpeDashboard, user_department, user_position, data_json, assets_dir)
         root.withdraw()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):

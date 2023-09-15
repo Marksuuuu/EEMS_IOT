@@ -208,6 +208,7 @@ class DashboardGUI:
         self.makeCenter()
         self.mch_label()
         self.checking_ticket()
+        self.update_chart()
 
         ## END ##
 
@@ -246,7 +247,7 @@ class DashboardGUI:
 
         self.image_1 = self.canvas.create_image(516.0, 49.0, image=self.tk_image_1)
 
-        self.image_2 = self.canvas.create_image(872.0, 49.0, image=self.tk_image_2)
+        self.image_2 = self.canvas.create_image(864.0,66.0, image=self.tk_image_2)
 
         entry_bg_1 = self.canvas.create_image(533.5, 50.0, image=self.tk_entry_1)
         self.employee_id = Entry(
@@ -263,10 +264,10 @@ class DashboardGUI:
 
         self.employee_id.bind("<KeyRelease>", self.validate_employee_number)
 
-        image_3 = self.canvas.create_image(782.0, 48.0, image=self.tk_image_3)
+        image_3 = self.canvas.create_image(815.0, 66.0,image=self.tk_image_3)
 
         self.clock = self.canvas.create_text(
-            806.0, 38.0, anchor="nw", fill="#343A40", font=("Roboto Regular", 16 * -1)
+            825.0, 60.0, anchor="nw", fill="#343A40", font=("Roboto Regular", 9 * -1)
         )
 
         image_4 = self.canvas.create_image(64.0, 47.0, image=self.tk_image_4)
@@ -295,7 +296,7 @@ class DashboardGUI:
 
         image_7 = self.canvas.create_image(167.0, 259.0, image=self.tk_image_7)
 
-        image_8 = self.canvas.create_image(167.0, 260.0, image=self.oee_img)
+        self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
 
         image_9 = self.canvas.create_image(340.0, 509.0, image=self.tk_image_9)
 
@@ -350,7 +351,7 @@ class DashboardGUI:
             image=self.tk_btn_1, borderwidth=0, highlightthickness=0, relief="flat"
         )
 
-        image_13 = self.canvas.create_image(871.0, 263.0, image=self.total_img)
+        self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
 
         image_14 = self.canvas.create_image(512.0, 264.0, image=self.line_graph_img)
 
@@ -364,8 +365,8 @@ class DashboardGUI:
         return os.path.dirname(os.path.abspath(__file__))
 
     def update_clock(self):
-        current_time = time.strftime("%H:%M:%S")
-        current_date = time.strftime("%Y-%m-%d")
+        current_time = time.strftime("%I:%M %p")  # Format time in 12-hour with AM/PM
+        current_date = time.strftime("%b/%d/%Y")
 
         dateNTime = current_date + " " + current_time
         self.canvas.itemconfig(self.clock, text=dateNTime)
@@ -388,7 +389,7 @@ class DashboardGUI:
         colors = ["#4CAF50", "#e74c3c"]
         explode = (0.05, 0)
 
-        figure = Figure(figsize=(3, 2), dpi=100)
+        figure = Figure(figsize=(3, 2.5), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
         autotexts = plot.pie(
             data,
@@ -411,7 +412,7 @@ class DashboardGUI:
 
         # Move the legend outside the plot
         plot.legend(
-            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize="small"
+            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize=6.5
         )
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
@@ -422,8 +423,15 @@ class DashboardGUI:
             "RGB", canvas.get_width_height(), canvas.tostring_rgb()
         )
         img = ImageTk.PhotoImage(image=pil_image)
-
         return img
+
+
+    def update_chart(self):
+        self.oee_img = self.create_oee_graph()
+        self.total_img = self.create_total_qty_graph()
+        self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
+        self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
+        self.root.after(5000, self.update_chart)
 
     def create_oee_graph(self):
         self.get_data = TimeData("../data")
@@ -436,7 +444,7 @@ class DashboardGUI:
         colors = ["#4CAF50", "#e74c3c"]
         explode = (0.05, 0)
 
-        figure = Figure(figsize=(3, 2), dpi=100)
+        figure = Figure(figsize=(3, 2.5), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
         autotexts = plot.pie(
             data,
@@ -459,7 +467,7 @@ class DashboardGUI:
 
         # Move the legend outside the plot
         plot.legend(
-            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize="small"
+            legend_labels, loc="center right", bbox_to_anchor=(1, 0.5), fontsize=6.5
         )
 
         canvas = FigureCanvasTkAgg(figure, master=self.root)
@@ -470,6 +478,7 @@ class DashboardGUI:
             "RGB", canvas.get_width_height(), canvas.tostring_rgb()
         )
         img = ImageTk.PhotoImage(image=pil_image)
+
 
         return img
 
@@ -511,7 +520,7 @@ class DashboardGUI:
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
-        self.root.after(60000, self.update_logs)
+        self.root.after(10000, self.update_logs)
 
     def online_status_card(self):
         self.canvas.create_rectangle(
@@ -576,9 +585,19 @@ class DashboardGUI:
         self.button_1.place_forget()
 
     def enable_label(self):
-        self.button_1.place(
-            x=689.0, y=553.0725708007812, width=335.0, height=45.92742919921875
-        )
+
+        self.button_1.place(x=710.0, y=10.0, width=313.64697265625, height=43.0)
+
+        # text_item = self.canvas.create_text(
+        #     873.0,
+        #     0,
+        #     anchor="nw",
+        #     text="DTNO: 1231251\n",
+        #     fill="#000000",
+        #     font=("Roboto Regular", 15 * -1)
+        # )
+
+        # self.canvas.lift(text_item)
 
     def checking_ticket(self):
         pass
@@ -824,7 +843,7 @@ class DashboardGUI:
         self.root.withdraw()
 
     def mch_label(self):
-        machine_details = f"""PRODUCTIVE HRS: \t{self.get_productive_hrs}\nTOTAL IDLE HRS: \t\t{self.get_idle_hrs}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
+        machine_details = f"""PRODUCTIVE HRS: \t{self.get_data.calculate_total_productive_time()}\nTOTAL IDLE HRS: \t\t{self.get_data.calculate_total_idle()}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
         """
         # print('test')
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)

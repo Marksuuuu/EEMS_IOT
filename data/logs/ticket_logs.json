@@ -539,5 +539,13 @@
         "checkbox_value": 0,
         "remarks_value": "TEST",
         "date_time": "2023-09-14 15:23:44"
+    },
+    {
+        "employee_no": "010761",
+        "machine_no_value": "DAD 3350-01",
+        "downtime_type_id": null,
+        "checkbox_value": 0,
+        "remarks_value": "TEST",
+        "date_time": "2023-09-15 09:18:15"
     }
 ]
