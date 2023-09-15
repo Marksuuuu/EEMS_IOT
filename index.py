@@ -112,25 +112,25 @@ class DashboardGUI:
         
         ## GLOBAL VARIABLE ##
 
-        button1 = "assets\\frame_dashboard\\button_1.png"
-        button2 = "assets\\frame_technician\\ticket.png"
+        button1 = "assets/frame_dashboard/button_1.png"
+        button2 = "assets/frame_technician/ticket.png"
 
-        img_1 = "assets\\frame_dashboard\\image_1.png"
-        img_2 = "assets\\frame_dashboard\\image_2.png"
-        img_3 = "assets\\frame_dashboard\\image_3.png"
-        img_4 = "assets\\frame_dashboard\\image_4.png"
-        img_5 = "assets\\frame_dashboard\\image_5.png"
-        img_6 = "assets\\frame_dashboard\\image_6.png"
-        img_7 = "assets\\frame_dashboard\\image_7.png"
-        img_8 = "assets\\frame_dashboard\\image_8.png"
-        img_9 = "assets\\frame_dashboard\\image_9.png"
-        img_10 = "assets\\frame_dashboard\\image_10.png"
-        img_11 = "assets\\frame_dashboard\\image_11.png"
-        img_12 = "assets\\frame_dashboard\\image_12.png"
-        img_13 = "assets\\frame_dashboard\\image_13.png"
-        img_14 = "assets\\frame_dashboard\\image_14.png"
+        img_1 = "assets/frame_dashboard/image_1.png"
+        img_2 = "assets/frame_dashboard/image_2.png"
+        img_3 = "assets/frame_dashboard/image_3.png"
+        img_4 = "assets/frame_dashboard/image_4.png"
+        img_5 = "assets/frame_dashboard/image_5.png"
+        img_6 = "assets/frame_dashboard/image_6.png"
+        img_7 = "assets/frame_dashboard/image_7.png"
+        img_8 = "assets/frame_dashboard/image_8.png"
+        img_9 = "assets/frame_dashboard/image_9.png"
+        img_10 = "assets/frame_dashboard/image_10.png"
+        img_11 = "assets/frame_dashboard/image_11.png"
+        img_12 = "assets/frame_dashboard/image_12.png"
+        img_13 = "assets/frame_dashboard/image_13.png"
+        img_14 = "assets/frame_dashboard/image_14.png"
 
-        entry1 = "assets\\frame_dashboard\\entry_1.png"
+        entry1 = "assets/frame_dashboard/entry_1.png"
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)

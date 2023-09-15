@@ -139,13 +139,13 @@ class OperatorDashboardTest:
         )
 
 
-        button1 = "assets\\frame_operator\\button_1.png"
-        button2 = "assets\\frame_operator\\button_2.png"
-        button3 = "assets\\frame_operator\\button_3.png"
+        button1 = "assets/frame_operator/button_1.png"
+        button2 = "assets/frame_operator/button_2.png"
+        button3 = "assets/frame_operator/button_3.png"
 
-        img_1 = "assets\\frame_operator\\image_1.png"
-        img_2 = "assets\\frame_operator\\image_2.png"
-        img_3 = "assets\\frame_operator\\image_3.png"
+        img_1 = "assets/frame_operator/image_1.png"
+        img_2 = "assets/frame_operator/image_2.png"
+        img_3 = "assets/frame_operator/image_3.png"
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)

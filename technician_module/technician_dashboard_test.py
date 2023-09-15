@@ -60,12 +60,12 @@ class TechnicianDashboardTest:
 
         self.image = ImageTk.PhotoImage(pil_image)
 
-        button1 = "assets\\frame_technician\\sign_out.png"
-        button2 = "assets\\frame_technician\\ticket.png"
+        button1 = "assets/frame_technician/sign_out.png"
+        button2 = "assets/frame_technician/ticket.png"
 
-        img_1 = "assets\\frame_technician\\image_1.png"
-        img_2 = "assets\\frame_technician\\image_2.png"
-        img_3 = "assets\\frame_technician\\image_3.png"
+        img_1 = "assets/frame_technician/image_1.png"
+        img_2 = "assets/frame_technician/image_2.png"
+        img_3 = "assets/frame_technician/image_3.png"
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)
