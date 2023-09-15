@@ -769,6 +769,7 @@ class OperatorDashboardTest:
                 self.details_window, self.extracted_fullname, self.extracted_employee_no,
                 self.extracted_photo_url, self.extracted_username, data, self.update_table, assets_dir)
             self.window_open = True
+            
         else:
             self.details_window.lift()
           

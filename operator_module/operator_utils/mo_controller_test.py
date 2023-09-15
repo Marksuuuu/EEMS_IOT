@@ -502,7 +502,7 @@ class MoDetailsTest:
         self.log_event("START")
         self.checking() #comment this if there is a ticket for testing
 
-        # self.show_stop_btn()  
+        self.show_stop_btn()  
 
     def stop_command(self):
 
@@ -524,19 +524,16 @@ class MoDetailsTest:
                 print("FAILED")
                 # self.start_btn["state"] = "disabled"
                 # self.stop_btn["state"] = "normal"
-
                 self.show_stop_btn()
                 showerror(
                 title="Login Failed",
                 message=f"Password is incorrect. Please try again.",
             )
                 # self.show_input_dialog()
-
             else:
                 # self.start_btn["state"] = "normal"    # Enable the START button
-                print("Success")
                 # self.stop_btn["state"] = "disabled"
-
+                self.root.iconify()
                 self.show_input_dialog()
                 self.mo_data = MOData()
                 self.mo_data.perform_check_and_swap()
@@ -644,13 +641,14 @@ class MoDetailsTest:
 
     def show_input_dialog(self):
 
-        dateTimeNow = self.currentDateTime
-        person_assigned = self.extracted_fullname
-
         total_finished = simpledialog.askstring(
             "Enter Total Number of finished",
             "Please enter the total number of finished items",
         )
+
+        dateTimeNow = self.currentDateTime
+        person_assigned = self.extracted_fullname
+
 
         if os.stat("data/mo_logs.json").st_size == 0:
             if total_finished is not None and total_finished.strip() != "":

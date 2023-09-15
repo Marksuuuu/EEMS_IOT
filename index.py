@@ -109,7 +109,7 @@ class DashboardGUI:
         self.root.configure(bg="#FBFBFB")
         current_year = datetime.datetime.now().year
         self.root.title(f"EEMS_IOT - © {current_year}")
-
+        
         ## GLOBAL VARIABLE ##
 
         button1 = "assets\\frame_dashboard\\button_1.png"
@@ -830,6 +830,7 @@ class DashboardGUI:
 
     def show_operator_dashboard(self, user_department, user_position, data_json):
         OpeDashboard = tk.Toplevel(self.root)
+        # OpeDashboard.attributes('-topmost', True)  
         assets_dir = "assets"
         ope_dashboard = OperatorDashboardTest(
             OpeDashboard, user_department, user_position, data_json, assets_dir)

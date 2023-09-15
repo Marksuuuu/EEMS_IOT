@@ -22,7 +22,6 @@ class QuantityData:
             print("File not found:", log_file_path)
             return 0
         except json.JSONDecodeError:
-            print("Invalid JSON data in file:", log_file_path)
             return 0
 
         total_running_qty = 0
@@ -49,7 +48,6 @@ class QuantityData:
             print("File not found:", log_file_path)
             return 0
         except json.JSONDecodeError:
-            print("Invalid JSON data in file:", log_file_path)
             return 0
         total_remaining_qty = 0
 
