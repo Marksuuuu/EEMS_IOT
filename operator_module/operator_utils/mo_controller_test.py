@@ -423,7 +423,6 @@ class MoDetailsTest:
             for entry in data:
                 if "wip_entity_name" in entry and entry["wip_entity_name"] == self.wip_entity_name:
                     last_person_assigned = entry["last_person_assigned"]
-                    print('last_person_assigned: ', last_person_assigned)
                     self.canvas.itemconfig(self.last_person_ass, text=f"LAST PERSON ASSIGNED: {last_person_assigned}")
                     break  # Exit the loop once the matching entry is found
 
@@ -533,7 +532,7 @@ class MoDetailsTest:
             else:
                 # self.start_btn["state"] = "normal"    # Enable the START button
                 # self.stop_btn["state"] = "disabled"
-                self.root.iconify()
+                # self.root.iconify()
                 self.show_input_dialog()
                 self.mo_data = MOData()
                 self.mo_data.perform_check_and_swap()
@@ -570,7 +569,6 @@ class MoDetailsTest:
                 # self.stop_btn["state"] = "disabled"
 
             else:
-                print("ELSE")
                 self.log_event("START")
                 # self.start_btn["state"] = "normal"
                 self.show_stop_btn()  
@@ -632,10 +630,9 @@ class MoDetailsTest:
                         self.show_label_completed()
                         self.hide_start_and_stop_btn()
                         showinfo("MO COMPLETED!", "MO Already Completed!")
-                        return  # No need to continue processing
+                        self.root.destroy()
         except FileNotFoundError:
             pass
-
     # If the file was empty or not found, you can handle it here
 
 

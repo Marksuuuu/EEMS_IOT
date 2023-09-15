@@ -28,7 +28,7 @@ class TechnicianDashboardTest:
     def __init__(self, root, user_department, user_position, dataJson, assets_dir):
         self.root = root
         self.assets_dir = assets_dir
-        self.root.attributes('-fullscreen',True)
+        # self.root.attributes('-fullscreen',True)
         # self.root.attributes('-topmost', True)
         ## GLOBAL VARIABLE ##
         data = dataJson['data']

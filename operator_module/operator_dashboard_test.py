@@ -101,7 +101,7 @@ class OperatorDashboardTest:
 
         ## GLOBAL VARIABLE ##
         self.root = root
-        self.root.attributes('-fullscreen',True)
+        # self.root.attributes('-fullscreen',True)
         self.extracted_user_department = data[0]
         self.extracted_fullname = data[1]
         self.extracted_employee_no = data[2]
@@ -756,7 +756,6 @@ class OperatorDashboardTest:
             # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
             # self.ticket_checking.destroy()
-            print("No ticket found")
             pass
 
     def show_mo_details_function(self, data):

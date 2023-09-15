@@ -353,7 +353,6 @@ class MoDetails:
                 )
                 # self.stop_btn["state"] = "disabled"
             else:
-                print("ELSE TEST")
                 self.log_event("START")
                 # self.start_btn["state"] = "normal"
                 self.show_start_btn()

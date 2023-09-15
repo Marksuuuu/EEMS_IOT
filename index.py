@@ -109,7 +109,7 @@ class DashboardGUI:
         self.root.configure(bg="#FBFBFB")
         current_year = datetime.datetime.now().year
         self.root.title(f"EEMS_IOT - © {current_year}")
-        self.root.attributes('-fullscreen',True)
+        # self.root.attributes('-fullscreen',True)
         
         ## GLOBAL VARIABLE ##
 
@@ -209,7 +209,7 @@ class DashboardGUI:
         self.makeCenter()
         self.mch_label()
         self.checking_ticket()
-        self.update_chart()
+        # self.update_chart()
 
         ## END ##
 
@@ -371,7 +371,7 @@ class DashboardGUI:
 
         dateNTime = current_date + " " + current_time
         self.canvas.itemconfig(self.clock, text=dateNTime)
-        self.root.after(1000, self.update_clock)
+        self.root.after(60000, self.update_clock)
 
     def create_total_qty_graph(self):
         self.quantity_data = QuantityData("../data")
@@ -429,10 +429,10 @@ class DashboardGUI:
 
     def update_chart(self):
         self.oee_img = self.create_oee_graph()
-        self.total_img = self.create_total_qty_graph()
-        self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
+        # self.total_img = self.create_total_qty_graph()
+        # self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
         self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
-        self.root.after(5000, self.update_chart)
+        self.root.after(60000, self.update_chart)
 
     def create_oee_graph(self):
         self.get_data = TimeData("../data")

@@ -8,6 +8,17 @@
             "main_opt": "Wafer Saw",
             "operation_seq_number": "10",
             "package": "WP",
+            "running_qty": "300",
+            "uph": "13246",
+            "wip_entity_id": "842969",
+            "wip_entity_name": "MO838414"
+        },
+        {
+            "customer": "IXYS",
+            "device": "WP.IXGD1952 1M MIL ENGG",
+            "main_opt": "Wafer Saw",
+            "operation_seq_number": "10",
+            "package": "WP",
             "running_qty": "100",
             "uph": "9667009",
             "wip_entity_id": "842969",
@@ -23,17 +34,6 @@
             "uph": "242883",
             "wip_entity_id": "842969",
             "wip_entity_name": "MO838412"
-        },
-        {
-            "customer": "IXYS",
-            "device": "WP.IXGD1952 1M MIL ENGG",
-            "main_opt": "Wafer Saw",
-            "operation_seq_number": "10",
-            "package": "WP",
-            "running_qty": "300",
-            "uph": "13246",
-            "wip_entity_id": "842969",
-            "wip_entity_name": "MO838414"
         }
     ]
 }
