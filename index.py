@@ -201,6 +201,7 @@ class DashboardGUI:
         ## FUNCTIONS ##
 
         self.create_gui_elements()
+        self.init_logging()
         self.update_clock()
         self.update_logs()
         self.update_status()
@@ -209,7 +210,7 @@ class DashboardGUI:
         self.makeCenter()
         self.mch_label()
         self.checking_ticket()
-        # self.update_chart()
+        self.update_chart()
 
         ## END ##
 
@@ -357,7 +358,11 @@ class DashboardGUI:
         image_14 = self.canvas.create_image(512.0, 264.0, image=self.line_graph_img)
 
         self.set_logs = self.canvas.create_text(
-            709.0, 435.0, anchor="nw", fill="#343A40", font=("Roboto Medium", 8 * -1)
+            709.0, 435.0,                   
+            anchor="nw",                   
+            fill="#343A40",                
+            font=("Roboto Medium", 10 * -1),  
+            width=300                    
         )
 
         # Add the rest of your GUI elements here
@@ -432,7 +437,8 @@ class DashboardGUI:
         # self.total_img = self.create_total_qty_graph()
         # self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
         self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
-        self.root.after(60000, self.update_chart)
+        print("Updating chart...")
+        self.root.after(1000, self.update_chart)
 
     def create_oee_graph(self):
         self.get_data = TimeData("../data")
@@ -516,11 +522,12 @@ class DashboardGUI:
             with open(log_file_path, "r") as file:
                 log_content = file.read()
             lines = log_content.split("\n")
-            last_5_logs = "\n".join(lines[-16:])
+            last_5_logs = "\n".join(lines[-6:])
             self.canvas.itemconfig(self.set_logs, text=last_5_logs)
 
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
+            
         self.root.after(10000, self.update_logs)
 
     def online_status_card(self):

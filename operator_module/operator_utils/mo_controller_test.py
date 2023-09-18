@@ -289,7 +289,8 @@ class MoDetailsTest:
             anchor="nw",
             text=self.formatted_running_qty,
             fill="#FFFFFF",
-            font=("Arial BoldMT", 48 * -1)
+            font=("Arial BoldMT", 48 * -1),
+            width=220
         )
 
         
@@ -322,22 +323,25 @@ class MoDetailsTest:
         )
 
 
-        self.button_image_3 = PhotoImage(
-            file=self.relative_to_assets("button_3.png"))
-        self.button_3 = Button(
-            self.root,
-            image=self.button_image_3,
-            borderwidth=0,
-            highlightthickness=0,
-            command=self.on_close,
-            relief="flat"
-        )
-        self.button_3.place(
-            x=884.0,
-            y=0.0,
-            width=49.0,
-            height=37.0
-        )
+        # CLOSE BUTTON
+        # ////////////////////////////////////////
+        
+        # self.button_image_3 = PhotoImage(
+        #     file=self.relative_to_assets("button_3.png"))
+        # self.button_3 = Button(
+        #     self.root,
+        #     image=self.button_image_3,
+        #     borderwidth=0,
+        #     highlightthickness=0,
+        #     command=self.on_close,
+        #     relief="flat"
+        # )
+        # self.button_3.place(
+        #     x=884.0,
+        #     y=0.0,
+        #     width=49.0,
+        #     height=37.0
+        # )
 
 
         # REMAINING MO QUANTITY
@@ -358,7 +362,7 @@ class MoDetailsTest:
         lbl_remaining_qty["font"] = ft
         lbl_remaining_qty["fg"] = "white"  # Set font color to white
         lbl_remaining_qty["justify"] = "center"
-        lbl_remaining_qty.place(x=383.0, y=458.0, width=200, height=55)
+        lbl_remaining_qty.place(x=383.0, y=458.0, width=200)
         self.lbl_remaining_qty = lbl_remaining_qty
 
 
@@ -797,8 +801,7 @@ class MoDetailsTest:
             self.get_last_person_assigned()
 
             self.log_event("STOP")
-
-            # self.root.destroy()
+            self.root.destroy()
 
     def show_label_completed(self):
         self.lbl_mo_status = tk.Label(self.root)
