@@ -29,7 +29,7 @@ class MoDetailsTest:
             extracted_username,
             data,
             update_table_function,
-            assets_dir
+            assets_dir,
             ):
         
         self.root = root
@@ -90,6 +90,7 @@ class MoDetailsTest:
         self.idle_function()
         self.idle_started = self.load_idle_state()
         self.update_table_function = update_table_function
+        # self.check_window_active = check_window_active
         self.check_total_finished()
         self.get_last_person_assigned()
         self.get_remaining_qty_from_logs()
@@ -540,6 +541,11 @@ class MoDetailsTest:
                 self.show_input_dialog()
                 self.mo_data = MOData()
                 self.mo_data.perform_check_and_swap()
+
+                # if not self.idle_started:
+                #     self.idle_started = True
+                #     self.log_event_idle("IDLE_STOP")
+                #     print('not idle')
         else:
             pass
 
@@ -833,13 +839,14 @@ class MoDetailsTest:
                 if self.idle_started:
                     self.idle_started = False
                     self.log_event_idle("IDLE_START")
-                    print('idle')
+                    print('idle controller')
         else:
             if not self.idle_started:
                 self.idle_started = True
                 self.log_event_idle("IDLE_STOP")
-                print('not idle')
+                print('not idle controller')
             
+        self.root.after(10000, self.tick)
     
     def log_event_idle(self, msg):
         current_time = datetime.datetime.now()

@@ -6,10 +6,13 @@ class TicketChecker:
         self.checking()
 
     def read_machno(self):
-        with open("data/main.json", "r") as json_file:
-            data = json.load(json_file)
-            extracted_machno = data["machno"]
-        return extracted_machno
+        try:
+            with open("data/main.json", "r") as json_file:
+                data = json.load(json_file)
+                extracted_machno = data["machno"]
+            return extracted_machno
+        except:
+            return "N/A"
 
     def checking(self):
         hris_url = "http://lams.teamglac.com/lams/api/job_order/active_jo.php"

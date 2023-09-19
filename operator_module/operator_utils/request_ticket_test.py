@@ -5,10 +5,14 @@ from pathlib import Path
 from PIL import Image, ImageTk
 import json
 import tkinter.font as tkFont
-from datetime import date
-from datetime import date, datetime
+# from datetime import date
+# from datetime import date, datetime
+from datetime import datetime
+
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showerror
+from threading import Timer
+import datetime
 
 import requests
 from utils.ticket_status import TicketChecker
@@ -30,8 +34,8 @@ class RequestTicketTest:
         self.fullname = extracted_fullname
         self.employee_no = extracted_employee_no
 
-        now = datetime.now()
-        today = date.today()
+        now = datetime.datetime.now()
+        # today = date.today()
         self.current_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
         self.wip_entity_name = data[6]
@@ -227,13 +231,14 @@ class RequestTicketTest:
             relief="flat",
         )
         self.button_3.place(x=884.0, y=0.0, width=49.0, height=37.0)
+
+        self.idle_started = self.load_idle_state()
+
         self.save_downtime_state()
         self.verify_ticket_status()
 
         # self.root.attributes('-topmost', True)
         self.root.resizable(False, False)
-
-
 
 
     def set_working_directory(self):
@@ -304,7 +309,7 @@ class RequestTicketTest:
             "downtime_type_id": downtime_type_id,
             "checkbox_value": checkbox_value,
             "remarks_value": remarks_value,
-            "date_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+            "date_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
         }
 
         # Add the new entry to the existing data
@@ -331,6 +336,7 @@ class RequestTicketTest:
                 showinfo(
                     "Success", f"Job order created successfully. \nDTNO {dtno_value}"
                 )
+                self.check_idle_condition()
                 self.root.destroy()
                 print(value_url["dtno"])
         else:
@@ -354,7 +360,7 @@ class RequestTicketTest:
         self.root.after(1000, self.verify_ticket_status)
         
     def log_event(self, msg):
-        current_time = datetime.now()
+        current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
 
@@ -383,6 +389,7 @@ class RequestTicketTest:
     def save_downtime_state(self):
         with open("config/downtime_state.json", "w") as state_file:
             json.dump({"downtime_started": self.downtime_started}, state_file)
+
     # def verify_ticket_status(self):
     #     ticket_inspector = TicketChecker()
     #     ticket_present = ticket_inspector.checking()
@@ -402,6 +409,52 @@ class RequestTicketTest:
 
     def close_window(self):
         self.root.destroy()
+
+    def get_last_csv_value(self):
+        try:
+            with open('data/logs/idle.csv', mode="r", newline="") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                rows = list(csv_reader)
+                if rows:
+                    last_row = rows[-1]
+                    return last_row
+                else:
+                    return None
+        except FileNotFoundError:
+            print("CSV file not found.")
+            return None
+        
+        # Define a function to execute the idle check
+    def check_idle_condition(self):
+        last_row = self.get_last_csv_value()
+        if last_row and last_row[0] == "IDLE_START":
+            last_time = datetime.datetime.strptime(last_row[2], "%H:%M:%S")
+            self.idle_log_event("IDLE_STOP")
+
+        # Schedule the check_idle_condition function to run after 10 seconds
+        self.root.after(10000, self.check_idle_condition)
+
+    def idle_log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+    def load_idle_state(self):
+        try:
+            with open('config/idle_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                print(state)
+                return state.get('idle_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_idle_state(self):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': self.idle_started}, state_file)
 
     def center_window(self):
         """Center the tkinter window on the screen."""

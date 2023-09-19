@@ -15,7 +15,6 @@ from PIL import Image, ImageTk
 import logging
 import datetime
 
-
 from utils.status_update import StatusUpdate
 
 
@@ -273,6 +272,15 @@ class OperatorDashboardTest:
         self.root.resizable(False, False)
         # self.root.attributes('-topmost', True)
 
+    def destroy_details_window(self):
+        if self.details_window is not None and self.details_window.winfo_exists():
+            self.details_window.destroy()
+            self.details_window = None
+
+    def destroy_ticket_window(self):
+        if self.ticket_window is not None and self.ticket_window.winfo_exists():
+            self.ticket_window.destroy()
+            self.ticket_window = None
 
     def create_tree_view(self):
         self.tree = ttk.Treeview(
@@ -416,32 +424,6 @@ class OperatorDashboardTest:
             width=372.0,
             height=51.0
         )
-
-    # def populate_table(self):
-    #     if os.stat("data/mo_logs.json").st_size == 0:
-    #         data = self.read_json_file()
-    #         for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
-    #             self.tree.insert(
-    #                 "", "end", iid=i, text=str(i),
-    #                 values=(i, customer, device, main_opt, package,
-    #                         running_qty, wip_entity_name, status)
-    #             )
-
-    #     else:
-    #         data = self.read_json_file_with_status()
-    #         for i, (customer, device, main_opt, package, running_qty, wip_entity_name, status) in enumerate(data, start=1):
-    #             self.tree.insert(
-    #                 "", "end", iid=i, text=str(i),
-    #                 values=(i, customer, device, main_opt, package,
-    #                         running_qty, wip_entity_name, status)
-    #             )
-                # toggle_button = tk.Button(self.tree, text="Toggle")
-                # toggle_button.grid(row=self.tree.index(i), column=1, padx=5, pady=2, sticky="e")
-
-                # Create a button-like label in the ACTION column
-                # button_label = tk.Label(self.tree, text="Button", relief="raised", padx=10, pady=5)
-                # button_label.grid(row=i, column=8, padx=5, pady=5, sticky="nsew")
-                # button_label.bind("<ButtonRelease-1>", lambda event, values=(i,): self.on_button_click(values))
 
     def load_permissions(self):
         log_file_path = os.path.join(
@@ -719,8 +701,8 @@ class OperatorDashboardTest:
             self.offline_status_card()
             # Disable opening MoDetailsTest and show a warning
             if self.details_window is not None and self.details_window.winfo_exists():
+                showwarning("MACHINE OFFLINE!", "Machine is currently OFFLINE.")
                 self.details_window.destroy()
-                showwarning("Machine Offline", "Machine is currently OFFLINE.")
 
         self.root.after(1000, self.update_status)
     def logout(self):
@@ -731,6 +713,8 @@ class OperatorDashboardTest:
             os.system("python index.py")
 
     def tickets_command(self):
+        self.destroy_ticket_window()
+
         selected_item = self.tree.selection()
         if not selected_item:
             showinfo(title="Error", message="No data selected.")
@@ -759,6 +743,8 @@ class OperatorDashboardTest:
             pass
 
     def show_mo_details_function(self, data):
+        self.destroy_details_window()
+
         if self.details_window is None or not self.details_window.winfo_exists():
             self.details_window = tk.Toplevel(self.root)
             assets_dir = 'assets'
@@ -779,13 +765,17 @@ class OperatorDashboardTest:
             # print('win close')
             if self.idle_started:
                 self.idle_started = False
+                print("TURN OFF ALL")
                 self.log_event("IDLE_STOP")
         else:
             # print('win open')
             if not self.idle_started:
                 self.idle_started = True
+                print("TURN ORANGE")
                 self.log_event("IDLE_START")
+
         self.root.after(10000, self.check_window_active)
+        
 
     def log_event(self, msg):
         current_time = datetime.datetime.now()
@@ -812,7 +802,11 @@ class OperatorDashboardTest:
         response = messagebox.askyesno(
             "Sign out", "Are you sure you want to Sign out?")
         if response:
+            print("Sign out")
             self.root.destroy()
+
+            # self.main_window.root.deiconify()
+            # self.root.withdraw()
             os.system("python index.py")
 
     def center_window(self):

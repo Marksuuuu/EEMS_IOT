@@ -23,7 +23,7 @@ from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
+import signal
 
 ## IMPORTS ##
 
@@ -110,15 +110,15 @@ class DashboardGUI:
         current_year = datetime.datetime.now().year
         self.root.title(f"EEMS_IOT - © {current_year}")
         # self.root.attributes('-fullscreen',True)
-        
         ## GLOBAL VARIABLE ##
 
         button1 = "assets/frame_dashboard/button_1.png"
         button2 = "assets/frame_technician/ticket.png"
+        button3 = "assets/frame_dashboard/refresh_btn.png"
 
         img_1 = "assets/frame_dashboard/image_1.png"
-        img_2 = "assets/frame_dashboard/image_2.png"
-        img_3 = "assets/frame_dashboard/image_3.png"
+        # img_2 = "assets/frame_dashboard/image_2.png"
+        # img_3 = "assets/frame_dashboard/image_3.png"
         img_4 = "assets/frame_dashboard/image_4.png"
         img_5 = "assets/frame_dashboard/image_5.png"
         img_6 = "assets/frame_dashboard/image_6.png"
@@ -135,15 +135,17 @@ class DashboardGUI:
 
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)
+        button3_pill = Image.open(button3)
 
         self.tk_btn_1 = ImageTk.PhotoImage(button1_pill)
         self.tk_btn_2 = ImageTk.PhotoImage(button2_pill)
+        self.tk_btn_3 = ImageTk.PhotoImage(button3_pill)
 
         entry_1 = Image.open(entry1)
 
         image_1 = Image.open(img_1)
-        image_2 = Image.open(img_2)
-        image_3 = Image.open(img_3)
+        # image_2 = Image.open(img_2)
+        # image_3 = Image.open(img_3)
         image_4 = Image.open(img_4)
         image_5 = Image.open(img_5)
         image_6 = Image.open(img_6)
@@ -159,8 +161,8 @@ class DashboardGUI:
         self.tk_entry_1 = ImageTk.PhotoImage(entry_1)
 
         self.tk_image_1 = ImageTk.PhotoImage(image_1)
-        self.tk_image_2 = ImageTk.PhotoImage(image_2)
-        self.tk_image_3 = ImageTk.PhotoImage(image_3)
+        # self.tk_image_2 = ImageTk.PhotoImage(image_2)
+        # self.tk_image_3 = ImageTk.PhotoImage(image_3)
         self.tk_image_4 = ImageTk.PhotoImage(image_4)
         self.tk_image_5 = ImageTk.PhotoImage(image_5)
         self.tk_image_6 = ImageTk.PhotoImage(image_6)
@@ -201,8 +203,12 @@ class DashboardGUI:
         ## FUNCTIONS ##
 
         self.create_gui_elements()
+
         self.init_logging()
-        self.update_clock()
+        self.idle_started = self.load_idle_state()
+        # self.check_window_active().
+        self.insert_idle_start_after_delay()
+        # self.update_clock()
         self.update_logs()
         self.update_status()
         self.verify_ticket_status()
@@ -212,7 +218,21 @@ class DashboardGUI:
         self.checking_ticket()
         self.update_chart()
 
-        ## END ##
+        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        try:
+            print("Window Closed")
+            self.idle_log_event("IDLE_STOP")
+            # self.led.turn_off_all()
+            self.root.destroy()  
+        except tk.TclError:
+            # Handle the exception when the window is closed
+            # self.led.turn_off_all()
+            self.idle_log_event("IDLE_STOP")
+            self.root.destroy()  
+            print("Window closed Unexpectedly")
+
 
     def makeCenter(self):
         self.width = 1024
@@ -249,7 +269,7 @@ class DashboardGUI:
 
         self.image_1 = self.canvas.create_image(516.0, 49.0, image=self.tk_image_1)
 
-        self.image_2 = self.canvas.create_image(864.0,66.0, image=self.tk_image_2)
+        # self.image_2 = self.canvas.create_image(864.0,66.0, image=self.tk_image_2)
 
         entry_bg_1 = self.canvas.create_image(533.5, 50.0, image=self.tk_entry_1)
         self.employee_id = Entry(
@@ -266,7 +286,7 @@ class DashboardGUI:
 
         self.employee_id.bind("<KeyRelease>", self.validate_employee_number)
 
-        image_3 = self.canvas.create_image(815.0, 66.0,image=self.tk_image_3)
+        # image_3 = self.canvas.create_image(815.0, 66.0,image=self.tk_image_3)
 
         self.clock = self.canvas.create_text(
             825.0, 60.0, anchor="nw", fill="#343A40", font=("Roboto Regular", 9 * -1)
@@ -353,6 +373,16 @@ class DashboardGUI:
             image=self.tk_btn_1, borderwidth=0, highlightthickness=0, relief="flat"
         )
 
+
+        self.button_3= Button(image=self.tk_btn_3,borderwidth=0, highlightthickness=0, relief="flat", command=self.refresh_clicked)
+        self.button_3.place(
+            x=800.0,
+            y=63.0,
+            width=128.54547119140625,
+            height=28.0
+        )
+
+
         self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
 
         image_14 = self.canvas.create_image(512.0, 264.0, image=self.line_graph_img)
@@ -364,19 +394,40 @@ class DashboardGUI:
             font=("Roboto Medium", 10 * -1),  
             width=300                    
         )
+        
+        self.lbl_graphs = self.canvas.create_text(
+            688.0,
+            97.0,
+            anchor="nw",
+            # text="GRAPHS LAST UPDATED AS OF:  28-08-23  | 11:25 :00  ",
+            fill="#FF0000",
+            font=("RobotoItalic Regular", 13 * -1, "italic")
+        )
 
-        # Add the rest of your GUI elements here
 
-    def get_script_directory(self):
-        return os.path.dirname(os.path.abspath(__file__))
 
-    def update_clock(self):
+    def update_graphs_label(self):
         current_time = time.strftime("%I:%M %p")  # Format time in 12-hour with AM/PM
         current_date = time.strftime("%b/%d/%Y")
 
         dateNTime = current_date + " " + current_time
-        self.canvas.itemconfig(self.clock, text=dateNTime)
-        self.root.after(60000, self.update_clock)
+        self.canvas.itemconfig(self.lbl_graphs, text=f"LAST UPDATED AS OF: {dateNTime}")
+
+    def refresh_clicked(self):
+        self.update_chart()
+        # self.update_graphs_label()
+
+
+    def get_script_directory(self):
+        return os.path.dirname(os.path.abspath(__file__))
+
+    # def update_clock(self):
+    #     current_time = time.strftime("%I:%M %p")  # Format time in 12-hour with AM/PM
+    #     current_date = time.strftime("%b/%d/%Y")
+
+    #     dateNTime = current_date + " " + current_time
+    #     self.canvas.itemconfig(self.clock, text=dateNTime)
+    #     self.root.after(60000, self.update_clock)
 
     def create_total_qty_graph(self):
         self.quantity_data = QuantityData("../data")
@@ -433,12 +484,12 @@ class DashboardGUI:
 
 
     def update_chart(self):
+        self.update_graphs_label()
         self.oee_img = self.create_oee_graph()
         # self.total_img = self.create_total_qty_graph()
         # self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
         self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
-        print("Updating chart...")
-        self.root.after(1000, self.update_chart)
+        self.root.after(300000, self.update_chart)
 
     def create_oee_graph(self):
         self.get_data = TimeData("../data")
@@ -528,7 +579,8 @@ class DashboardGUI:
         except FileNotFoundError:
             self.logs["text"] = "Log file not found."
             
-        self.root.after(10000, self.update_logs)
+        # self.root.after(10000, self.update_logs)
+        
 
     def online_status_card(self):
         self.canvas.create_rectangle(
@@ -837,26 +889,76 @@ class DashboardGUI:
         logging.log(level, message)
 
     def show_operator_dashboard(self, user_department, user_position, data_json):
+        self.root.withdraw()
+
         OpeDashboard = tk.Toplevel(self.root)
         # OpeDashboard.attributes('-topmost', True)  
         assets_dir = "assets"
-        ope_dashboard = OperatorDashboardTest(
-            OpeDashboard, user_department, user_position, data_json, assets_dir)
-        self.root.withdraw()
+        ope_dashboard = OperatorDashboardTest(OpeDashboard, user_department, user_position, data_json, assets_dir)
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
-        techDashboard = Toplevel(self.root)
+        techDashboard = Toplevel(self.root)   
         assets_dir = "assets"
         tech_dashboard = TechnicianDashboardTest(
             techDashboard, user_department, user_position, dataJson, assets_dir)
         self.root.withdraw()
 
     def mch_label(self):
-        machine_details = f"""PRODUCTIVE HRS: \t{self.get_data.calculate_total_productive_time()}\nTOTAL IDLE HRS: \t\t{self.get_data.calculate_total_idle()}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{self.total_remaining_qty_value}\nTTL QTY TO PROCESS: \t{self.total_running_qty} 
+        machine_details = f"""PRODUCTIVE HRS: \t{self.get_data.calculate_total_productive_time()}\nTOTAL IDLE HRS: \t\t{self.get_data.calculate_total_idle()}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{'{:,}'.format(self.total_remaining_qty_value)}\nTTL QTY TO PROCESS: \t{'{:,}'.format(self.total_running_qty)} 
         """
         # print('test')
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
         self.root.after(1000, self.mch_label)
+
+    def get_last_csv_value(self):
+        try:
+            with open('data/logs/idle.csv', mode="r", newline="") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                rows = list(csv_reader)
+                if rows:
+                    last_row = rows[-1]
+                    return last_row
+                else:
+                    return None
+        except FileNotFoundError:
+            print("CSV file not found.")
+            return None
+
+    def insert_idle_start_after_delay(self):
+        # Define a function to execute the idle check
+        if not self.ticket_present:
+            def check_idle_condition():
+                last_row = self.get_last_csv_value()
+                if last_row and last_row[0] == "IDLE_STOP":
+                    last_time = datetime.datetime.strptime(last_row[2], "%H:%M:%S")
+                    self.idle_log_event("IDLE_START")
+
+            # Schedule the check_idle_condition function to run after 10 seconds
+            self.root.after(10000, check_idle_condition)
+
+    def idle_log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])
+
+    def load_idle_state(self):
+        try:
+            with open('config/idle_state.json', 'r') as state_file:
+                state = json.load(state_file)
+                print(state)
+                return state.get('idle_started', False)
+        except FileNotFoundError:
+            return False
+
+    def save_idle_state(self):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': self.idle_started}, state_file)
+
+
 
     def delete_file_data(self):
         idle = os.path.join(self.get_script_directory(), "data/logs", "idle.csv")
@@ -902,6 +1004,6 @@ sio.connect("http://192.168.1.84:8085")
 if __name__ == "__main__":
     window = tk.Tk()
     window.resizable(False, False)
-    app = DashboardGUI(window)
+    main_window = DashboardGUI(window)
     window.iconbitmap("config/ico/favicon.ico")
     window.mainloop()
