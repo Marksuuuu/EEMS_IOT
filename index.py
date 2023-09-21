@@ -115,6 +115,7 @@ class DashboardGUI:
         button1 = "assets/frame_dashboard/button_1.png"
         button2 = "assets/frame_technician/ticket.png"
         button3 = "assets/frame_dashboard/refresh_btn.png"
+        button4 = "assets/frame_dashboard/close_btn.png"
 
         img_1 = "assets/frame_dashboard/image_1.png"
         # img_2 = "assets/frame_dashboard/image_2.png"
@@ -136,10 +137,12 @@ class DashboardGUI:
         button1_pill = Image.open(button1)
         button2_pill = Image.open(button2)
         button3_pill = Image.open(button3)
+        button4_pill = Image.open(button4)
 
         self.tk_btn_1 = ImageTk.PhotoImage(button1_pill)
         self.tk_btn_2 = ImageTk.PhotoImage(button2_pill)
         self.tk_btn_3 = ImageTk.PhotoImage(button3_pill)
+        self.tk_btn_4 = ImageTk.PhotoImage(button4_pill)
 
         entry_1 = Image.open(entry1)
 
@@ -200,30 +203,30 @@ class DashboardGUI:
         # if self.cpk_graph is not None:
         #     self.cpk_graph.configure(image=self.line_img)
 
-        ## FUNCTIONS ##
-
+                ## FUNCTIONS ##
         self.create_gui_elements()
-
+        self.makeCenter()
         self.init_logging()
-        self.idle_started = self.load_idle_state()
+        # self.idle_started = self.load_idle_state()
         # self.check_window_active().
-        self.insert_idle_start_after_delay()
+        self.root.after(15000, self.insert_idle_start_after_delay)
         # self.update_clock()
         self.update_logs()
         self.update_status()
         self.verify_ticket_status()
         self.save_downtime_state()
-        self.makeCenter()
         self.mch_label()
         self.checking_ticket()
         self.update_chart()
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+
     def on_closing(self):
         try:
-            print("Window Closed")
             self.idle_log_event("IDLE_STOP")
+            self.save_idle_state(False)
+
             # self.led.turn_off_all()
             self.root.destroy()  
         except tk.TclError:
@@ -232,6 +235,7 @@ class DashboardGUI:
             self.idle_log_event("IDLE_STOP")
             self.root.destroy()  
             print("Window closed Unexpectedly")
+
 
 
     def makeCenter(self):
@@ -381,6 +385,14 @@ class DashboardGUI:
             width=128.54547119140625,
             height=28.0
         )
+
+        # self.button_4= Button(image=self.tk_btn_4,borderwidth=0, highlightthickness=0, relief="flat", command=self.refresh_clicked)
+        # self.button_4.place(
+        #     x=800.0,
+        #     y=63.0,
+        #     width=49.0,
+        #     height=37.0
+        # )
 
 
         self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
@@ -887,7 +899,7 @@ class DashboardGUI:
 
     def log_activity(self, level, message):
         logging.log(level, message)
-
+ 
     def show_operator_dashboard(self, user_department, user_position, data_json):
         self.root.withdraw()
 
@@ -910,32 +922,64 @@ class DashboardGUI:
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
         self.root.after(1000, self.mch_label)
 
-    def get_last_csv_value(self):
-        try:
-            with open('data/logs/idle.csv', mode="r", newline="") as csv_file:
-                csv_reader = csv.reader(csv_file)
-                rows = list(csv_reader)
-                if rows:
-                    last_row = rows[-1]
-                    return last_row
-                else:
-                    return None
-        except FileNotFoundError:
-            print("CSV file not found.")
-            return None
+    # def get_last_csv_value(self):
+    #     try:
+    #         with open('data/logs/idle.csv', mode="r", newline="") as csv_file:
+    #             csv_reader = csv.reader(csv_file)
+    #             rows = list(csv_reader)
+    #             if rows:
+    #                 last_row = rows[-1]
+    #                 return last_row
+    #             else:
+    #                 return None
+    #     except FileNotFoundError:
+    #         print("CSV file not found.")
+    #         return None
 
     def insert_idle_start_after_delay(self):
-        # Define a function to execute the idle check
-        if not self.ticket_present:
-            def check_idle_condition():
-                last_row = self.get_last_csv_value()
-                if last_row and last_row[0] == "IDLE_STOP":
-                    last_time = datetime.datetime.strptime(last_row[2], "%H:%M:%S")
+        # Schedule the check_idle_condition function to run after 10 seconds
+        self.root.after(10000, self.insert_idle_start_after_delay)
+        self.check_idle_condition()
+        
+    def check_idle_condition(self):
+        # create an instance of the StatusUpdate class
+        statusHere = StatusUpdate("data/logs/logs.csv")
+        # get the last value in the log file
+        getStatus = statusHere.get_last_log_value()
+
+        # check that the log file is not empty
+        if getStatus is None or False:
+            pass
+        # if the last value is ONLINE, and no ticket is present, load the idle state
+        elif getStatus == "ONLINE":
+            if not self.ticket_present:
+                self.load_idle_state()
+            else:
+                self.save_idle_state(False)
+   
+    def load_idle_state(self):
+        try:
+            # Open the idle_state.json file for reading
+            with open('config/idle_state.json', 'r') as idle_state_val:
+                # Load the data from the idle_state.json file
+                data = json.load(idle_state_val)
+                # Get the idle_started value from the data
+                idle_started = data['idle_started']
+
+                # If idle_started is False, then log the IDLE_START event and save the new value 
+                # to the idle_state.json file
+                if idle_started == False:
                     self.idle_log_event("IDLE_START")
-
-            # Schedule the check_idle_condition function to run after 10 seconds
-            self.root.after(10000, check_idle_condition)
-
+                    self.save_idle_state(True)
+                    print('idle_started: ', idle_started)
+               
+        except FileNotFoundError:
+            return False
+        
+    def save_idle_state(self, val):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': val}, state_file)
+       
     def idle_log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
@@ -944,21 +988,6 @@ class DashboardGUI:
         with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
-
-    def load_idle_state(self):
-        try:
-            with open('config/idle_state.json', 'r') as state_file:
-                state = json.load(state_file)
-                print(state)
-                return state.get('idle_started', False)
-        except FileNotFoundError:
-            return False
-
-    def save_idle_state(self):
-        with open('config/idle_state.json', 'w') as state_file:
-            json.dump({'idle_started': self.idle_started}, state_file)
-
-
 
     def delete_file_data(self):
         idle = os.path.join(self.get_script_directory(), "data/logs", "idle.csv")

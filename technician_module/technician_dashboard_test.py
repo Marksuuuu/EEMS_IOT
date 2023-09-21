@@ -15,7 +15,7 @@ from tkinter.messagebox import showinfo, showwarning, showerror
 # from ttkbootstrap.constants import *
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
-
+import subprocess
 import requests
 from PIL import Image, ImageTk
 
@@ -426,8 +426,8 @@ class TechnicianDashboardTest:
         response = messagebox.askyesno(
             "Sign out", "Are you sure you want to Sign out?")
         if response:
-            self.root.destroy()
-            os.system("python index.py")
+            self.root.withdraw()
+            subprocess.call(["python", "index.py"])
 
     def center_window(self):
         self.root.update_idletasks()

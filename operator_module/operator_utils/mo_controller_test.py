@@ -17,6 +17,7 @@ import datetime
 from threading import Timer
 
 from .mo_transaction import MOData
+from utils.status_update import StatusUpdate
 
 
 class MoDetailsTest:
@@ -87,8 +88,8 @@ class MoDetailsTest:
         # FUNCTIONS
         # ///////////////////////////////////////////////////////////////..       
         self.initialize_gui()
-        self.idle_function()
-        self.idle_started = self.load_idle_state()
+        # self.idle_function()
+        # self.idle_started = self.load_idle_state()
         self.update_table_function = update_table_function
         # self.check_window_active = check_window_active
         self.check_total_finished()
@@ -507,7 +508,8 @@ class MoDetailsTest:
         self.checking() #comment this if there is a ticket for testing
 
         self.show_stop_btn()  
-
+        self.idle_log_event("IDLE_STOP")
+        self.save_idle_state(True)
     def stop_command(self):
 
         # TESTING PURPOSES ONLY
@@ -538,6 +540,7 @@ class MoDetailsTest:
                 # self.start_btn["state"] = "normal"    # Enable the START button
                 # self.stop_btn["state"] = "disabled"
                 # self.root.iconify()
+
                 self.show_input_dialog()
                 self.mo_data = MOData()
                 self.mo_data.perform_check_and_swap()
@@ -694,6 +697,8 @@ class MoDetailsTest:
                     self.get_remaining_qty_from_logs()
                     self.update_table_display()
                     self.log_event("STOP")
+                    self.save_idle_state(False)
+
                 else:
                     messagebox.showinfo(
                         title="Warning",
@@ -807,6 +812,7 @@ class MoDetailsTest:
             self.get_last_person_assigned()
 
             self.log_event("STOP")
+            self.save_idle_state(False)
             self.root.destroy()
 
     def show_label_completed(self):
@@ -823,32 +829,97 @@ class MoDetailsTest:
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
 
-    def are_buttons_shown(self):
-        try:
-            return self.start_btn is not None and self.start_btn.winfo_ismapped()
-        except tk.TclError as e:
-            return False
+    # def are_buttons_shown(self):
+    #     try:
+    #         if self.start_btn is not None and self.start_btn.winfo_ismapped():
+    #             print("Are buttons shown?")
+    #     except tk.TclError as e:
+    #         return False
 
-    def idle_function(self):
-        Timer(10, self.tick).start()
-        self.root.after(10000, self.idle_function)
+    # def idle_function(self):
+    #     Timer(10, self.tick).start()
+    #     self.root.after(10000, self.idle_function)
 
-    def tick(self):
-        if self.are_buttons_shown():
-            if self.start_btn["state"] == "normal":
-                if self.idle_started:
-                    self.idle_started = False
-                    self.log_event_idle("IDLE_START")
-                    print('idle controller')
-        else:
-            if not self.idle_started:
-                self.idle_started = True
-                self.log_event_idle("IDLE_STOP")
-                print('not idle controller')
+    # def tick(self):
+    #     if self.are_buttons_shown():
+    #         if self.start_btn["state"] == "normal":
+    #             if self.idle_started:
+    #                 self.idle_started = False
+    #                 self.log_event_idle("IDLE_START")
+    #                 print('idle turn on orange')
+    #     else:
+    #         if not self.idle_started:
+    #             self.idle_started = True
+    #             self.log_event_idle("IDLE_STOP")
+    #             print('not idle controller')
             
-        self.root.after(10000, self.tick)
+    #     self.root.after(10000, self.tick)
     
-    def log_event_idle(self, msg):
+    # def log_event_idle(self, msg):
+    #     current_time = datetime.datetime.now()
+    #     date = current_time.strftime("%Y-%m-%d")
+    #     time = current_time.strftime("%H:%M:%S")
+
+    #     with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+    #         csv_writer = csv.writer(csv_file)
+    #         csv_writer.writerow([msg, date, time])
+
+    # def load_idle_state(self):
+    #     try:
+    #         with open('config/idle_state.json', 'r') as state_file:
+    #             state = json.load(state_file)
+    #             return state.get('idle_started', False)
+    #     except FileNotFoundError:
+    #         return False
+
+    # def save_idle_state(self):
+    #     with open('config/idle_state.json', 'w') as state_file:
+    #         json.dump({'idle_started': self.idle_started}, state_file)
+
+    # def insert_idle_start_after_delay(self):
+    #     # Schedule the check_idle_condition function to run after 10 seconds
+    #     self.root.after(10000, self.insert_idle_start_after_delay)
+    #     self.check_idle_condition()
+        
+    # def check_idle_condition(self):
+    #     # create an instance of the StatusUpdate class
+    #     statusHere = StatusUpdate("data/logs/logs.csv")
+    #     # get the last value in the log file
+    #     getStatus = statusHere.get_last_log_value()
+
+    #     # check that the log file is not empty
+    #     if getStatus is None or False:
+    #         pass
+    #     # if the last value is ONLINE, and no ticket is present, load the idle state
+    #     elif getStatus == "ONLINE":
+    #         if not self.ticket_present:
+    #             self.load_idle_state()
+
+   
+    # def load_idle_state(self):
+    #     try:
+    #         # Open the idle_state.json file for reading
+    #         with open('config/idle_state.json', 'r') as idle_state_val:
+    #             # Load the data from the idle_state.json file
+    #             data = json.load(idle_state_val)
+    #             # Get the idle_started value from the data
+    #             idle_started = data['idle_started']
+
+    #             # If idle_started is False, then log the IDLE_START event and save the new value 
+    #             # to the idle_state.json file
+    #             if idle_started == False:
+    #                 self.idle_log_event("IDLE_START")
+    #                 self.save_idle_state(True)
+    #                 print('idle_started: ', idle_started)
+               
+    #     except FileNotFoundError:
+    #         return False
+        
+    def save_idle_state(self, val):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': val}, state_file)
+    
+    def idle_log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
         time = current_time.strftime("%H:%M:%S")
@@ -857,17 +928,6 @@ class MoDetailsTest:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
 
-    def load_idle_state(self):
-        try:
-            with open('config/idle_state.json', 'r') as state_file:
-                state = json.load(state_file)
-                return state.get('idle_started', False)
-        except FileNotFoundError:
-            return False
-
-    def save_idle_state(self):
-        with open('config/idle_state.json', 'w') as state_file:
-            json.dump({'idle_started': self.idle_started}, state_file)
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -14,7 +14,7 @@ import requests
 from PIL import Image, ImageTk
 import logging
 import datetime
-
+import subprocess
 from utils.status_update import StatusUpdate
 
 
@@ -263,8 +263,8 @@ class OperatorDashboardTest:
         self.update_status()
         self.verify_ticket_status()
         # self.update_table()
-        self.check_window_active()
-        self.save_idle_state()
+        # self.check_window_active()
+        # self.save_idle_state()
 
         self.create_tree_view()
         self.center_window()
@@ -436,10 +436,10 @@ class OperatorDashboardTest:
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
 
-    def on_button_click(self, values):
-        # Implement the action to be taken when the button in the ACTION column is clicked.
-        # You can use the 'values' parameter to identify which row was clicked.
-        print(f"Button clicked for row {values[0]}")
+    # def on_button_click(self, values):
+    #     # Implement the action to be taken when the button in the ACTION column is clicked.
+    #     # You can use the 'values' parameter to identify which row was clicked.
+    #     print(f"Button clicked for row {values[0]}")
 
 
     def double_click_handler(self, event):
@@ -797,17 +797,14 @@ class OperatorDashboardTest:
     def save_idle_state(self):
         with open('config/idle_state.json', 'w') as state_file:
             json.dump({'idle_started': self.idle_started}, state_file)
-
+            
     def signout(self):
-        response = messagebox.askyesno(
+        response: bool = messagebox.askyesno(
             "Sign out", "Are you sure you want to Sign out?")
         if response:
-            print("Sign out")
-            self.root.destroy()
+            self.root.withdraw()
+            subprocess.call(["python", "index.py"])
 
-            # self.main_window.root.deiconify()
-            # self.root.withdraw()
-            os.system("python index.py")
 
     def center_window(self):
         self.root.update_idletasks()
