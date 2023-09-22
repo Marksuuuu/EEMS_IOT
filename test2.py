@@ -1,44 +1,40 @@
 import tkinter as tk
-from tkinter import ttk
+import signal
+import sys
 
+def on_closing():
+    # This function is called when the user tries to close the window
+    print("Window closed or close button clicked")
+    root.destroy()
 
-def toggle_label(item_id):
-    current_state = tree.item(item_id, 'values')[0]
-    print(f":computer:==>> current_state: {current_state}")
-    new_state = "On" if current_state == "Off" else "Off"
-    tree.item(item_id, values=(new_state,))
+def check_window_response():
+    # This function checks if the window is still responsive
+    if root.winfo_exists():  # Check if the window still exists
+        print("Window is responsive")
+    else:
+        print("Window is closed or not responding")
+        root.quit()  # Exit the mainloop if the window is closed
 
+def shutdown_handler(signum, frame):
+    print("Shutdown detected")
+    root.quit()
 
-def on_item_click(event):
-    item_id = tree.identify_row(event.y)
-    if item_id:
-        toggle_label(item_id)
-
-        
 root = tk.Tk()
-root.title("Toggleable Label in Treeview")
-# Create a Treeview widget
-tree = ttk.Treeview(root, columns=("State",))
-tree.heading("#1", text="State")
-tree.pack()
-# Insert sample data with toggleable labels
-items = [
-    ("Item 1", "On"),
-    ("Item 2", "Off"),
-    ("Item 3", "On"),
-    ("Item 1", "On"),
-    ("Item 2", "Off"),
-    ("Item 3", "On"),
-    ("Item 1", "On"),
-    ("Item 2", "Off"),
-    ("Item 3", "On"),
-]
-for item in items:
-    item_id = tree.insert("", "end", values=(item[1],))
-    label = tk.Label(tree, text=item[0])
-    label.grid(row=tree.index(item_id), column=0, padx=5, pady=2, sticky="w")
-    toggle_button = tk.Button(tree, text="Toggle", command=lambda : toggle_label(item_id))
-    toggle_button.grid(row=tree.index(item_id), column=1, padx=5, pady=2, sticky="e")
-# Bind a click event to toggle the label
-tree.bind("<Button-1>", on_item_click)
-root.mainloop()
+root.title("Window Monitoring")
+
+# Bind the window closing event to the on_closing function
+root.protocol("WM_DELETE_WINDOW", on_closing)
+
+# Check window responsiveness every 1 second (you can adjust the interval as needed)
+root.after(1000, check_window_response)
+
+# Register a signal handler to catch shutdown events
+signal.signal(signal.SIGINT, shutdown_handler)
+signal.signal(signal.SIGTERM, shutdown_handler)
+
+# Start the tkinter mainloop
+try:
+    root.mainloop()
+except KeyboardInterrupt:
+    print("KeyboardInterrupt: Exiting...")
+    sys.exit(1)

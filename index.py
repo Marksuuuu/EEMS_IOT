@@ -24,7 +24,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 import signal
-
+import threading
 ## IMPORTS ##
 
 
@@ -111,6 +111,7 @@ class DashboardGUI:
         self.root.title(f"EEMS_IOT - © {current_year}")
         # self.root.attributes('-fullscreen',True)
         ## GLOBAL VARIABLE ##
+        
 
         button1 = "assets/frame_dashboard/button_1.png"
         button2 = "assets/frame_technician/ticket.png"
@@ -182,6 +183,9 @@ class DashboardGUI:
         self.line_graph_img = self.create_line_chart()
         self.downtime_started = self.load_downtime_state()
 
+        self.root_folders = ['data', os.path.join('data', 'logs')]
+        self.sending_files = False
+
         self.quantity_data = QuantityData("../data")
         self.get_data = TimeData("../data")
         self.ticket_inspector = TicketChecker()
@@ -209,7 +213,8 @@ class DashboardGUI:
         self.init_logging()
         # self.idle_started = self.load_idle_state()
         # self.check_window_active().
-        self.root.after(15000, self.insert_idle_start_after_delay)
+        # self.root.after(15000, self.insert_idle_start_after_delay)
+        self.insert_idle_start_after_delay()
         # self.update_clock()
         self.update_logs()
         self.update_status()
@@ -218,7 +223,8 @@ class DashboardGUI:
         self.mch_label()
         self.checking_ticket()
         self.update_chart()
-
+        self.ope_dashboard_open = False
+        self.send_file()
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
@@ -280,6 +286,7 @@ class DashboardGUI:
             self.root,
             bd=0,
             bg="#EFEFEF",
+            
             fg="#000716",
             highlightthickness=0,
             font=("arial", 30),
@@ -288,7 +295,7 @@ class DashboardGUI:
 
         self.employee_id.place(x=378.0, y=28.0, width=311.0, height=42.0)
 
-        self.employee_id.bind("<KeyRelease>", self.validate_employee_number)
+        self.employee_id.bind("<KeyPress>", self.validate_employee_number)
 
         # image_3 = self.canvas.create_image(815.0, 66.0,image=self.tk_image_3)
 
@@ -497,11 +504,26 @@ class DashboardGUI:
 
     def update_chart(self):
         self.update_graphs_label()
-        self.oee_img = self.create_oee_graph()
+
+        # Create a separate thread for creating the OEE graph
+        threading.Thread(target=self.create_oee_graph_threaded).start()
+
+        # Schedule the function to run again after 300000 milliseconds (5 minutes)
+        self.root.after(300000, self.update_chart)
+
+    def create_oee_graph_threaded(self):
+        oee_img = self.create_oee_graph()
+
+        # Update the GUI in the main thread with the OEE graph image
+        self.root.after(0, self.update_oee_graph, oee_img)
+
+    def update_oee_graph(self, oee_img):
         # self.total_img = self.create_total_qty_graph()
         # self.image_13 = self.canvas.create_image(857.0, 259.0, image=self.total_img)
+
+        self.oee_img = oee_img
         self.image_8 = self.canvas.create_image(166.0, 260.0, image=self.oee_img)
-        self.root.after(300000, self.update_chart)
+
 
     def create_oee_graph(self):
         self.get_data = TimeData("../data")
@@ -524,13 +546,17 @@ class DashboardGUI:
             startangle=90,
             pctdistance=0.85,
             explode=explode,
+            textprops={'fontsize': 12} 
         )
+
 
         centre_circle = plt.Circle((0, 0), 0.70, fc="white")
         plot.add_artist(centre_circle)
 
         plot.set_facecolor("none")
         plot.axis("equal")
+
+        
 
         autopct_values = [f"{p}" for p in autotexts]
         legend_labels = ["EFFECTIVENESS", "INEFFECTIVENESS"]
@@ -599,7 +625,7 @@ class DashboardGUI:
             31.0, 10.0, 282.0, 86.97332763671875, fill="#D3F9D8", outline=""
         )
         self.canvas.create_text(
-            97.0,
+            97.0, 
             27.0,
             anchor="nw",
             text="MACHINE",
@@ -831,6 +857,7 @@ class DashboardGUI:
                     "msg": f"User login successful. ID NUM: {self.employee_number}",
                     "emp_id": self.employee_number,
                 }
+                
                 sio.emit("activity_log", {"data": data})
                 self.log_activity(
                     logging.INFO,
@@ -900,55 +927,81 @@ class DashboardGUI:
     def log_activity(self, level, message):
         logging.log(level, message)
  
-    def show_operator_dashboard(self, user_department, user_position, data_json):
-        self.root.withdraw()
+    # def show_operator_dashboard(self, user_department, user_position, data_json):
 
-        OpeDashboard = tk.Toplevel(self.root)
-        # OpeDashboard.attributes('-topmost', True)  
-        assets_dir = "assets"
-        ope_dashboard = OperatorDashboardTest(OpeDashboard, user_department, user_position, data_json, assets_dir)
+    #     OpeDashboard = tk.Toplevel(self.root)
+    #     # OpeDashboard.attributes('-topmost', True)  
+    #     assets_dir = "assets"
+    #     ope_dashboard = OperatorDashboardTest(OpeDashboard, user_department, user_position, data_json, assets_dir)
+    #     self.root.withdraw()
+
+    def show_operator_dashboard(self, user_department, user_position, data_json):
+        if not self.ope_dashboard_open:
+            self.ope_dashboard_open = True
+
+            OpeDashboard = tk.Toplevel(self.root)
+            OpeDashboard.protocol("WM_DELETE_WINDOW", self.on_dashboard_close)
+            assets_dir = "assets"
+            ope_dashboard = OperatorDashboardTest(OpeDashboard, user_department, user_position, data_json, assets_dir, sio)
+            self.root.withdraw()
+
+    def on_dashboard_close(self):
+        self.ope_dashboard_open = False
+        self.root.deiconify()
 
     def show_tech_dashboard(self, user_department, user_position, dataJson):
-        techDashboard = Toplevel(self.root)   
+        techDashboard = tk.Toplevel(self.root)   
         assets_dir = "assets"
         tech_dashboard = TechnicianDashboardTest(
             techDashboard, user_department, user_position, dataJson, assets_dir)
         self.root.withdraw()
 
     def mch_label(self):
-        machine_details = f"""PRODUCTIVE HRS: \t{self.get_data.calculate_total_productive_time()}\nTOTAL IDLE HRS: \t\t{self.get_data.calculate_total_idle()}\nDOWNTIME HRS: \t\t{self.get_data.calculate_total_downtime()}\nAVAIL HRS: \t\t{self.get_data.get_available_hrs()}\nQTY PROCESSED:\t{'{:,}'.format(self.total_remaining_qty_value)}\nTTL QTY TO PROCESS: \t{'{:,}'.format(self.total_running_qty)} 
-        """
-        # print('test')
+        # Create a separate thread for calculating machine details
+        threading.Thread(target=self.calculate_machine_details).start()
+
+    def calculate_machine_details(self):
+        productive_time = self.get_data.calculate_total_productive_time()
+        total_idle_time = self.get_data.calculate_total_idle()
+        total_downtime = self.get_data.calculate_total_downtime()
+        available_hours = self.get_data.get_available_hrs()
+        processed_qty = '{:,}'.format(self.total_remaining_qty_value)
+        total_qty_to_process = '{:,}'.format(self.total_running_qty)
+
+        machine_details = f"""\tPRODUCTIVE HRS: \t{productive_time}
+              TOTAL IDLE HRS: \t\t{total_idle_time}
+              DOWNTIME HRS: \t\t{total_downtime}
+              AVAIL HRS: \t\t{available_hours}
+              QTY PROCESSED:\t\t{processed_qty}
+              TTL QTY TO PROCESS: \t{total_qty_to_process}"""
+
+        # Update the GUI label in the main thread
+        self.root.after(0, self.update_machine_details, machine_details)
+
+    def update_machine_details(self, machine_details):
         self.canvas.itemconfig(self.machine_data_lbl, text=machine_details)
-        self.root.after(1000, self.mch_label)
+        # Schedule the function to run again after 1000 milliseconds (1 second)
+        self.root.after(60000, self.mch_label)
 
-    # def get_last_csv_value(self):
-    #     try:
-    #         with open('data/logs/idle.csv', mode="r", newline="") as csv_file:
-    #             csv_reader = csv.reader(csv_file)
-    #             rows = list(csv_reader)
-    #             if rows:
-    #                 last_row = rows[-1]
-    #                 return last_row
-    #             else:
-    #                 return None
-    #     except FileNotFoundError:
-    #         print("CSV file not found.")
-    #         return None
-
+        
     def insert_idle_start_after_delay(self):
         # Schedule the check_idle_condition function to run after 10 seconds
-        self.root.after(10000, self.insert_idle_start_after_delay)
-        self.check_idle_condition()
-        
+        self.root.after(10000, self.check_idle_condition_threaded)
+
+    def check_idle_condition_threaded(self):
+        # Create a separate thread for check_idle_condition
+        idle_thread = threading.Thread(target=self.check_idle_condition)
+        idle_thread.start()
+
     def check_idle_condition(self):
+        print('check idle condition')
         # create an instance of the StatusUpdate class
         statusHere = StatusUpdate("data/logs/logs.csv")
         # get the last value in the log file
         getStatus = statusHere.get_last_log_value()
 
         # check that the log file is not empty
-        if getStatus is None or False:
+        if getStatus is None or getStatus == "False":
             pass
         # if the last value is ONLINE, and no ticket is present, load the idle state
         elif getStatus == "ONLINE":
@@ -956,7 +1009,7 @@ class DashboardGUI:
                 self.load_idle_state()
             else:
                 self.save_idle_state(False)
-   
+
     def load_idle_state(self):
         try:
             # Open the idle_state.json file for reading
@@ -968,18 +1021,19 @@ class DashboardGUI:
 
                 # If idle_started is False, then log the IDLE_START event and save the new value 
                 # to the idle_state.json file
-                if idle_started == False:
+                if idle_started is False:
                     self.idle_log_event("IDLE_START")
                     self.save_idle_state(True)
+                    # You might want to emit the event here as well
+                    sio.emit('light_change', {'data': "TURN_ON_ORANGE"})
                     print('idle_started: ', idle_started)
-               
+
         except FileNotFoundError:
             return False
-        
     def save_idle_state(self, val):
         with open('config/idle_state.json', 'w') as state_file:
-            json.dump({'idle_started': val}, state_file)
-       
+            json.dump({'idle_started': val}, state_file)       
+
     def idle_log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
@@ -1008,6 +1062,28 @@ class DashboardGUI:
         except IOError:
             print(f"Error deleting data in '{filename}'.")
 
+    def send_files_in_folder(self, folder_path):
+        try:
+            items = os.listdir(folder_path)
+            for item in items:
+                item_path = os.path.join(folder_path, item)
+                if os.path.isfile(item_path):
+                    with open(item_path, 'rb') as file:
+                        file_data = file.read()
+                        sio.emit('file_upload', {'file_data': file_data, 'file_name': item})
+                elif os.path.isdir(item_path):
+                    self.send_files_in_folder(item_path)
+        except Exception as e:
+            print(f"Error sending files in folder {folder_path}: {str(e)}")
+
+    def send_file(self):
+        if not self.sending_files:
+            self.sending_files = True
+            for root_folder in self.root_folders:
+                self.send_files_in_folder(root_folder)
+            self.sending_files = False
+        self.root.after(180000, self.send_file)  # Adjust the interval as needed
+
     @sio.event
     def my_message(data):
         print("Message received with", data)
@@ -1027,7 +1103,7 @@ class DashboardGUI:
         sio.emit("my_response", {"response": "my response"})
 
 
-sio.connect("http://192.168.1.84:8085")
+sio.connect("http://10.0.2.150:8083")
 
 
 if __name__ == "__main__":

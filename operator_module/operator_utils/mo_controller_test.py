@@ -827,93 +827,15 @@ class MoDetailsTest:
 
     def on_close(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            self.root.destroy()
-
-    # def are_buttons_shown(self):
-    #     try:
-    #         if self.start_btn is not None and self.start_btn.winfo_ismapped():
-    #             print("Are buttons shown?")
-    #     except tk.TclError as e:
-    #         return False
-
-    # def idle_function(self):
-    #     Timer(10, self.tick).start()
-    #     self.root.after(10000, self.idle_function)
-
-    # def tick(self):
-    #     if self.are_buttons_shown():
-    #         if self.start_btn["state"] == "normal":
-    #             if self.idle_started:
-    #                 self.idle_started = False
-    #                 self.log_event_idle("IDLE_START")
-    #                 print('idle turn on orange')
-    #     else:
-    #         if not self.idle_started:
-    #             self.idle_started = True
-    #             self.log_event_idle("IDLE_STOP")
-    #             print('not idle controller')
-            
-    #     self.root.after(10000, self.tick)
-    
-    # def log_event_idle(self, msg):
-    #     current_time = datetime.datetime.now()
-    #     date = current_time.strftime("%Y-%m-%d")
-    #     time = current_time.strftime("%H:%M:%S")
-
-    #     with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
-    #         csv_writer = csv.writer(csv_file)
-    #         csv_writer.writerow([msg, date, time])
-
-    # def load_idle_state(self):
-    #     try:
-    #         with open('config/idle_state.json', 'r') as state_file:
-    #             state = json.load(state_file)
-    #             return state.get('idle_started', False)
-    #     except FileNotFoundError:
-    #         return False
-
-    # def save_idle_state(self):
-    #     with open('config/idle_state.json', 'w') as state_file:
-    #         json.dump({'idle_started': self.idle_started}, state_file)
-
-    # def insert_idle_start_after_delay(self):
-    #     # Schedule the check_idle_condition function to run after 10 seconds
-    #     self.root.after(10000, self.insert_idle_start_after_delay)
-    #     self.check_idle_condition()
-        
-    # def check_idle_condition(self):
-    #     # create an instance of the StatusUpdate class
-    #     statusHere = StatusUpdate("data/logs/logs.csv")
-    #     # get the last value in the log file
-    #     getStatus = statusHere.get_last_log_value()
-
-    #     # check that the log file is not empty
-    #     if getStatus is None or False:
-    #         pass
-    #     # if the last value is ONLINE, and no ticket is present, load the idle state
-    #     elif getStatus == "ONLINE":
-    #         if not self.ticket_present:
-    #             self.load_idle_state()
-
-   
-    # def load_idle_state(self):
-    #     try:
-    #         # Open the idle_state.json file for reading
-    #         with open('config/idle_state.json', 'r') as idle_state_val:
-    #             # Load the data from the idle_state.json file
-    #             data = json.load(idle_state_val)
-    #             # Get the idle_started value from the data
-    #             idle_started = data['idle_started']
-
-    #             # If idle_started is False, then log the IDLE_START event and save the new value 
-    #             # to the idle_state.json file
-    #             if idle_started == False:
-    #                 self.idle_log_event("IDLE_START")
-    #                 self.save_idle_state(True)
-    #                 print('idle_started: ', idle_started)
-               
-    #     except FileNotFoundError:
-    #         return False
+            if self.start_btn is not None and self.start_btn.winfo_ismapped():
+                self.root.destroy()
+                print("START BUTTON IS SHOWN")
+            else:
+                showerror(
+                title="Close Running MO",
+                message=f"Please stop the running MO before exiting.",
+            )
+           
         
     def save_idle_state(self, val):
         with open('config/idle_state.json', 'w') as state_file:

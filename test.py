@@ -20,7 +20,7 @@ class NewWindow:
         self.close_button.pack()
 
     def close_and_open_main(self):
-        self.root.destroy()  # Close the new window
+        self.root.quit()  # Close the new window
         main_window.root.deiconify()  # Show the main window again
 
 if __name__ == "__main__":

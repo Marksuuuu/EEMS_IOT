@@ -95,11 +95,12 @@ class CSVMonitor:
         return self.new_data_count
 
 class OperatorDashboardTest:
-    def __init__(self, root, user_department, user_position, dataJson, assets_dir):
+    def __init__(self, root, user_department, user_position, dataJson, assets_dir, sio):
         data = dataJson["data"]
 
         ## GLOBAL VARIABLE ##
         self.root = root
+        self.sio = sio
         # self.root.attributes('-fullscreen',True)
         self.extracted_user_department = data[0]
         self.extracted_fullname = data[1]
@@ -110,6 +111,8 @@ class OperatorDashboardTest:
         self.extracted_username = data[6]
 
 
+
+        self.sio.emit('light_change', {'data': ''})
 
         self.idle_started = self.load_idle_state()
         self.details_window = None
@@ -264,7 +267,7 @@ class OperatorDashboardTest:
         self.verify_ticket_status()
         # self.update_table()
         # self.check_window_active()
-        # self.save_idle_state()
+        self.save_idle_state()
 
         self.create_tree_view()
         self.center_window()
@@ -760,21 +763,21 @@ class OperatorDashboardTest:
             self.details_window.lift()
           
 
-    def check_window_active(self):
-        if self.details_window is not None and self.details_window.winfo_exists():
-            # print('win close')
-            if self.idle_started:
-                self.idle_started = False
-                print("TURN OFF ALL")
-                self.log_event("IDLE_STOP")
-        else:
-            # print('win open')
-            if not self.idle_started:
-                self.idle_started = True
-                print("TURN ORANGE")
-                self.log_event("IDLE_START")
+    # def check_window_active(self):
+    #     if self.details_window is not None and self.details_window.winfo_exists():
+    #         # print('win close')
+    #         if self.idle_started:
+    #             self.idle_started = False
+    #             print("TURN OFF ALL")
+    #             self.log_event("IDLE_STOP")
+    #     else:
+    #         # print('win open')
+    #         if not self.idle_started:
+    #             self.idle_started = True
+    #             print("TURN ORANGE")
+    #             self.log_event("IDLE_START")
 
-        self.root.after(10000, self.check_window_active)
+    #     self.root.after(10000, self.check_window_active)
         
 
     def log_event(self, msg):

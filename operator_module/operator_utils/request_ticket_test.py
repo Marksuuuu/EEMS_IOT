@@ -13,7 +13,7 @@ from tkinter import ttk
 from tkinter.messagebox import showinfo, showerror
 from threading import Timer
 import datetime
-
+import threading
 import requests
 from utils.ticket_status import TicketChecker
 
@@ -342,11 +342,21 @@ class RequestTicketTest:
         else:
             showerror("Error", "Error in creating job order.")
 
-
     def verify_ticket_status(self):
+        # Create a separate thread for checking the ticket status
+        threading.Thread(target=self.check_ticket_status_threaded).start()
+
+        # Schedule the function to run again after 1000 milliseconds (1 second)
+        self.root.after(1000, self.verify_ticket_status)
+
+    def check_ticket_status_threaded(self):
         ticket_inspector = TicketChecker()
         ticket_present = ticket_inspector.checking()
 
+        # Update the GUI in the main thread based on the ticket status
+        self.root.after(0, self.update_ticket_status, ticket_present)
+
+    def update_ticket_status(self, ticket_present):
         if ticket_present:
             if not self.downtime_started:
                 self.show_ticket_button()
@@ -357,7 +367,22 @@ class RequestTicketTest:
                 # self.hide_ticket_button()
                 self.downtime_started = False
                 self.log_event("DOWNTIME_STOP")
-        self.root.after(1000, self.verify_ticket_status)
+
+    # def verify_ticket_status(self):
+    #     ticket_inspector = TicketChecker()
+    #     ticket_present = ticket_inspector.checking()
+
+    #     if ticket_present:
+    #         if not self.downtime_started:
+    #             self.show_ticket_button()
+    #             self.downtime_started = True
+    #             self.log_event("DOWNTIME_START")
+    #     else:
+    #         if self.downtime_started:
+    #             # self.hide_ticket_button()
+    #             self.downtime_started = False
+    #             self.log_event("DOWNTIME_STOP")
+    #     self.root.after(1000, self.verify_ticket_status)
         
     def log_event(self, msg):
         current_time = datetime.datetime.now()
@@ -426,12 +451,16 @@ class RequestTicketTest:
         
         # Define a function to execute the idle check
     def check_idle_condition(self):
+        # Create a separate thread for running check_idle_condition
+        threading.Thread(target=self.check_idle_condition_threaded).start()
+
+    def check_idle_condition_threaded(self):
         last_row = self.get_last_csv_value()
         if last_row and last_row[0] == "IDLE_START":
             last_time = datetime.datetime.strptime(last_row[2], "%H:%M:%S")
             self.idle_log_event("IDLE_STOP")
 
-        # Schedule the check_idle_condition function to run after 10 seconds
+        # Schedule the check_idle_condition function to run again after 10000 milliseconds (10 seconds)
         self.root.after(10000, self.check_idle_condition)
 
     def idle_log_event(self, msg):
