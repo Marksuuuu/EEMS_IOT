@@ -17,7 +17,6 @@ import datetime
 import subprocess
 from utils.status_update import StatusUpdate
 
-
 # from mo_details import MO_Details
 # from operator_module.operator_utils.mo_controller import MoDetails
 # from operator_module.operator_utils.request_ticket import RequestTicket
@@ -28,7 +27,6 @@ from utils.ticket_status import TicketChecker
 # from move_mo import MOData
 from tkinter import Canvas, Entry, Button, PhotoImage
 from pathlib import Path
-
 
 class UserPermissions:
     def __init__(self, config_path):
@@ -110,11 +108,6 @@ class OperatorDashboardTest:
         self.extracted_possition = data[5]
         self.extracted_username = data[6]
 
-
-
-        self.sio.emit('light_change', {'data': ''})
-
-        self.idle_started = self.load_idle_state()
         self.details_window = None
         self.ticket_window = None
         self.window_open = False
@@ -141,7 +134,6 @@ class OperatorDashboardTest:
             f"OPERATOR DASHBOARD - {self.extracted_employee_no} -- POSITION - {self.extracted_possition}"
         )
 
-
         button1 = "assets/frame_operator/button_1.png"
         button2 = "assets/frame_operator/button_2.png"
         button3 = "assets/frame_operator/button_3.png"
@@ -166,7 +158,6 @@ class OperatorDashboardTest:
         self.tk_image_2 = ImageTk.PhotoImage(image_2)
         self.tk_image_3 = ImageTk.PhotoImage(image_3)
 
-        
         self.canvas = Canvas(
             self.root,
             bg="#F7F7F7",
@@ -194,25 +185,12 @@ class OperatorDashboardTest:
             581.0,
             fill="#FFFFFF",
             outline="")
-
-
-
-        # self.image_image_1 = self.canvas.create_image(
-        #     64.0,
-        #     47.0,
-        #     image=self.tk_image_1
-        # )
-
-
         
         self.image_image_3 = self.canvas.create_image(
             728.0,
             48.0,
             image=self.image
         )
-
-
-
 
         self.button_1 = tk.Button(
             self.root,
@@ -229,7 +207,6 @@ class OperatorDashboardTest:
             width=122.0,
             height=42.0
         )
-
 
         # FULL NAME
         # ///////////////////////////////////////////
@@ -259,21 +236,26 @@ class OperatorDashboardTest:
             height=43.0
         )
 
-
-
         # FUNCTIONS
         # /////////////////////////////////////
         self.update_status()
         self.verify_ticket_status()
-        # self.update_table()
-        # self.check_window_active()
-        self.save_idle_state()
-
         self.create_tree_view()
         self.center_window()
         self.online_status_card()
         self.root.resizable(False, False)
-        # self.root.attributes('-topmost', True)
+
+        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+
+    def on_closing(self):
+        try:
+            self.root.withdraw()
+            subprocess.call(["python", "index.py"])
+        except tk.TclError:
+            self.root.withdraw()
+            subprocess.call(["python", "index.py"])
+            print("Window closed Unexpectedly")
 
     def destroy_details_window(self):
         if self.details_window is not None and self.details_window.winfo_exists():
@@ -315,7 +297,6 @@ class OperatorDashboardTest:
         header_style = ttk.Style()
         header_style.configure("Treeview.Heading", font=("Helvetica", 13))
 
-
         row_style = ttk.Style()
         row_style.configure("Treeview", font=("Helvetica", 12))
         row_style.configure("Treeview.Item", padding=(0, 0))
@@ -330,8 +311,7 @@ class OperatorDashboardTest:
         self.tree.column("MO QUANTITY",minwidth=0, width=130, stretch=False)
         self.tree.column("MO",minwidth=0, width=120, stretch=False)
         self.tree.column("STATUS",minwidth=0, width=150, stretch=False)
-        # self.tree.column("ACTION",minwidth=0, width=90, stretch=False)
-        # self.tree.column("ACTION", width=90, anchor="center")
+
 
         for col in self.tree["columns"]:
             self.tree.column(col, anchor="center")
@@ -438,11 +418,6 @@ class OperatorDashboardTest:
 
     def get_script_directory(self):
         return os.path.dirname(os.path.abspath(__file__))
-
-    # def on_button_click(self, values):
-    #     # Implement the action to be taken when the button in the ACTION column is clicked.
-    #     # You can use the 'values' parameter to identify which row was clicked.
-    #     print(f"Button clicked for row {values[0]}")
 
 
     def double_click_handler(self, event):
@@ -680,19 +655,6 @@ class OperatorDashboardTest:
         showinfo("Success", "Data swapped successfully!")
         self.update_table()
 
-    # def update_status(self):
-    #     statusHere = StatusUpdate('data/logs/logs.csv')
-    #     getStatus = statusHere.get_last_log_value()
-    #     if getStatus is None or False:
-    #         pass
-    #     elif getStatus == 'ONLINE':
-    #         self.online_status_card()
-
-    #     else:
-    #         self.offline_status_card()
-
-    #     self.root.after(1000, self.update_status)
-
     def update_status(self):
         statusHere = StatusUpdate('data/logs/logs.csv')
         getStatus = statusHere.get_last_log_value()
@@ -708,6 +670,7 @@ class OperatorDashboardTest:
                 self.details_window.destroy()
 
         self.root.after(1000, self.update_status)
+        
     def logout(self):
         response = messagebox.askyesno(
             "Logout", "Are you sure you want to logout?")
@@ -740,9 +703,7 @@ class OperatorDashboardTest:
 
         if ticket_present:
             self.show_ticket_button()
-            # self.ticket_checking["text"] = "VALID TICKET AVAILABLE. ACCESS ONLY FOR CHECKING, NO TRANSACTIONS. CLOSE TO PROCEED."
         else:
-            # self.ticket_checking.destroy()
             pass
 
     def show_mo_details_function(self, data):
@@ -751,9 +712,6 @@ class OperatorDashboardTest:
         if self.details_window is None or not self.details_window.winfo_exists():
             self.details_window = tk.Toplevel(self.root)
             assets_dir = 'assets'
-            # show_mo_details_window = MoDetails(
-            #     self.details_window, self.extracted_fullname, self.extracted_employee_no,
-            #     self.extracted_photo_url, self.extracted_username, data, self.update_table)
             show_mo_details_window = MoDetailsTest(
                 self.details_window, self.extracted_fullname, self.extracted_employee_no,
                 self.extracted_photo_url, self.extracted_username, data, self.update_table, assets_dir)
@@ -762,24 +720,6 @@ class OperatorDashboardTest:
         else:
             self.details_window.lift()
           
-
-    # def check_window_active(self):
-    #     if self.details_window is not None and self.details_window.winfo_exists():
-    #         # print('win close')
-    #         if self.idle_started:
-    #             self.idle_started = False
-    #             print("TURN OFF ALL")
-    #             self.log_event("IDLE_STOP")
-    #     else:
-    #         # print('win open')
-    #         if not self.idle_started:
-    #             self.idle_started = True
-    #             print("TURN ORANGE")
-    #             self.log_event("IDLE_START")
-
-    #     self.root.after(10000, self.check_window_active)
-        
-
     def log_event(self, msg):
         current_time = datetime.datetime.now()
         date = current_time.strftime("%Y-%m-%d")
@@ -789,17 +729,18 @@ class OperatorDashboardTest:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([msg, date, time])
 
-    def load_idle_state(self):
-        try:
-            with open('config/idle_state.json', 'r') as state_file:
-                state = json.load(state_file)
-                return state.get('idle_started', False)
-        except FileNotFoundError:
-            return False
-
-    def save_idle_state(self):
+    def save_idle_state(self, val):
         with open('config/idle_state.json', 'w') as state_file:
-            json.dump({'idle_started': self.idle_started}, state_file)
+            json.dump({'idle_started': val}, state_file)  
+
+    def idle_log_event(self, msg):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime("%Y-%m-%d")
+        time = current_time.strftime("%H:%M:%S")
+
+        with open('data/logs/idle.csv', mode="a", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([msg, date, time])     
             
     def signout(self):
         response: bool = messagebox.askyesno(
@@ -825,4 +766,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = OperatorDashboardTest(root)
     root.mainloop()
-

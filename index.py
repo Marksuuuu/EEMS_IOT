@@ -224,7 +224,7 @@ class DashboardGUI:
         self.checking_ticket()
         self.update_chart()
         self.ope_dashboard_open = False
-        self.send_file()
+        # self.send_file()
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
@@ -292,6 +292,8 @@ class DashboardGUI:
             font=("arial", 30),
             justify="center",  # Set text alignment to center
         )
+        self.employee_id.focus_set()
+
 
         self.employee_id.place(x=378.0, y=28.0, width=311.0, height=42.0)
 
@@ -415,10 +417,9 @@ class DashboardGUI:
         )
         
         self.lbl_graphs = self.canvas.create_text(
-            688.0,
+            750.0,
             97.0,
             anchor="nw",
-            # text="GRAPHS LAST UPDATED AS OF:  28-08-23  | 11:25 :00  ",
             fill="#FF0000",
             font=("RobotoItalic Regular", 13 * -1, "italic")
         )
@@ -430,7 +431,7 @@ class DashboardGUI:
         current_date = time.strftime("%b/%d/%Y")
 
         dateNTime = current_date + " " + current_time
-        self.canvas.itemconfig(self.lbl_graphs, text=f"LAST UPDATED AS OF: {dateNTime}")
+        self.canvas.itemconfig(self.lbl_graphs, text=f"Updated On: {dateNTime}")
 
     def refresh_clicked(self):
         self.update_chart()
@@ -674,9 +675,9 @@ class DashboardGUI:
             self.verify_ticket_status()
             # self.downtime_started = False
         else:
-            self.offline_status_card()
-          
+            self.offline_status_card()        
             self.delete_file_data()
+            
         self.root.after(1000, self.update_status)
 
     def disable_label(self):
@@ -974,7 +975,7 @@ class DashboardGUI:
               AVAIL HRS: \t\t{available_hours}
               QTY PROCESSED:\t\t{processed_qty}
               TTL QTY TO PROCESS: \t{total_qty_to_process}"""
-
+ 
         # Update the GUI label in the main thread
         self.root.after(0, self.update_machine_details, machine_details)
 
@@ -999,9 +1000,8 @@ class DashboardGUI:
         statusHere = StatusUpdate("data/logs/logs.csv")
         # get the last value in the log file
         getStatus = statusHere.get_last_log_value()
-
         # check that the log file is not empty
-        if getStatus is None or getStatus == "False":
+        if getStatus is None or False:
             pass
         # if the last value is ONLINE, and no ticket is present, load the idle state
         elif getStatus == "ONLINE":
@@ -1009,7 +1009,6 @@ class DashboardGUI:
                 self.load_idle_state()
             else:
                 self.save_idle_state(False)
-
     def load_idle_state(self):
         try:
             # Open the idle_state.json file for reading
@@ -1018,21 +1017,19 @@ class DashboardGUI:
                 data = json.load(idle_state_val)
                 # Get the idle_started value from the data
                 idle_started = data['idle_started']
-
-                # If idle_started is False, then log the IDLE_START event and save the new value 
+                # If idle_started is False, then log the IDLE_START event and save the new value
                 # to the idle_state.json file
-                if idle_started is False:
+                if idle_started == False:
                     self.idle_log_event("IDLE_START")
                     self.save_idle_state(True)
-                    # You might want to emit the event here as well
-                    sio.emit('light_change', {'data': "TURN_ON_ORANGE"})
+                    sio.emit('light_change', {'data': 'TURN_ON_ORANGE'})
                     print('idle_started: ', idle_started)
-
         except FileNotFoundError:
             return False
+            
     def save_idle_state(self, val):
         with open('config/idle_state.json', 'w') as state_file:
-            json.dump({'idle_started': val}, state_file)       
+            json.dump({'idle_started': val}, state_file)     
 
     def idle_log_event(self, msg):
         current_time = datetime.datetime.now()
@@ -1077,6 +1074,7 @@ class DashboardGUI:
             print(f"Error sending files in folder {folder_path}: {str(e)}")
 
     def send_file(self):
+        print('send_file')
         if not self.sending_files:
             self.sending_files = True
             for root_folder in self.root_folders:

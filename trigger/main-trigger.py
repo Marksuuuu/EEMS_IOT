@@ -2,7 +2,7 @@ import csv
 import datetime
 import os
 import tkinter as tk
-
+import json
 
 class App:
     def __init__(self, root):
@@ -42,10 +42,25 @@ class App:
             with open(self.csv_file_path, mode='w', newline='') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow([message, date, time])
+                self.log_event('ONLINE')
         else:
             with open(self.csv_file_path, mode='a', newline='') as csv_file:
+                self.log_event('OFFLINE')
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow([message, date, time])
+
+    def log_event(self, message):
+        current_time = datetime.datetime.now()
+        date = current_time.strftime('%Y-%m-%d')
+        time = current_time.strftime('%H:%M:%S')
+        with open(self.csv_file_path, mode='a', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow([message, date, time])
+
+
+    def save_idle_state(self, val):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': val}, state_file)
 
 
 if __name__ == "__main__":

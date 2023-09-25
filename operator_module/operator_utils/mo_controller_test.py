@@ -504,53 +504,51 @@ class MoDetailsTest:
 
     def start_command(self):
 
-        self.log_event("START")
         self.checking() #comment this if there is a ticket for testing
-
-        self.show_stop_btn()  
-        self.idle_log_event("IDLE_STOP")
-        self.save_idle_state(True)
+        # self.show_stop_btn()  
     def stop_command(self):
 
         # TESTING PURPOSES ONLY
         # ///////////////////////////////////////////////////////////////
-        # self.show_input_dialog()
+        self.show_input_dialog()
+        self.mo_data = MOData()
+        self.mo_data.perform_check_and_swap()
 
-        hris_password = simpledialog.askstring(
-            "Password",
-            "Enter Password", show='*'
-        )
+        # hris_password = simpledialog.askstring(
+        #     "Password",
+        #     "Enter Password", show='*'
+        # )
 
-        if hris_password is not None and hris_password.strip() != "":
-            input_password = str(hris_password)
+        # if hris_password is not None and hris_password.strip() != "":
+        #     input_password = str(hris_password)
 
-            url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
-            response = requests.get(url).json()
-            if response['result'] == False or response['result'] == None:
-                print("FAILED")
-                # self.start_btn["state"] = "disabled"
-                # self.stop_btn["state"] = "normal"
-                self.show_stop_btn()
-                showerror(
-                title="Login Failed",
-                message=f"Password is incorrect. Please try again.",
-            )
-                # self.show_input_dialog()
-            else:
-                # self.start_btn["state"] = "normal"    # Enable the START button
-                # self.stop_btn["state"] = "disabled"
-                # self.root.iconify()
+        #     url = f"http://hris.teamglac.com/api/users/login?u={self.extracted_username}&p={input_password}"
+        #     response = requests.get(url).json()
+        #     if response['result'] == False or response['result'] == None:
+        #         print("FAILED")
+        #         # self.start_btn["state"] = "disabled"
+        #         # self.stop_btn["state"] = "normal"
+        #         self.show_stop_btn()
+        #         showerror(
+        #         title="Login Failed",
+        #         message=f"Password is incorrect. Please try again.",
+        #     )
+        #         # self.show_input_dialog()
+        #     else:
+        #         # self.start_btn["state"] = "normal"    # Enable the START button
+        #         # self.stop_btn["state"] = "disabled"
+        #         # self.root.iconify()
 
-                self.show_input_dialog()
-                self.mo_data = MOData()
-                self.mo_data.perform_check_and_swap()
+        #         self.show_input_dialog()
+        #         self.mo_data = MOData()
+        #         self.mo_data.perform_check_and_swap()
 
-                # if not self.idle_started:
-                #     self.idle_started = True
-                #     self.log_event_idle("IDLE_STOP")
-                #     print('not idle')
-        else:
-            pass
+        #         # if not self.idle_started:
+        #         #     self.idle_started = True
+        #         #     self.log_event_idle("IDLE_STOP")
+        #         #     print('not idle')
+        # else:
+        #     pass
 
     def read_machno(self): 
         with open("data/main.json", "r") as json_file:
@@ -572,12 +570,11 @@ class MoDetailsTest:
                     res = 1
                     break
             if res == 1:
-                self.hide_start_and_stop_btn()
-
                 showwarning(
                     "TICKET ALERT!",
                     "Attention! The machine is temporarily unavailable.",
                 )
+                self.hide_start_and_stop_btn()
                 self.root.destroy()
                 # self.stop_btn["state"] = "disabled"
 
@@ -585,6 +582,9 @@ class MoDetailsTest:
                 self.log_event("START")
                 # self.start_btn["state"] = "normal"
                 self.show_stop_btn()  
+                self.idle_log_event("IDLE_STOP")
+                self.save_idle_state(True)
+                print("TURN ON GREEN")
 
                 # self.show_start_btn()
 
@@ -813,7 +813,7 @@ class MoDetailsTest:
 
             self.log_event("STOP")
             self.save_idle_state(False)
-            self.root.destroy()
+            #self.root.destroy()
 
     def show_label_completed(self):
         self.lbl_mo_status = tk.Label(self.root)
