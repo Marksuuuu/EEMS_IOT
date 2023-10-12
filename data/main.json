@@ -1,17 +1,17 @@
 {
-    "machno": "VLFH-058",
-    "filename": "index",
-    "data": [
-        {
-            "customer": "IXYS",
-            "device": "WP.IXCD1953 M1 MIL",
-            "main_opt": "Die Plate-Viking",
-            "operation_seq_number": "20",
-            "package": "WP",
-            "running_qty": "96359",
-            "uph": "1672",
-            "wip_entity_id": "837352",
-            "wip_entity_name": "MO832784"
-        }
-    ]
+  "machno": "VLFH-058",
+  "filename": "index",
+  "data": [
+    {
+      "customer": "IXYS",
+      "device": "WP.IXCD1953 M1 MIL",
+      "main_opt": "Die Plate-Viking",
+      "operation_seq_number": "20",
+      "package": "WP",
+      "running_qty": "96359",
+      "uph": "1672",
+      "wip_entity_id": "837352",
+      "wip_entity_name": "MO832784"
+    }
+  ]
 }

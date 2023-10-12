@@ -316,9 +316,9 @@ class MoDetails:
 
                 self.show_stop_btn()
                 showerror(
-                title="Login Failed",
-                message=f"Password is incorrect. Please try again.",
-            )
+                    title="Login Failed",
+                    message=f"Password is incorrect. Please try again.",
+                )
                 # self.show_input_dialog()
 
             else:

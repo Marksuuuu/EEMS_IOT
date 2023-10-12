@@ -1,5 +1,7 @@
 import json
+
 import requests
+
 
 class TicketChecker:
     def __init__(self):
@@ -26,6 +28,7 @@ class TicketChecker:
                 if machno is not None and x.get("MACH201_MACHNO") == machno:
                     return True
         return False
+
 
 if __name__ == "__main__":
     TicketChecker()

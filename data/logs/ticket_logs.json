@@ -117,5 +117,54 @@
         "downtime_type_id": "1",
         "checkbox_value": 1,
         "remarks_value": "TEST TICKET PLEASE DELETE"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": ""
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "1",
+        "checkbox_value": 1,
+        "remarks_value": "TEST TICKET"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST"
+    },
+    {
+        "employee_no": "010450",
+        "machine_no_value": "VLFH-058",
+        "downtime_type_id": "2",
+        "checkbox_value": 1,
+        "remarks_value": "TEST"
     }
 ]

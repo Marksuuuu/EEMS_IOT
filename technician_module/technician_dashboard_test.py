@@ -1,27 +1,18 @@
 import json
+import logging
 import os
 import tkinter as tk
-from tkinter import Scrollbar, Text
-import tkinter.font as tkFont
-import csv
-from datetime import datetime
-import logging
 from io import BytesIO
-from tkinter import Toplevel
-from tkinter import messagebox
-from tkinter import simpledialog
-from tkinter import ttk
-from tkinter.messagebox import showinfo, showwarning, showerror
 # from ttkbootstrap.constants import *
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
+from tkinter import Canvas
+from tkinter import messagebox
+from tkinter.messagebox import showinfo, showerror
 
 import requests
 from PIL import Image, ImageTk
 
 # from technician_module.technician_utils.downtime_type import DownTimeType
 from utils.ticket_status import TicketChecker
-from utils.status_update import StatusUpdate
 
 
 class TechnicianDashboardTest:
@@ -38,12 +29,11 @@ class TechnicianDashboardTest:
         self.extracted_photo_url = data[4]
         self.extracted_possition = data[5]
         self.downtime_type = ''
-        self.log_configured = False 
+        self.log_configured = False
         self.root = root
         self.root.geometry("1024x600")
         self.root.configure(bg="#E5E5E5")
         self.ticket_logging()
-        
 
         if self.extracted_photo_url == False or self.extracted_photo_url is None:
             image_url = "https://www.freeiconspng.com/uploads/no-image-icon-15.png"
@@ -243,7 +233,6 @@ class TechnicianDashboardTest:
 
         self.ticket_checking_var()
         self.verify_ticket_status()
-        
 
         ## END ##
 
@@ -392,22 +381,22 @@ class TechnicianDashboardTest:
                     accept_res = value_url['msg']
                     showinfo("Warning", f"{accept_res}")
                     self.log_ticket_activity(
-                logging.INFO, f'{accept_res}.. ID NUM: {self.extracted_employee_no,}')
+                        logging.INFO, f'{accept_res}.. ID NUM: {self.extracted_employee_no,}')
                 else:
                     showinfo("Success", f"Job order accepted successfully.")
                     self.log_ticket_activity(
-                logging.INFO, f'Job order accepted successfully.. ID NUM: {self.extracted_employee_no,}')
+                        logging.INFO, f'Job order accepted successfully.. ID NUM: {self.extracted_employee_no,}')
                     self.ticket_checking_var()
             else:
                 showerror("Error", "Invalid response format from the server.")
                 self.log_ticket_activity(
-                logging.INFO, f'Invalid response format from the server... ID NUM: {self.extracted_employee_no,}')
+                    logging.INFO, f'Invalid response format from the server... ID NUM: {self.extracted_employee_no,}')
         except requests.RequestException as e:
             print(f"Error in creating job order: {e}")
             showerror("Error", "Error in creating job order.")
             self.log_ticket_activity(
                 logging.INFO, f'Error in creating job order... ID NUM: {self.extracted_employee_no,}')
-            
+
     def ticket_logging(self):
         if not self.log_configured:
             log_file = 'data/logs/accepted_ticket.txt'
@@ -416,18 +405,16 @@ class TechnicianDashboardTest:
                                 datefmt='%Y-%m-%d %H:%M:%S', filemode='a')
             print(f'Logging to {log_file}')
             self.log_configured = True  # Set the flag to True after configuring logging
-        
-        
+
     def log_ticket_activity(self, level, message):
         logging.log(level, message)
-
 
     def signout(self):
         response = messagebox.askyesno(
             "Sign out", "Are you sure you want to Sign out?")
         if response:
             self.root.destroy()
-            os.system("python index_test.py")
+            os.system("python index.py")
 
     def center_window(self):
         self.root.update_idletasks()
@@ -475,12 +462,12 @@ class TechnicianDashboardTest:
 
                 if self.machno_string is None or self.machno_string_status is None:
                     self.new_text = 'DT NO: ' + self.machno_string + \
-                        ' ' + '|| ' + self.machno_string_status
+                                    ' ' + '|| ' + self.machno_string_status
                     self.canvas.itemconfigure(self.label1, text=self.new_text)
                     self.accept_btn.place_forget()
                 else:
                     self.new_text = 'DT NO: ' + self.machno_string + \
-                        ' ' + '|| ' + self.machno_string_status
+                                    ' ' + '|| ' + self.machno_string_status
                     self.canvas.itemconfigure(self.label1, text=self.new_text)
 
     # def get_downtime_type(self, downtimeType):

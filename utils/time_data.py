@@ -1,12 +1,6 @@
 import csv
-import json
 import os
 from datetime import datetime, timedelta
-
-import matplotlib.pyplot as plt
-from PIL import Image, ImageTk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 
 
 class TimeData:
@@ -28,27 +22,27 @@ class TimeData:
     def calculate_oee(self):
         try:
             productiveHrs = self.calculate_total_productive_time().total_seconds() / 3600
-            
+
             # Convert timedelta objects to strings and then split them
             availableHrs_str = str(self.get_available_hrs())
             availableHrs_parts = availableHrs_str.split(':')
-            
+
             if len(availableHrs_parts) != 3:
                 raise ValueError("Invalid format for available hours")
-            
+
             available_hours = int(availableHrs_parts[0])
             available_minutes = int(availableHrs_parts[1])
             available_seconds = int(availableHrs_parts[2])
 
             availableHrs = available_hours + (available_minutes / 60) + (available_seconds / 3600)
-            
+
             # Convert timedelta objects to strings and then split them
             downtimeHrs_str = str(self.calculate_total_downtime())
             downtimeHrs_parts = downtimeHrs_str.split(':')
-            
+
             if len(downtimeHrs_parts) != 3:
                 raise ValueError("Invalid format for downtime hours")
-            
+
             downtime_hours = int(downtimeHrs_parts[0])
             downtime_minutes = int(downtimeHrs_parts[1])
             downtime_seconds = int(downtimeHrs_parts[2])
@@ -70,7 +64,7 @@ class TimeData:
     #     log_file_path = os.path.join(log_folder, 'logs/logs.csv')
     #     data = []
     #     total_available_seconds = 0
-        
+
     #     with open(log_file_path, 'r') as csvfile:
     #         csvreader = csv.reader(csvfile)
     #         for row in csvreader:
@@ -109,7 +103,7 @@ class TimeData:
             csvreader = csv.reader(csvfile)
             for row in csvreader:
                 data.append(row)
-        
+
         if not data:
             # If there is no data in the CSV, return 0 as formatted time
             return "00:00:00"
@@ -131,8 +125,8 @@ class TimeData:
                 time_difference = current_datetime - previous_event_time
             else:
                 time_difference = current_datetime - \
-                    datetime.strptime("2000-01-01 00:00:00",
-                                    "%Y-%m-%d %H:%M:%S")
+                                  datetime.strptime("2000-01-01 00:00:00",
+                                                    "%Y-%m-%d %H:%M:%S")
             total_available_seconds += time_difference.total_seconds()
         formatted_time = self.format_time(total_available_seconds)
         return formatted_time
@@ -215,8 +209,7 @@ class TimeData:
 
         formatted_time = self.format_time(total_idle_time)
         return formatted_time
-    
-    
+
     def calculate_total_idle(self):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         log_folder = os.path.join(script_directory, self.file_path)
@@ -260,6 +253,7 @@ class TimeData:
         formatted_time = self.format_time(total_idle_time)
         # print(f"==>> formatted_time: {formatted_time}")
         return formatted_time
+
 
 if __name__ == "__main__":
     TimeData()

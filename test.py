@@ -1,53 +1,36 @@
-import tkinter as tk
-from tkinter import Label
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from io import BytesIO
-from PIL import Image, ImageTk
+import csv
+import json
+import datetime
 
-def create_donut_chart():
-    # Donut chart data
-    labels = ['A', 'B', 'C', 'D']
-    sizes = [30, 40, 20, 10]
-    colors = ['red', 'green', 'blue', 'orange']
+class YourClassName:
+    def __init__(self):
+        # Initialize self.idle_started here or in your constructor
+        self.idle_started = self.load_idle_state()
+    
+    def check_last_data(self):
+        with open('data/time.csv', 'r') as file:
+            csv_reader = csv.reader(file)
+            data = list(csv_reader)
+            return data[-1][0]
+        
+    def trigger_idle_in_main(self):
+        # You need to define self.checking_data_in_time_csv
+        if self.checking_data_in_time_csv == 'STOP':
+            print('go here')
+            if not self.idle_started:
+                print('go here, if')  # Fixed typo here
+                self.idle_started = True
+                self.log_event("IDLE_START")
+                print(self.checking_data_in_time_csv)
+        else:
+            if self.idle_started:
+                print('go here, else')  # Fixed typo here
+                self.idle_started = False
+                self.log_event("IDLE_STOP")
+        self.root.after(10000, self.trigger_idle_in_main)
+        
+    # Rest of your methods
 
-    # Create a figure and a subplot for the donut chart
-    fig, ax = plt.subplots()
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
-
-    # Create the donut chart
-    wedges, texts, autotexts = ax.pie(
-        sizes,
-        labels=labels,
-        autopct='%1.1f%%',
-        colors=colors,
-        wedgeprops={'width': 0.4},  # Set the width to create a donut chart
-    )
-
-    # Customize the labels
-    for text, autotext in zip(texts, autotexts):
-        text.set(size=12, weight='bold')
-        autotext.set(size=12, weight='bold')
-
-    # Save the chart as an image in memory
-    image_stream = BytesIO()
-    plt.savefig(image_stream, format='png')
-    image_stream.seek(0)
-    chart_image = Image.open(image_stream)
-
-    # Create a Tkinter window
-    root = tk.Tk()
-    root.title("Donut Chart in Label Example")
-
-    # Convert the Matplotlib chart image to a Tkinter PhotoImage
-    tk_chart_image = ImageTk.PhotoImage(chart_image)
-
-    # Create a label and display the chart image
-    label = Label(root, image=tk_chart_image)
-    label.pack()
-
-    # Start the Tkinter main loop
-    root.mainloop()
-
-# Call the function to create a window with the donut chart in a label
-create_donut_chart()
+    def save_idle_state(self):
+        with open('config/idle_state.json', 'w') as state_file:
+            json.dump({'idle_started': self.idle_started}, state_file)

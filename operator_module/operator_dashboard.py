@@ -11,7 +11,6 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning, showerror
-# from datetime import datetime
 
 import requests
 from PIL import Image, ImageTk
@@ -21,6 +20,9 @@ from operator_module.operator_utils.mo_controller import MoDetails
 from operator_module.operator_utils.request_ticket import RequestTicket
 from utils.status_update import StatusUpdate
 from utils.ticket_status import TicketChecker
+
+
+# from datetime import datetime
 
 
 # from request_ticket import RequestTicket
